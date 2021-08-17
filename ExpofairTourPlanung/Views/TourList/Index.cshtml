@@ -1,0 +1,92 @@
+﻿@model List<Tour>
+
+@{
+    ViewData["Title"] = "Touren Übersicht";
+}
+
+<h3>Aktuell vorhandene Tourenpläne</h3>
+<br />
+
+<table id="tourTable" class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Tourdatum</th>
+            <th>Tourname</th>
+            <th>Aktionen</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @{
+            foreach (Tour tour in Model)
+            {
+                <tr>
+                    <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
+                    <td>@tour.TourName</td>
+                    <td>
+                        <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
+                            <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                        </a>
+                        <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
+                            <span class="fa fa-file-pdf fa-lg" aria-hidden="true"></span>
+                        </button>
+
+                        <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
+                            <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+<a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Neuen Tourenplan anlegen</a>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+    $('#tourTable').DataTable();
+
+    });
+    function onClickedDeleteTourButton(id) {
+
+            Swal.fire({
+                title: 'Möchtest du den Tourenplan wirklich löschen?',
+                icon: 'error',
+                showCloseButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    'Ja, löschen!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    // Backend call to delete tour by id
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("DelTourById")",
+                        data: { id: id },
+                        success: function (msg) {
+                            Swal.fire('Wurde gelöscht!', '', 'success').then((result) => {
+                                location.reload();
+                            });
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+                }
+            })
+    }
+
+
+    function onClickedCreatePDF( id ) {
+        window.open("/Tour/CreatePdf?"+ id, '_blank');
+            }
+
+
+    </script>
+}

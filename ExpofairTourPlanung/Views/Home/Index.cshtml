@@ -1,0 +1,129 @@
+﻿@model List<Job2Tour>
+
+@{
+    ViewData["Title"] = "Job Übersicht";
+}
+
+<h3>Aktuelle Job Übersicht</h3>
+<br />
+
+
+
+<form asp-controller="Home" asp-action="Index" enctype="multipart/form-data">
+    <div class="row form-group">
+        <div class="col-2">
+            <div class="col-form-label">
+                Von:
+            </div>
+        </div>
+        <div class="col-3">
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" />
+        </div>
+       <div class="col-2">
+            <button class="btn btn-primary" type="submit">Anzeigen</button>
+        </div>
+    </div>
+</form>
+
+
+
+<hr />
+<table id="jobTable" class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Auslieferungdatum</th>
+            <th>Beschreibung</th>
+            <th>Adresse</th>
+            <th>Auslieferung/Rückgabe</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @{
+            foreach (Job2Tour job in Model)
+            {
+                <tr>
+                    <td>@job.JobDate.ToString("dd.MM.yyyy") </td>
+                    <td>@job.Caption</td>
+
+
+               @{
+                   if (job.Address != null)
+                   {
+                       string[] words = @job.Address.Split(';');
+                        <td>
+                            @words[0] <br />
+                            @words[3] <br />
+                            @words[1] @words[2]
+                        </td>
+                   }
+                   else
+                   {
+                       <td><br /></td>
+                   }
+
+                }
+
+                     <td>@job.InOut</td>
+                    @*<td>
+                            <a asp-route-id="@jobPosting.Id" asp-controller="JobPosting" asp-action="CreateEditJobPosting" class="btn btn-warning">Edit</a>
+                            <button onclick="onClickedDeleteButton(@jobPosting.Id)" class="btn btn-danger">Löschen</button>
+                        </td>*@
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function () {
+            $('#jobTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                }
+            });
+            document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
+            @*document.getElementById("dateTo").value = '@ViewData["dateTo"]';*@
+
+        });
+
+        @*function onClickedDeleteButton(id) {
+
+            Swal.fire({
+                title: 'Möchtest du das Inserat wirklich löschen?',
+                icon: 'error',
+                showCloseButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    'Ja, löschen!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    // Backend call to delete job posting by id
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("DeleteJobPostingById")",
+                        data: { id: id },
+                        success: function (msg) {
+                            Swal.fire('Wurde gelöscht!', '', 'success').then((result) => {
+                                location.reload();
+                            });
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+                }
+            })
+        }*@
+
+    </script>
+}
+

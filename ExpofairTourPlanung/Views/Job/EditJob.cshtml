@@ -1,0 +1,43 @@
+﻿@model ExpofairTourPlanung.Models.Job2Tour
+
+@{
+    ViewData["Title"] = "Jobdaten";
+}
+
+<form asp-controller="Job" asp-action="SaveJob" enctype="multipart/form-data">
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>Jobdaten:</h5>
+        </div>
+
+        <div class="card-body">
+
+            <input hidden asp-for="IdTourJob" />
+
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="Tour">Zeitraum</label>
+                    <input class="form-control" asp-for="Time" type="text" placeholder="Bitte Legen Sie einen Zeitraum fest" />
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-12">
+                   <label for="Tour">Kommentar</label>
+                   <textarea rows="10" class="form-control" asp-for="Comment" placeholder="Hier können Sie einen generellen Kommentar eintragen."></textarea>
+                </div>
+            </div>
+            <div class="row form-group">
+                 <div class="col-12">
+                     <label for="Tour">Stock</label>
+                     <textarea rows="10" class="form-control" asp-for="Stock" placeholder="Stockbeschreibung"></textarea>
+                 </div>
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Speichern</button>
+        </div>
+    </div>
+</form>
