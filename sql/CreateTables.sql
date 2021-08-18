@@ -50,16 +50,22 @@ GO
 create Table [expofair].[Vehicle] (
 IdVehicle INT NOT NULL IDENTITY(1,1),
 VehicleNr VARCHAR(20) NULL,
-VehicleType VARCHAR(20) NULL,
+VehicleType VARCHAR(100) NULL,
 Comment VARCHAR(500) NULL,
-MaxLoad INT NULL,
+NetWeight decimal,
+NetVolume decimal,
+Status VARCHAR(20) NULL,
+Owner VARCHAR(300) NULL,
+IsActiv BIT NULL,
+StartDate Smalldatetime NULL,
+EndDate  Smalldatetime Null,
 PRIMARY KEY(IdVehicle)
 );
 GO
 
-insert into [expofair].[Vehicle] ( VehicleNr, VehicleType, MaxLoad) values ('B-HK1234', 'LKW 20T', 5000);
-insert into [expofair].[Vehicle] ( VehicleNr, VehicleType, MaxLoad) values ('B-HK1212', 'LKW 20T', 5000);
-insert into [expofair].[Vehicle] ( VehicleNr, VehicleType, MaxLoad) values ('B-HK4321', 'LKW 20T', 5000);
+insert into [expofair].[Vehicle] ( VehicleNr, VehicleType, NetWeight) values ('B-HK1234', 'LKW 20T', 5000);
+insert into [expofair].[Vehicle] ( VehicleNr, VehicleType, NetWeight) values ('B-HK1212', 'LKW 20T', 5000);
+insert into [expofair].[Vehicle] ( VehicleNr, VehicleType, NetWeight) values ('B-HK4321', 'LKW 20T', 5000);
 
 GO
 drop Table [expofair].[Stuff];
@@ -71,6 +77,11 @@ EmployeeName2 VARCHAR(100) NULL,
 EmployeeType VARCHAR(100) NULL,
 EmployeeNr VARCHAR(100) NULL,
 Comments VARCHAR(500) NULL,
+IsActiv BIT NULL,
+Status VARCHAR(20) NULL,
+Employer VARCHAR(300) NULL,
+StartDate Smalldatetime NULL,
+EndDate  Smalldatetime Null,
 PRIMARY KEY(IdStuff)
 );
 GO

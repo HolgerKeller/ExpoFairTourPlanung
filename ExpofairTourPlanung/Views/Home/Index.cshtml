@@ -34,7 +34,8 @@
             <th>Auslieferungdatum</th>
             <th>Beschreibung</th>
             <th>Adresse</th>
-            <th>Auslieferung/Rückgabe</th>
+            <th>Service</th>
+            <th>Lieferung/Rückgabe</th>
 
         </tr>
     </thead>
@@ -66,6 +67,7 @@
 
                 }
 
+                     <td>@job.Service</td>
                      <td>@job.InOut</td>
                     @*<td>
                             <a asp-route-id="@jobPosting.Id" asp-controller="JobPosting" asp-action="CreateEditJobPosting" class="btn btn-warning">Edit</a>

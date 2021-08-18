@@ -1,38 +1,37 @@
-﻿@model List<Tour>
+﻿
+@model List<Stuff>
 
 @{
-    ViewData["Title"] = "Touren Übersicht";
+    ViewData["Title"] = "Mitarbeiter-Übersicht";
 }
 
-<h3>Aktuell vorhandene Tourenpläne</h3>
+<h3>Verfügbare Mitarbeiter</h3>
 <br />
 
-<table id="tourTable" class="table table-bordered table-striped table-hover">
+<table id="stuffTable" class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
         <tr>
-            <th>Tourdatum</th>
-            <th>Tourname</th>
-            <th>Aktionen</th>
+            <th>Mitarbeitername</th>
+            <th>Mitarbeiterstatus</th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
 
     <tbody>
 
         @{
-            foreach (Tour tour in Model)
+            foreach (Stuff employee in Model)
             {
                 <tr>
-                    <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
-                    <td>@tour.TourName</td>
+                    <td>@employee.EmployeeName1 </td>
+                    <td>@employee.Status</td>
+
                     <td>
-                        <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
+                        <a asp-route-id="@employee.IdStuff" asp-controller="Stuff" asp-action="CreateEditEmployee" class="btn btn-default" aria-label="Bearbeiten">
                             <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                         </a>
-                        <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
-                            <span class="fa fa-file-pdf fa-lg" aria-hidden="true"></span>
-                        </button>
 
-                        <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
+                        <button onclick="onClickedDeleteVehicleButton(@employee.IdStuff)" class="btn btn-default" aria-label="Löschen">
                             <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
                         </button>
                     </td>
@@ -44,18 +43,18 @@
 </table>
 
 
-<a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Neuen Tourenplan anlegen</a>
+<a class="btn btn-primary" asp-controller="Stuff" asp-action="CreateEditEmployee">Neuen Mitarbeiter anlegen</a>
 
 @section Scripts {
     <script>
     $(document).ready(function () {
-    $('#tourTable').DataTable();
+    $('#stuffTable').DataTable();
 
     });
-    function onClickedDeleteTourButton(id) {
+    function onClickedDeleteEmployeeButton(id) {
 
             Swal.fire({
-                title: 'Möchtest du den Tourenplan wirklich löschen?',
+                title: 'Möchtest du den Mitarbeiter wirklich löschen?',
                 icon: 'error',
                 showCloseButton: true,
                 focusConfirm: false,
@@ -64,10 +63,10 @@
             }).then((result) => {
                 if (result.isConfirmed) {
 
-                    // Backend call to delete tour by id
+                    // Backend call to delete Employee by id
                     $.ajax({
                         type: "POST",
-                        url: "@Url.Action("DelTourById")",
+                        url: "@Url.Action("DelEmployeeById")",
                         data: { id: id },
                         success: function (msg) {
                             Swal.fire('Wurde gelöscht!', '', 'success').then((result) => {
@@ -83,9 +82,6 @@
     }
 
 
-    function onClickedCreatePDF( id ) {
-        window.open("/TourPdf/CreateTourPdf/"+ id, '_blank');
-            }
 
 
     </script>

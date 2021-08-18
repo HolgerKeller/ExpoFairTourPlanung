@@ -1,0 +1,101 @@
+﻿@model ExpofairTourPlanung.Models.Stuff
+
+@{
+    ViewData["Title"] = "Mitarbeiterdaten";
+}
+
+
+<form asp-controller="Stuff" asp-action="SaveEmployee" enctype="multipart/form-data">
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>Mitarbeiter-Daten:</h5>
+        </div>
+
+        <div class="card-body">
+
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+
+            @Html.Hidden("IdStuff", (Model != null) ? Model.IdStuff : 0)
+
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Vehicle">Mitarbeitername</label>
+                    <input class="form-control" asp-for="EmployeeName1" type="Text" placeholder="Mitarbeitername" />
+                </div>
+                <div class="col-6">
+                    <label for="Vehicle">Tätigkeit</label>
+                    <input class="form-control" asp-for="EmployeeType" type="Text" placeholder="Tätigkeit" />
+                </div>
+            </div>
+           
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Vehicle">Status</label>
+                    <input class="form-control" asp-for="Status" type="text" placeholder="Status" />
+                </div>
+                <div class="col-6">
+                    <label for="Vehicle">Arbeitgeber</label>
+                    <input class="form-control" asp-for="Employer" type="text" placeholder="Arbeitgeber" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col">
+                    <label for="Vehicle">Kommentar</label>
+                    <textarea rows="6" class="form-control" asp-for="Comments" placeholder="Hier können Sie einen generellen Kommentar eintragen."></textarea>
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Vehicle">Verfügbar von:</label>
+                    <input class="form-control" asp-for="StartDate" type="date" placeholder="Verfügbar von" />
+                </div>
+                <div class="col-6">
+                    <label for="Vehicle">Verfügbar bis:</label>
+                    <input class="form-control" asp-for="EndDate" type="date" placeholder="Verfügbar bis" />
+                </div>
+            </div>
+
+
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Vehicle">Mitarbeiter ist aktiv:</label>
+                    @Html.CheckBox("IsActiv", Model?.IsActiv ?? true, new { @class = "checkbox style-2 pull-right" })
+                </div>
+            </div>
+        </div>
+
+
+        @*@Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @placeholder = "Wer ist der Fahrer?" })*@
+
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Speichern</button>
+        </div>
+    </div>
+</form>
+@section scripts {
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            if (document.getElementById("StartDate").value == "") {
+                document.getElementById("StartDate").valueAsDate = new Date();
+            }
+            if (document.getElementById("EndDate").value == "") {
+                document.getElementById("EndDate").valueAsDate = new Date("2099-12-31");
+            }
+        });
+
+    </script>
+}

@@ -49,7 +49,7 @@ namespace ExpofairTourPlanung.Data
             modelBuilder.Entity<Stuff>(entity =>
             {
                 entity.HasKey(e => e.IdStuff)
-                    .HasName("PK__Stuff__2B126724F91D7B48");
+                    .HasName("PK__Stuff__2B126724A7310BBA");
 
                 entity.Property(e => e.Comments).IsUnicode(false);
 
@@ -60,6 +60,10 @@ namespace ExpofairTourPlanung.Data
                 entity.Property(e => e.EmployeeNr).IsUnicode(false);
 
                 entity.Property(e => e.EmployeeType).IsUnicode(false);
+
+                entity.Property(e => e.Employer).IsUnicode(false);
+
+                entity.Property(e => e.Status).IsUnicode(false);
             });
 
             modelBuilder.Entity<Tour>(entity =>
@@ -87,9 +91,13 @@ namespace ExpofairTourPlanung.Data
             modelBuilder.Entity<Vehicle>(entity =>
             {
                 entity.HasKey(e => e.IdVehicle)
-                    .HasName("PK__Vehicle__64D74CC890905727");
+                    .HasName("PK__Vehicle__64D74CC87182C905");
 
                 entity.Property(e => e.Comment).IsUnicode(false);
+
+                entity.Property(e => e.Owner).IsUnicode(false);
+
+                entity.Property(e => e.Status).IsUnicode(false);
 
                 entity.Property(e => e.VehicleNr).IsUnicode(false);
 

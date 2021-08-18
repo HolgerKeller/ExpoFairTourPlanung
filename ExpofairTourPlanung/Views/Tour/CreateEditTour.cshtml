@@ -18,49 +18,55 @@
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
 
+            @Html.Hidden("IdTour", (Model != null) ? Model.IdTour : 0)
 
-            <input hidden asp-for="IdTour" />
+            @*<input hidden asp-for="IdTour" />*@
 
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Tour">Tourdatum</label>
                     <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
                 </div>
-                <div class="col-6">
-                    <label for="Tour">Fahrzeug</label>
-                    @Html.DropDownListFor(model => Model.VehicleNr, (SelectList)ViewBag.Vehicles, "Welches Fahrzeug?", new { @class = "form-control", @placeholder = "Fahrzeug auswählen" })
-                </div>
-            </div>
-            <div class="row form-group">
                 <div class="col ">
                     <label for="Tour">Tourbezeichnung</label>
                     <input class="form-control" asp-for="TourName" type="text" placeholder="Bitte Legen Sie eine Tour-Bezeichnung fest" />
                 </div>
-                <div class="col">
-                    <label for="Tour">Fahrer</label>
-                    @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @placeholder = "Wer ist der Fahrer?" })
-
-                </div>
-            </div>
-            <div class="row form-group">
-                <div class="col ">
-                    <label for="Tour">Verantwortlicher</label>
-                    @Html.DropDownListFor(model => Model.Master, (SelectList)ViewBag.Employees, "Wer ist Verantwortlich?", new { @placeholder = "Wer ist verantworlich?" })
-
-                </div>
-                <div class="col">
-                    <label for="Tour">Team</label>
-                    @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @multiple = "multiple", @placeholder = "Wer ist weiterhin im Team?" })
-
-                </div>
             </div>
 
-            <div class="row form-group">
-                <div class="col">
-                    <label for="Tour">Kommentar</label>
-                    <textarea rows="6" class="form-control" asp-for="Comment" placeholder="Hier können Sie einen generellen Kommentar eintragen."></textarea>
-                </div>
-            </div>
+            @if (Model != null)
+            {
+
+             <div class="row form-group">
+                    <div class="col-6">
+                        <label for="Tour">Fahrzeug</label>
+                        @Html.DropDownListFor(model => Model.VehicleNr, (SelectList)ViewBag.Vehicles, "Welches Fahrzeug?", new { @class = "form-control", @placeholder = "Fahrzeug auswählen" })
+                    </div>
+                    <div class="col">
+                        <label for="Tour">Fahrer</label>
+                        @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @placeholder = "Wer ist der Fahrer?" })
+
+                    </div>
+             </div>
+             <div class="row form-group">
+                    <div class="col ">
+                        <label for="Tour">Verantwortlicher</label>
+                        @Html.DropDownListFor(model => Model.Master, (SelectList)ViewBag.Employees, "Wer ist Verantwortlich?", new { @placeholder = "Wer ist verantworlich?" })
+
+                    </div>
+                    <div class="col">
+                        <label for="Tour">Team</label>
+                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @multiple = "multiple", @placeholder = "Wer ist weiterhin im Team?" })
+
+                    </div>
+             </div>
+
+             <div class="row form-group">
+                    <div class="col">
+                        <label for="Tour">Kommentar</label>
+                        <textarea rows="6" class="form-control" asp-for="Comment" placeholder="Hier können Sie einen generellen Kommentar eintragen."></textarea>
+                    </div>
+             </div>
+            }
         </div>
 
         <div class="card-footer">
@@ -212,16 +218,19 @@
 
         function showModal(id) {
 
+ 
             $.ajax({
                 type: "GET",
                 url: "@Url.Action("GetJobDetail")",
                 data: { id: id },
                 success: function (daten) {
 
+                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
+
                     $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
                     $('#modalAddress').text(daten.address);
                     $('#modalComment').text(daten.comment);
-                    $('#modalStock').text(daten.stock);
+                    $('#modalStock').html(stock);
 
                     $('#modalJobDetail').modal('show')
 

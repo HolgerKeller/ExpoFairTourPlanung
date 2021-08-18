@@ -23,5 +23,14 @@ namespace ExpofairTourPlanung.Models
         public string EmployeeNr { get; set; }
         [StringLength(500)]
         public string Comments { get; set; }
+        public bool? IsActiv { get; set; }
+        [StringLength(20)]
+        public string Status { get; set; }
+        [StringLength(300)]
+        public string Employer { get; set; }
+        [Column(TypeName = "smalldatetime")]
+        public DateTime? StartDate { get; set; }
+        [Column(TypeName = "smalldatetime")]
+        public DateTime? EndDate { get; set; }
     }
 }

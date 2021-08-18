@@ -1,38 +1,38 @@
-﻿@model List<Tour>
+﻿@model List<Vehicle>
 
 @{
-    ViewData["Title"] = "Touren Übersicht";
+    ViewData["Title"] = "Fahrzeug-Übersicht";
 }
 
-<h3>Aktuell vorhandene Tourenpläne</h3>
+<h3>Verfügbare Fahrzeuge</h3>
 <br />
 
 <table id="tourTable" class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
         <tr>
-            <th>Tourdatum</th>
-            <th>Tourname</th>
-            <th>Aktionen</th>
+            <th>Fahrzeugnummer</th>
+            <th>Fahrzeugtyp</th>
+            <th>Zuladung</th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
 
     <tbody>
 
         @{
-            foreach (Tour tour in Model)
+            foreach (Vehicle vehicle in Model)
             {
                 <tr>
-                    <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
-                    <td>@tour.TourName</td>
+                    <td>@vehicle.VehicleNr </td>
+                    <td>@vehicle.VehicleType</td>
+
+                    <td>@string.Format("{0:n0}", vehicle.NetWeight.ToString())</td>
                     <td>
-                        <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
+                        <a asp-route-id="@vehicle.IdVehicle" asp-controller="Vehicle" asp-action="CreateEditVehicle" class="btn btn-default" aria-label="Bearbeiten">
                             <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                         </a>
-                        <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
-                            <span class="fa fa-file-pdf fa-lg" aria-hidden="true"></span>
-                        </button>
 
-                        <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
+                        <button onclick="onClickedDeleteVehicleButton(@vehicle.IdVehicle)" class="btn btn-default" aria-label="Löschen">
                             <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
                         </button>
                     </td>
@@ -44,7 +44,7 @@
 </table>
 
 
-<a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Neuen Tourenplan anlegen</a>
+<a class="btn btn-primary" asp-controller="Vehicle" asp-action="CreateEditVehicle">Neue Fahrzeug anlegen</a>
 
 @section Scripts {
     <script>
@@ -52,10 +52,10 @@
     $('#tourTable').DataTable();
 
     });
-    function onClickedDeleteTourButton(id) {
+    function onClickedDeleteVehicleButton(id) {
 
             Swal.fire({
-                title: 'Möchtest du den Tourenplan wirklich löschen?',
+                title: 'Möchtest du das Fahrzeug wirklich löschen?',
                 icon: 'error',
                 showCloseButton: true,
                 focusConfirm: false,
@@ -67,7 +67,7 @@
                     // Backend call to delete tour by id
                     $.ajax({
                         type: "POST",
-                        url: "@Url.Action("DelTourById")",
+                        url: "@Url.Action("DelVehicleById")",
                         data: { id: id },
                         success: function (msg) {
                             Swal.fire('Wurde gelöscht!', '', 'success').then((result) => {
@@ -83,10 +83,7 @@
     }
 
 
-    function onClickedCreatePDF( id ) {
-        window.open("/TourPdf/CreateTourPdf/"+ id, '_blank');
-            }
-
+   
 
     </script>
 }

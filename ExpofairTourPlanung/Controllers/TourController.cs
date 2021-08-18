@@ -111,7 +111,7 @@ namespace ExpofairTourPlanung.Controllers
             if (!ModelState.IsValid)
             {
 
-                return RedirectToAction("CreateEditTour", tour);
+                return RedirectToAction("CreateEditTour", new { id = tour.IdTour });
 
             }
 
@@ -152,9 +152,7 @@ namespace ExpofairTourPlanung.Controllers
 
             _context.SaveChanges();
 
-            int idTour = tour.IdTour;
-
-            return RedirectToAction("CreateEditTour", tour );
+            return RedirectToAction("CreateEditTour", new { id = tour.IdTour });
         }
 
         [HttpPost]
@@ -286,22 +284,6 @@ namespace ExpofairTourPlanung.Controllers
         }
 
 
-              [HttpGet]
-        public ActionResult CreatePdf( int id )
-        {
-            byte[] pdfBytes;
-            using (var stream = new System.IO.MemoryStream())
-            using (var wri = new PdfWriter(stream))
-            using (var pdf = new PdfDocument(wri))
-            using (var doc = new Document(pdf))
-            {
-                doc.Add(new Paragraph("Das Wird PDF Seite für die Expofair Tourplanung"));
-                doc.Flush();
-                doc.Close();
-                pdfBytes = stream.ToArray();
-            }
-            return new FileContentResult(pdfBytes, "application/pdf");
-        }
 
     }
 }
