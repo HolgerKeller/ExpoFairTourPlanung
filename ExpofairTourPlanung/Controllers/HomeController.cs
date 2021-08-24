@@ -47,9 +47,6 @@ namespace ExpofairTourPlanung.Controllers
             _logger.LogInformation("dateFrom:" + dateFrom + " dateTo:" + dateTo);
 
 
-            DateTime dateFromDT = DateTime.Parse(dateFrom);
-            DateTime dateToDT = DateTime.Parse(dateTo);
-
 
             var dateFromParam = new SqlParameter()
             {
@@ -70,6 +67,9 @@ namespace ExpofairTourPlanung.Controllers
             };
 
             var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustCopyJobsByDate @DateStart, @DateEnd", dateFromParam, dateToParam);
+
+            DateTime dateFromDT = DateTime.Parse(dateFrom);
+            DateTime dateToDT = DateTime.Parse(dateTo);
 
             var allJobs = _context.Job2Tours.Where(x => x.JobDate >= dateFromDT && x.JobDate <= dateToDT).ToList();
 

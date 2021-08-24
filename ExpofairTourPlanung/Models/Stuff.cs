@@ -14,12 +14,14 @@ namespace ExpofairTourPlanung.Models
         [Key]
         public int IdStuff { get; set; }
         [StringLength(100)]
+        [Required(ErrorMessage = "Bitte geben Sie den Mitarbeiternamen ein"), MaxLength(100)]
         public string EmployeeName1 { get; set; }
         [StringLength(100)]
         public string EmployeeName2 { get; set; }
         [StringLength(100)]
         public string EmployeeType { get; set; }
         [StringLength(100)]
+        [Required(ErrorMessage = "Bitte geben Sie eine eindeutige Mitarbeiternummer ein"), MaxLength(100)]
         public string EmployeeNr { get; set; }
         [StringLength(500)]
         public string Comments { get; set; }

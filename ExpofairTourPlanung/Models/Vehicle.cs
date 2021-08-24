@@ -13,13 +13,14 @@ namespace ExpofairTourPlanung.Models
     {
         [Key]
         public int IdVehicle { get; set; }
-        [StringLength(20)]
-        public string VehicleNr { get; set; }
+        [Required(ErrorMessage = "Bitte geben Sie das KFZ-Kennzeichen ein"), MaxLength(20)]
+       public string VehicleNr { get; set; }
         [StringLength(100)]
         public string VehicleType { get; set; }
         [StringLength(500)]
         public string Comment { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
+        [Required(ErrorMessage = "Bitte geben Sie die Tonnage ein")]
         public decimal? NetWeight { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? NetVolume { get; set; }

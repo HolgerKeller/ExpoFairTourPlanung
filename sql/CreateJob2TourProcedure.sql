@@ -7,17 +7,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE OR ALTER PROCEDURE [expofair].[CustAddJobToTour] (
 	@IdTour int,
-	@IdJob int
+	@IdTourJob int
 	)
 AS
 BEGIN
-update [expofair].[job2Tour] set IdTour = @IdTour where IdJob = @IdJob
+update [expofair].[job2Tour] set IdTour = @IdTour where IdTourJob = @IdTourJob
 
 -- Set inital Ranking
 DECLARE @Ranking INT
 select @Ranking =MAX(Ranking) from [expofair].[job2Tour] where IdTour = @IdTour
 set @Ranking = @Ranking + 1
-update [expofair].[job2Tour] set Ranking = @Ranking  where IdJob = @IdJob and IdTour = @IdTour
+update [expofair].[job2Tour] set Ranking = @Ranking  where IdTourJob = @IdTourJob and IdTourJob = @IdTourJob
 END
 -- DROP PROCEDURE [expofair].[CustAddJobToTour]
 -- GO
@@ -83,7 +83,7 @@ CREATE OR ALTER PROCEDURE [expofair].[CustDelJobFromTour] (
 	)
 AS
 BEGIN
-update [expofair].[job2Tour] set IdTour = 0, Ranking = 0 where IdJob = @IdJob
+update [expofair].[job2Tour] set IdTour = 0, Ranking = 0 where IdJob = @IdJob and IdTour = @IdTour
 END
 GO
 

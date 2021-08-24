@@ -30,10 +30,12 @@ namespace ExpofairTourPlanung.Controllers
             _logger = logger;
         }
 
-        private SelectList _getAllVehicles ()
+        private SelectList _getAllVehicles ( DateTime date )
         {
 
-            var vehicles = _context.Vehicles.ToList();
+            //DateTime date = DateTime.Now;
+
+            var vehicles = _context.Vehicles.Where(x => x.IsActiv == true && ( x.StartDate <= date && x.EndDate >= date )).ToList();
 
             var vehicleSelectItems = new List<VehicleSelectItem>();
             foreach (var vehicle in vehicles)
@@ -43,10 +45,12 @@ namespace ExpofairTourPlanung.Controllers
             return new SelectList(vehicleSelectItems, "VehicleNr", "VehicleName");
         }
 
-        private SelectList _getStuff()
+        private SelectList _getStuff( DateTime date )
         {
 
-            var employees = _context.Stuffs.ToList();
+           // DateTime date = DateTime.Now;
+
+            var employees = _context.Stuffs.Where(x => x.IsActiv == true && (x.StartDate <= date && x.EndDate >= date)).ToList();
 
             var employeeSelectItems = new List<EmployeeSelectItem>();
             foreach (var employee in employees)
@@ -61,11 +65,9 @@ namespace ExpofairTourPlanung.Controllers
         {
 
        
-            ViewBag.Vehicles = _getAllVehicles();
-            ViewBag.Employees = _getStuff();
-
             if ( id != 0)
             {
+
                 var tourFromDb = _context.Tours.SingleOrDefault(x => x.IdTour == id);
 
                 //if ((jobPostingFromDb.OwnerUsername != User.Identity.Name) && !User.IsInRole("Admin"))
@@ -82,6 +84,29 @@ namespace ExpofairTourPlanung.Controllers
 
                     DateTime tourdate = tourFromDb.TourDate;
 
+                    var dateFromParam = new SqlParameter()
+                    {
+                        ParameterName = "@DateStart",
+                        SqlDbType = System.Data.SqlDbType.VarChar,
+                        Direction = System.Data.ParameterDirection.Input,
+                        Size = 10,
+                        Value = tourdate.ToString()
+                    };
+
+                    var dateToParam = new SqlParameter()
+                    {
+                        ParameterName = "@DateEnd",
+                        SqlDbType = System.Data.SqlDbType.VarChar,
+                        Direction = System.Data.ParameterDirection.Input,
+                        Size = 10,
+                        Value = tourdate.ToString()
+                    };
+
+                    var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustCopyJobsByDate @DateStart, @DateEnd", dateFromParam, dateToParam);
+
+                    ViewBag.Vehicles = _getAllVehicles( tourdate );
+                    ViewBag.Employees = _getStuff( tourdate );
+
                     var freeJobsFromDb = _context.Job2Tours.Where(x => x.IdTour != id && x.JobDate == tourdate  ).ToList();
                     var tourJobsFromDb = _context.Job2Tours.Where(x => x.IdTour == id && x.JobDate == tourdate ).OrderBy(x => x.Ranking).ToList();
 
@@ -90,7 +115,6 @@ namespace ExpofairTourPlanung.Controllers
 
                     ViewData["FreeJobsCount"] = freeJobsFromDb.Count;
                     ViewData["TourJobsCount"] = tourJobsFromDb.Count;
-                    
 
                     return View(tourFromDb);
                 }
@@ -99,9 +123,6 @@ namespace ExpofairTourPlanung.Controllers
                     return NotFound();
                 }
             }
-
-
-           
 
             return View();
         }
@@ -156,9 +177,9 @@ namespace ExpofairTourPlanung.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddJob2Tour(int id, int idJob )
+        public IActionResult AddJob2Tour(int id, int idTourJob )
         {
-            if (id == 0 || idJob == 0)
+            if (id == 0 || idTourJob == 0)
                 return BadRequest();
 
             var idTourParam = new SqlParameter()
@@ -172,14 +193,14 @@ namespace ExpofairTourPlanung.Controllers
 
             var idJobParam = new SqlParameter()
             {
-                ParameterName = "@IdJob",
+                ParameterName = "@IdTourJob",
                 SqlDbType = System.Data.SqlDbType.Int,
                 Direction = System.Data.ParameterDirection.Input,
                 Size = 10,
-                Value = idJob
+                Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustAddJobToTour @IdTour, @IdJob ", idTourParam, idJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustAddJobToTour @IdTour, @IdTourJob ", idTourParam, idJobParam);
 
             return Ok();
         }

@@ -15,46 +15,69 @@ using iText.IO.Font.Constants;
 using iText.Layout.Renderer;
 using iText.Layout.Layout;
 using iText.Kernel.Pdf.Canvas;
+using ExpofairTourPlanung.Data;
+using Microsoft.Extensions.Logging;
+using ExpofairTourPlanung.Models;
+using iText.Layout.Borders;
 
 namespace ExpofairTourPlanung.Controllers
 {
     public class TourPdf : Controller
     {
+
+        private readonly ILogger<TourPdf> _logger;
+
+        private readonly EasyjobDbContext _context;
+
+        public TourPdf(EasyjobDbContext context, ILogger<TourPdf> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
         [HttpGet]
         public ActionResult CreateTourPdf(int id)
         {
             byte[] pdfBytes;
-            using (var stream = new System.IO.MemoryStream())
-            using (var wri = new PdfWriter(stream))
-            using (var pdf = new PdfDocument(wri))
-            using (var doc = new Document(pdf))
-            {
+
+   
+                var tourFromDb = _context.Tours.SingleOrDefault(x => x.IdTour == id);
+  
+                    using (var stream = new System.IO.MemoryStream())
+                    using (var wri = new PdfWriter(stream))
+                    using (var pdf = new PdfDocument(wri))
+                    using (var doc = new Document(pdf))
+                    {
+
+                        TableHeaderEventHandler handler = new TableHeaderEventHandler(doc, tourFromDb);
+                        pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, handler);
 
 
-                TableHeaderEventHandler handler = new TableHeaderEventHandler(doc);
-                pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, handler);
+                        // Calculate top margin to be sure that the table will fit the margin.
+                        float topMargin = 20 + handler.GetTableHeight();
+                        doc.SetMargins(topMargin, 20, 20, 20);
 
-                // Calculate top margin to be sure that the table will fit the margin.
-                float topMargin = 20 + handler.GetTableHeight();
-                doc.SetMargins(topMargin, 36, 36, 36);
+                        for (int i = 0; i < 50; i++)
+                        {
+                            doc.Add(new Paragraph("Hello World!"));
+                        }
 
-                for (int i = 0; i < 50; i++)
-                {
-                    doc.Add(new Paragraph("Hello World!"));
-                }
+                        doc.Add(new AreaBreak());
+                        doc.Add(new Paragraph("Hello World!"));
+                        doc.Add(new AreaBreak());
+                        doc.Add(new Paragraph("Hello World!"));
 
-                doc.Add(new AreaBreak());
-                doc.Add(new Paragraph("Hello World!"));
-                doc.Add(new AreaBreak());
-                doc.Add(new Paragraph("Hello World!"));
+                        //                doc.Add(new Paragraph("Das wird das PDF für die Expofair Tourplanung für ID:" + id.ToString()));
 
-                //                doc.Add(new Paragraph("Das wird das PDF für die Expofair Tourplanung für ID:" + id.ToString()));
 
-                doc.Flush();
-                doc.Close();
-                pdfBytes = stream.ToArray();
-            }
-            return new FileContentResult(pdfBytes, "application/pdf");
+
+
+
+                        doc.Flush();
+                        doc.Close();
+                        pdfBytes = stream.ToArray();
+                    }
+                    return new FileContentResult(pdfBytes, "application/pdf");
         }
 
         private class TableHeaderEventHandler : IEventHandler
@@ -62,11 +85,13 @@ namespace ExpofairTourPlanung.Controllers
             private Table table;
             private float tableHeight;
             private Document doc;
+            private Tour tour;
 
-            public TableHeaderEventHandler(Document doc)
+            public TableHeaderEventHandler(Document doc, Tour tour)
             {
                 this.doc = doc;
-                InitTable();
+                this.tour = tour;
+                InitTable( tour );
 
                 TableRenderer renderer = (TableRenderer)table.CreateRendererSubTree();
                 renderer.SetParent(new DocumentRenderer(doc));
@@ -92,6 +117,7 @@ namespace ExpofairTourPlanung.Controllers
                 new Canvas(canvas, rect)
                     .Add(table)
                     .Close();
+
             }
 
             public float GetTableHeight()
@@ -99,12 +125,44 @@ namespace ExpofairTourPlanung.Controllers
                 return tableHeight;
             }
 
-            private void InitTable()
+            private void InitTable(Tour tour )
             {
-                table = new Table(1).UseAllAvailableWidth();
-                table.AddCell("Header row 1");
-                table.AddCell("Header row 2");
-                table.AddCell("Header row 3");
+
+
+                Table subTable = new Table(1).UseAllAvailableWidth();
+
+                
+                Cell cell11 = new Cell().Add(new Paragraph("Fahrer").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
+
+                Div div1 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0);
+                div1.Add(new Paragraph("Max Muster").SetFontSize(10));
+                cell11.Add(div1);
+                subTable.AddCell(cell11);
+  
+                Cell cell12 = new Cell().Add(new Paragraph("Verantwortlich").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
+                Div div2 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
+                div2.Add(new Paragraph("Thomas Müller"));
+                cell12.Add(div2);
+                subTable.AddCell(cell12);
+
+
+                table = new Table(4).UseAllAvailableWidth();
+
+                Cell cell1 = new Cell().Add(subTable);
+                cell1.SetPadding(0);
+            
+                table.AddCell(cell1);
+
+                Cell cell2 = new Cell().Add(new Paragraph("Datum").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+
+                cell2.Add(new Paragraph(tour.TourDate.ToString("dd.MM.yyyy")).SetFontSize(10).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
+ 
+                table.AddCell(cell2);
+  
+                table.AddCell("Montag");
+                table.AddCell("B-HK1234");
+
+
             }
         }
 

@@ -27,11 +27,18 @@
                     <input class="form-control" asp-for="EmployeeName1" type="Text" placeholder="Mitarbeitername" />
                 </div>
                 <div class="col-6">
+                    <label for="Vehicle">Mitarbeiternummer</label>
+                    <input class="form-control" asp-for="EmployeeNr" type="Text" placeholder="Mitarbeiternummer" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-6">
                     <label for="Vehicle">Tätigkeit</label>
                     <input class="form-control" asp-for="EmployeeType" type="Text" placeholder="Tätigkeit" />
                 </div>
             </div>
-           
+
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Vehicle">Status</label>
@@ -93,7 +100,7 @@
                 document.getElementById("StartDate").valueAsDate = new Date();
             }
             if (document.getElementById("EndDate").value == "") {
-                document.getElementById("EndDate").valueAsDate = new Date("2099-12-31");
+                document.getElementById("EndDate").valueAsDate = new Date("2049-12-31");
             }
         });
 

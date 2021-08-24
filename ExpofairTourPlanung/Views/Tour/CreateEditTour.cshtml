@@ -43,19 +43,19 @@
                     </div>
                     <div class="col">
                         <label for="Tour">Fahrer</label>
-                        @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @placeholder = "Wer ist der Fahrer?" })
+                        @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @class = "form-control", @placeholder = "Wer ist der Fahrer?" })
 
                     </div>
              </div>
              <div class="row form-group">
                     <div class="col ">
                         <label for="Tour">Verantwortlicher</label>
-                        @Html.DropDownListFor(model => Model.Master, (SelectList)ViewBag.Employees, "Wer ist Verantwortlich?", new { @placeholder = "Wer ist verantworlich?" })
+                        @Html.DropDownListFor(model => Model.Master, (SelectList)ViewBag.Employees, "Wer ist Verantwortlich?", new { @class = "form-control", @placeholder = "Wer ist verantworlich?" })
 
                     </div>
                     <div class="col">
                         <label for="Tour">Team</label>
-                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @multiple = "multiple", @placeholder = "Wer ist weiterhin im Team?" })
+                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @class = "form-control", @multiple = "multiple", @placeholder = "Wer ist weiterhin im Team?" })
 
                     </div>
              </div>
@@ -148,7 +148,7 @@
                     <tr>
                         <td>@job.Caption</td>
                         <td>
-                            <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default" aria-label="Zufügen">
+                            <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-default" aria-label="Zufügen">
                                 <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
                             </button>
                             <button onclick="showModal(@job.IdTourJob)" class="btn btn-default" aria-label="Detail">
@@ -239,13 +239,13 @@
         }
 
 
-        function onClickedAddJobButton(id, idJob) {
+        function onClickedAddJobButton(id, idTourJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
                         type: "POST",
                         url: "@Url.Action("AddJob2Tour")",
-                        data: { id: id, idJob: idJob  },
+                        data: { id: id, idTourJob: idTourJob },
                         success: function (msg) {
                                location.reload();
                         },
