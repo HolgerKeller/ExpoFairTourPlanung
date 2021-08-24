@@ -26,14 +26,14 @@ namespace ExpofairTourPlanung.Data
         public virtual DbSet<Tour> Tours { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<Job2Tour>(entity =>
             {
                 entity.HasKey(e => e.IdTourJob)
-                    .HasName("PK__job2Tour__C7FEF4AB51A70FA8");
+                    .HasName("PK__job2Tour__C7FEF4AB2118FC42");
 
                 entity.Property(e => e.Address).IsUnicode(false);
 
@@ -49,7 +49,7 @@ namespace ExpofairTourPlanung.Data
             modelBuilder.Entity<Stuff>(entity =>
             {
                 entity.HasKey(e => e.IdStuff)
-                    .HasName("PK__Stuff__2B126724A7310BBA");
+                    .HasName("PK__Stuff__2B1267240E3F9C80");
 
                 entity.Property(e => e.Comments).IsUnicode(false);
 
@@ -69,7 +69,7 @@ namespace ExpofairTourPlanung.Data
             modelBuilder.Entity<Tour>(entity =>
             {
                 entity.HasKey(e => e.IdTour)
-                    .HasName("PK__Tour__860C736FD0CBD065");
+                    .HasName("PK__Tour__860C736FD11BF378");
 
                 entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
 
@@ -91,7 +91,7 @@ namespace ExpofairTourPlanung.Data
             modelBuilder.Entity<Vehicle>(entity =>
             {
                 entity.HasKey(e => e.IdVehicle)
-                    .HasName("PK__Vehicle__64D74CC87182C905");
+                    .HasName("PK__Vehicle__64D74CC801A7CAE3");
 
                 entity.Property(e => e.Comment).IsUnicode(false);
 

@@ -14,24 +14,24 @@ namespace ExpofairTourPlanung.Models
         [Key]
         public int IdVehicle { get; set; }
         [Required(ErrorMessage = "Bitte geben Sie das KFZ-Kennzeichen ein"), MaxLength(20)]
-       public string VehicleNr { get; set; }
+        public string VehicleNr { get; set; }
         [StringLength(100)]
         public string VehicleType { get; set; }
         [StringLength(500)]
         public string Comment { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
-        [Required(ErrorMessage = "Bitte geben Sie die Tonnage ein")]
         public decimal? NetWeight { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
+        [Required(ErrorMessage = "Bitte geben Sie die Tonnage ein")]
         public decimal? NetVolume { get; set; }
         [StringLength(20)]
         public string Status { get; set; }
         [StringLength(300)]
         public string Owner { get; set; }
         public bool? IsActiv { get; set; }
-        [Column(TypeName = "smalldatetime")]
+        [Column(TypeName = "date")]
         public DateTime? StartDate { get; set; }
-        [Column(TypeName = "smalldatetime")]
+        [Column(TypeName = "date")]
         public DateTime? EndDate { get; set; }
     }
 }

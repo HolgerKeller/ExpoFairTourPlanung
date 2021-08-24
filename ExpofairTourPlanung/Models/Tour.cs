@@ -25,6 +25,10 @@ namespace ExpofairTourPlanung.Models
         public string Driver { get; set; }
         [StringLength(200)]
         public string Master { get; set; }
+        [Column(TypeName = "decimal(18, 0)")]
+        public decimal? Weight { get; set; }
+        [Column(TypeName = "decimal(18, 0)")]
+        public decimal? Volume { get; set; }
         [StringLength(200)]
         public string SecDriver { get; set; }
         [StringLength(1000)]

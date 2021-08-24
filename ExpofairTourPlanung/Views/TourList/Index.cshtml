@@ -24,7 +24,7 @@
                 <tr>
                     <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
                     <td>@tour.TourName</td>
-                    <td>
+                    <td class="text-right" >
                         <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
                             <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                         </a>
@@ -35,7 +35,7 @@
                         <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
                             <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
                         </button>
-                    </td>
+                    </tdclass="text-right">
                 </tr>
             }
         }

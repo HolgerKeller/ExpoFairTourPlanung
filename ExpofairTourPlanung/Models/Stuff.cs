@@ -13,14 +13,12 @@ namespace ExpofairTourPlanung.Models
     {
         [Key]
         public int IdStuff { get; set; }
-        [StringLength(100)]
         [Required(ErrorMessage = "Bitte geben Sie den Mitarbeiternamen ein"), MaxLength(100)]
         public string EmployeeName1 { get; set; }
         [StringLength(100)]
         public string EmployeeName2 { get; set; }
         [StringLength(100)]
         public string EmployeeType { get; set; }
-        [StringLength(100)]
         [Required(ErrorMessage = "Bitte geben Sie eine eindeutige Mitarbeiternummer ein"), MaxLength(100)]
         public string EmployeeNr { get; set; }
         [StringLength(500)]
@@ -30,9 +28,9 @@ namespace ExpofairTourPlanung.Models
         public string Status { get; set; }
         [StringLength(300)]
         public string Employer { get; set; }
-        [Column(TypeName = "smalldatetime")]
+        [Column(TypeName = "date")]
         public DateTime? StartDate { get; set; }
-        [Column(TypeName = "smalldatetime")]
+        [Column(TypeName = "date")]
         public DateTime? EndDate { get; set; }
     }
 }
