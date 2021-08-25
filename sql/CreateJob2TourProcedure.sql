@@ -18,6 +18,11 @@ DECLARE @Ranking INT
 select @Ranking =MAX(Ranking) from [expofair].[job2Tour] where IdTour = @IdTour
 set @Ranking = @Ranking + 1
 update [expofair].[job2Tour] set Ranking = @Ranking  where IdTourJob = @IdTourJob and IdTourJob = @IdTourJob
+
+DECLARE @Weight FLOAT
+select @Weight = sum(Weight) from [expofair].[job2Tour] where IdTour = @IdTour
+update [expofair].Tour set Weight = @Weight where IdTour = @IdTour
+
 END
 -- DROP PROCEDURE [expofair].[CustAddJobToTour]
 -- GO
@@ -84,6 +89,9 @@ CREATE OR ALTER PROCEDURE [expofair].[CustDelJobFromTour] (
 AS
 BEGIN
 update [expofair].[job2Tour] set IdTour = 0, Ranking = 0 where IdJob = @IdJob and IdTour = @IdTour
+DECLARE @Weight FLOAT
+select @Weight = sum(Weight) from [expofair].[job2Tour] where IdTour = @IdTour
+update [expofair].Tour set Weight = @Weight where IdTour = @IdTour
 END
 GO
 

@@ -92,32 +92,34 @@
                 <tr>
                     <th class="col-2">Zeitraum</th>
                     <th class="col-1">Job-Nr</th>
-                    <th class="col-6">Job</th>
-                    <th class="col-3">Aktion</th>
+                    <th class="col-1">Aktion</th>
+                    <th class="col-5">Job</th>
+                    <th class="col-3">&nbsp;</th>
                 </tr>
 
 
 
-                @foreach (Job2Tour job in tourJobs)
+               @foreach (Job2Tour job in tourJobs)
                 {
 
             <tr>
                 <td>@job.Time</td>
+                <td>@job.InOut</td>
                 <td>@job.Number</td>
                 <td>@job.Caption</td>
-                <td class="text-right">
-                    <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-default" aria-label="Nach Vorn">
-                        <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
+                <td class="text-right"  >
+                    <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
+                        <span class="fa fa-arrow-up fa-lg fa-border" style="padding: 1px;" aria-hidden="true"></span>
                     </button>
-                    <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-default" aria-label="Nach Hinten">
-                        <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
+                    <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
+                        <span class="fa fa-arrow-down fa-lg fa-border" aria-hidden="true"></span>
                     </button>
 
-                    <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default" aria-label="Entfernen">
-                        <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
+                    <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
+                        <span class="fa fa-minus fa-lg fa-border" aria-hidden="true"></span>
                     </button>
-                    <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-default" aria-label="Bearbeiten">
-                        <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                    <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
+                        <span class="fa fa-edit fa-lg fa-border" aria-hidden="true"></span>
                     </a>
                 </td>
             </tr>
@@ -138,9 +140,10 @@
             }
             <table class="table table-sm">
                 <tr>
+                    <th class="col-1">Akion</th>
                     <th class="col-2">JobNr</th>
                     <th class="col-7">Adresse</th>
-                    <th class="col-3">Aktion</th>
+                    <th class="col-2">Aktion</th>
                 </tr>
 
 
@@ -148,13 +151,14 @@
            @foreach (Job2Tour job in jobs)
             {
             <tr>
+                <td>@job.InOut</td>
                 <td>@job.Number</td>
                 <td>@job.Caption</td>
                 <td class="text-right">
-                    <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-default" aria-label="Zufügen">
+                    <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
                         <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
                     </button>
-                    <button onclick="showModal(@job.IdTourJob)" class="btn btn-default" aria-label="Detail">
+                    <button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
                         <span class="fa fa-info fa-lg" aria-hidden="true"></span>
                     </button>
             </tr>
