@@ -109,17 +109,17 @@
                 <td>@job.Caption</td>
                 <td class="text-right"  >
                     <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
-                        <span class="fa fa-arrow-up fa-lg fa-border" style="padding: 1px;" aria-hidden="true"></span>
+                        <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
                     </button>
                     <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
-                        <span class="fa fa-arrow-down fa-lg fa-border" aria-hidden="true"></span>
+                        <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
                     </button>
 
                     <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
-                        <span class="fa fa-minus fa-lg fa-border" aria-hidden="true"></span>
+                        <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
                     </button>
                     <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
-                        <span class="fa fa-edit fa-lg fa-border" aria-hidden="true"></span>
+                        <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                     </a>
                 </td>
             </tr>
@@ -184,14 +184,14 @@
                 <div id="modalAddress">
 
                 </div>
-
-                <hr />
+                <hr class="col-xs-12">
                 <h6>Kommentar:</h6>
                 <div id="modalComment">
 
                 </div>
 
-                <hr />
+                 <hr class="col-xs-12">
+
                 <h6>Inhalt:</h6>
                 <div id="modalStock">
 
@@ -232,10 +232,11 @@
                 success: function (daten) {
 
                     var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
+                    var comment = daten.comment.replace(/Storno\.*?/g, "");
 
                     $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
                     $('#modalAddress').text(daten.address);
-                    $('#modalComment').text(daten.comment);
+                    $('#modalComment').text(comment);
                     $('#modalStock').html(stock);
 
                     $('#modalJobDetail').modal('show')

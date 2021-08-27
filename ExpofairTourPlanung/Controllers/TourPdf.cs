@@ -88,6 +88,27 @@ namespace ExpofairTourPlanung.Controllers
             return new FileContentResult(pdfBytes, "application/pdf");
         }
 
+        string getStuffNames( string StuffNumbers )
+        {
+            string StuffNames = "";
+
+            string[] numbers = StuffNumbers.Split(',');
+            if( numbers != null)
+            {
+                foreach (var num in numbers)
+                {
+                    var employeenames = _context.Stuffs.Where(x => x.EmployeeNr == num).ToList();
+                    foreach(var name in employeenames)
+                    {
+                        StuffNames = StuffNames + name + ',';
+                    }
+                }
+                StuffNames.Remove(StuffNames.Length - 1, 1);
+            }
+            return StuffNames;
+        }
+
+
         private class TableHeaderEventHandler : IEventHandler
         {
             private Table table;
