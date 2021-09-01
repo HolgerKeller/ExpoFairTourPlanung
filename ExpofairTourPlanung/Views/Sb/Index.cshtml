@@ -1,7 +1,7 @@
 ﻿@model List<Tour>
 
 @{
-    ViewData["Title"] = "Touren Übersicht";
+    ViewData["Title"] = "SB-Pläne";
 }
 
 <h3>Aktuell vorhandene Tourenpläne</h3>
@@ -25,7 +25,7 @@
                     <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
                     <td>@tour.TourName</td>
                     <td class="text-right">
-                        <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
+                        <a asp-route-id="@tour.IdTour" asp-controller="Sb" asp-action="ShowDetailSB" class="btn btn-default" aria-label="Bearbeiten">
                             <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                         </a>
                         <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
@@ -44,7 +44,10 @@
 </table>
 
 
-<a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Tourenplan anlegen</a>
+
+<a class="btn btn-primary" asp-controller="Sb" asp-action="CreateSbTour">SB-Plan anlegen</a>
+
+
 
 
 @section Scripts {

@@ -25,7 +25,17 @@ Service,
 Status,
 Address,
 In_Out,
-Ranking
+Ranking,
+JobDateReturn,
+DeliveryTimeStart,
+DeliveryTimeEnd,
+PickupTimeStart,
+PickupTimeEnd,
+Contact,
+ContactPhone,
+JobStartTime,
+Time,
+ReadyTime
 )
 SELECT 
        t1.IdJob,
@@ -40,11 +50,20 @@ SELECT
        t4.Caption Status,
 	   t2.Company +  ';' + t2.Zip + ';' + t2.City +  ';' + t2.Street,
 	   'Lieferung',
-	   0
-	FROM 
-		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4
- where  t1.IdJobState = 1 and cast(t1.DayTimeOut as Date) >= convert(date, @DateStart) and cast(t1.DayTimeOut as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState
-
+	   0,
+	   t1.DayTimeIn,
+	   t5.DeliveryTimeStart,
+       t5.DeliveryTimeEnd,
+       t5.PickupTimeStart,
+       t5.PickupTimeEnd,
+       t5.Contact,
+       t5.ContactPhone,
+	   t5.DeliveryTimeStart,
+	   convert(varchar(5), t5.DeliveryTimeStart,108) + '-' + convert(varchar(5), t5.DeliveryTimeEnd,108),
+	   convert(varchar(5), t5.SetupEnd,108)
+ 	FROM 
+		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4, [easyjob].[dbo].[CusProjectInfo] t5
+ where  t1.IdJobState = 1 and cast(t1.DayTimeOut as Date) >= convert(date, @DateStart) and cast(t1.DayTimeOut as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState and t5.IdJob = t1.IdJob
 
  INSERT INTO [expofair].[job2Tour] (
 IdJob,
@@ -59,7 +78,16 @@ Service,
 Status,
 Address,
 In_Out,
-Ranking
+Ranking,
+DeliveryTimeStart,
+DeliveryTimeEnd,
+PickupTimeStart,
+PickupTimeEnd,
+Contact,
+ContactPhone,
+JobStartTime,
+Time,
+ReadyTime
 )
 SELECT 
        t1.IdJob,
@@ -74,11 +102,29 @@ SELECT
        t4.Caption Status,
 	   t2.Company +  ';' + t2.Zip + ';' + t2.City +  ';' + t2.Street,
 	   'Abholung',
-	   0
+	   0,
+	   t5.DeliveryTimeStart,
+       t5.DeliveryTimeEnd,
+       t5.PickupTimeStart,
+       t5.PickupTimeEnd,
+       t5.Contact,
+       t5.ContactPhone,
+	   t5.PickupTimeStart,
+	   convert(varchar(5), t5.PickupTimeStart,108) + '-' + convert(varchar(5), t5.PickupTimeEnd,108),
+	   convert(varchar(5), t5.BreakdownEnd,108)
 	FROM 
-		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4
- where  t1.IdJobState = 1 and cast(t1.DayTimeIn as Date) >= convert(date, @DateStart) and cast(t1.DayTimeIn as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState 
+		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4 , [easyjob].[dbo].[CusProjectInfo] t5
+ where  t1.IdJobState = 1 and cast(t1.DayTimeIn as Date) >= convert(date, @DateStart) and cast(t1.DayTimeIn as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState  and t5.IdJob = t1.IdJob
  
+
+       update  [expofair].[job2Tour] set Time='' where Time='00:00-00:00'
+
+       update  [expofair].[job2Tour] set Time = replace( Time, '-00:00','') where Time like '%00:00'  
+
+
+	   update  [expofair].[job2Tour] set ReadyTime='' where ReadyTime='00:00'
+
+
 
  -- The Stock of the Job is concateneded into a string and add to the job
 

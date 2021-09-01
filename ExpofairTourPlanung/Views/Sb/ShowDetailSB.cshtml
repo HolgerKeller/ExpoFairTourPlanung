@@ -1,0 +1,247 @@
+﻿@model ExpofairTourPlanung.Models.Tour
+
+@{
+    ViewData["Title"] = "SB-Plan";
+}
+<form asp-controller="Sb" asp-action="saveSbTour" enctype="multipart/form-data">
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>Selbstabholer-Plan erstellen:</h5>
+        </div>
+
+        <div class="card-body">
+
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+
+            @Html.Hidden("IdTour", (Model != null) ? Model.IdTour : 0)
+
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Tour">Datum</label>
+                    <input class="form-control" asp-for="TourDate" type="date" placeholder="SB-Jobs für welches Datum?" disabled="true" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+        </div>
+    </div>
+</form>
+
+@if (Model != null)
+{
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>SB-Jobs:</h5>
+        </div>
+
+        <div class="card-body">
+            @{
+                List<Job2Tour> sBJobs = ViewBag.sBJobs;
+            }
+            <table class="table table-sm table-hover">
+                <tr>
+                    <th class="col-1">&nbsp;</th>
+                    <th class="col-1">Zeit</th>
+                    <th class="col-2">JobNr<br />fertig bis</th>
+                    <th class="col-4">Bezeichnung</th>
+                    <th class="col-3">Adresse</th>
+
+                    <th class="col-1">&nbsp;</th>
+                </tr>
+
+
+
+                @foreach (Job2Tour job in sBJobs)
+                {
+
+                    <tr onclick="showModal(@job.IdTourJob)">
+                        <td>@job.InOut</td>
+
+
+                        <td>@job.Time</td>
+
+
+                        <td>@job.Number<br />@job.ReadyTime</td>
+
+                        <td>@job.Caption</td>
+
+                        @{
+
+                            if (job.Address != null)
+                            {
+                                string[] words = @job.Address.Split(';');
+                                <td>
+                                    @words[0] <br />
+                                    @words[3] <br />
+                                    @words[1] @words[2]
+                                </td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
+                            }
+
+                        }
+
+
+                        <td class="text-right">
+                            <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
+                                <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
+                            </button>
+                            <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
+                                <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
+                            </button>
+                           <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
+                                <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+
+}
+<div class="modal fade" id="modalJobDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+
+                <h6>Adresse:</h6>
+                <div id="modalAddress">
+
+                </div>
+                <hr class="col-xs-12">
+                <h6>Kommentar:</h6>
+                <div id="modalComment">
+
+                </div>
+
+                <hr class="col-xs-12">
+
+                <h6>Inhalt:</h6>
+                <div id="modalStock">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+
+
+
+
+        function showModal(id) {
+
+
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetJobDetail")",
+                data: { id: id },
+                success: function (daten) {
+
+                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
+                    var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
+                    comment = comment.replace(/_*/g, "");
+
+                    $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
+                    $('#modalAddress').text(daten.address);
+                    $('#modalComment').text(comment);
+                    $('#modalStock').html(stock);
+
+                    $('#modalJobDetail').modal('show')
+
+                }
+             });
+        }
+
+
+        function onClickedAddJobButton(id, idTourJob) {
+
+                    // Backend call to Add Job to the tour
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("AddJob2Tour")",
+                        data: { id: id, idTourJob: idTourJob },
+                        success: function (msg) {
+                               location.reload();
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+        }
+        function onClickedDelJobButton(id, idJob) {
+
+                    // Backend call to Add Job to the tour
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("DelJobFromTour")",
+                        data: { id: id, idJob: idJob  },
+                        success: function (msg) {
+                               location.reload();
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+        }
+                function onClickedIncreaseJobRankingButton(id, idJob) {
+
+                    // Backend call to Add Job to the tour
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("IncreaseJobRanking")",
+                        data: { id: id, idJob: idJob  },
+                        success: function (msg) {
+                               location.reload();
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+        }
+        function onClickedDecreaseJobRankingButton(id, idJob) {
+
+                    // Backend call to Add Job to the tour
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("DecreaseJobRanking")",
+                        data: { id: id, idJob: idJob  },
+                        success: function (msg) {
+                               location.reload();
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+        }
+
+    </script>
+
+}

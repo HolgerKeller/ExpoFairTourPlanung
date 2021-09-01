@@ -25,11 +25,20 @@
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Tour">Tourdatum</label>
-                    <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
+                    @{
+                        if (Model == null)
+                        {
+                            <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
+                        }
+                        else
+                        {
+                            <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" disabled  />
+                        }
+                    }
                 </div>
                 <div class="col ">
                     <label for="Tour">Tourbezeichnung</label>
-                    <input class="form-control" asp-for="TourName" type="text" placeholder="Bitte Legen Sie eine Tour-Bezeichnung fest" />
+                    @Html.DropDownListFor(model => Model.TourName, (SelectList)ViewBag.TourNames ,new { @class = "form-control", @placeholder = "Tourname" })
                 </div>
             </div>
 
@@ -88,13 +97,15 @@
             @{
                 List<Job2Tour> tourJobs = ViewBag.tourJobs;
             }
-            <table class="table table-sm">
+            <table class="table table-sm table-hover">
                 <tr>
-                    <th class="col-2">Zeitraum</th>
-                    <th class="col-1">Job-Nr</th>
-                    <th class="col-1">Aktion</th>
-                    <th class="col-5">Job</th>
-                    <th class="col-3">&nbsp;</th>
+                    <th class="col-1">&nbsp;</th>
+                    <th class="col-1">Zeit</th>
+                    <th class="col-2">JobNr<br/>fertig bis</th>
+                    <th class="col-4">Bezeichnung</th>
+                    <th class="col-3">Adresse</th>
+
+                    <th class="col-1">&nbsp;</th>
                 </tr>
 
 
@@ -102,28 +113,54 @@
                @foreach (Job2Tour job in tourJobs)
                 {
 
-            <tr>
-                <td>@job.Time</td>
-                <td>@job.InOut</td>
-                <td>@job.Number</td>
-                <td>@job.Caption</td>
-                <td class="text-right"  >
-                    <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
-                        <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
-                    </button>
-                    <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
-                        <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
-                    </button>
+                        <tr onclick="showModal(@job.IdTourJob)">
+                            <td>@job.InOut</td>
 
-                    <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
-                        <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
-                    </button>
-                    <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
-                        <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
-                    </a>
-                </td>
-            </tr>
-                }
+
+                            <td>@job.Time</td>
+
+
+                            <td>@job.Number<br/>@job.ReadyTime</td>
+
+                            <td>@job.Caption</td>
+
+                            @{
+
+                                if (job.Address != null)
+                                {
+                                    string[] words = @job.Address.Split(';');
+                                    <td>
+                                        @words[0] <br />
+                                        @words[3] <br />
+                                        @words[1] @words[2]
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>&nbsp;</td>
+                                }
+
+                            }
+
+
+                            <td class="text-right">
+                                <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
+                                    <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
+                                </button>
+                                <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
+                                    <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
+                                </button>
+
+                                <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
+                                    <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
+                                </button>
+                                <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
+                                    <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                                </a>
+                            </td>
+                        </tr>
+                 }
+
             </table>
         </div>
     </div>
@@ -138,30 +175,61 @@
             @{
                 List<Job2Tour> jobs = ViewBag.freeJobs;
             }
-            <table class="table table-sm">
+            <table class="table table-sm table-hover">
                 <tr>
-                    <th class="col-1">Akion</th>
-                    <th class="col-2">JobNr</th>
-                    <th class="col-7">Adresse</th>
-                    <th class="col-2">Aktion</th>
+                    <th class="col-1">&nbsp;</th>
+                    <th class="col-1">Zeit</th>
+                    <th class="col-2">JobNr<br />fertig bis</th>
+                    <th class="col-4">Bezeichnung</th>
+                    <th class="col-3">Adresse</th>
+
+                    <th class="col-1">&nbsp;</th>
                 </tr>
 
 
 
            @foreach (Job2Tour job in jobs)
-            {
-            <tr>
+           {
+            <tr onclick="showModal(@job.IdTourJob)">
                 <td>@job.InOut</td>
-                <td>@job.Number</td>
+
+
+                <td>@job.Time</td>
+                                
+                
+                <td>@job.Number<br />@job.ReadyTime</td>
+
                 <td>@job.Caption</td>
-                <td class="text-right">
-                    <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
-                        <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
-                    </button>
-                    <button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
-                        <span class="fa fa-info fa-lg" aria-hidden="true"></span>
-                    </button>
-            </tr>
+
+                @{
+
+                    if (job.Address != null)
+                    {
+                        string[] words = @job.Address.Split(';');
+                        <td>
+                            @words[0] <br />
+                            @words[3] <br />
+                            @words[1] @words[2]
+                        </td>
+                    }
+                    else
+                    {
+                        <td>&nbsp;</td>
+                    }
+
+                }
+
+
+
+
+                    <td class="text-right">
+                        <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
+                            <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
+                        </button>
+                        @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
+                    <span class="fa fa-info fa-lg" aria-hidden="true"></span>
+                </button>*@
+                </tr>
             }
             </table>
         </div>
@@ -218,7 +286,7 @@
             $('#Driver').SumoSelect();
             $('#Master').SumoSelect();
             $('#Team').SumoSelect();
-
+            $('#TourName').SumoSelect();
         })
 
 
@@ -232,7 +300,8 @@
                 success: function (daten) {
 
                     var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
-                    var comment = daten.comment.replace(/Storno\.*?/g, "");
+                    var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
+                    comment = comment.replace(/_*/g, "");
 
                     $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
                     $('#modalAddress').text(daten.address);

@@ -115,7 +115,6 @@ namespace ExpofairTourPlanung.Controllers
 
         public IActionResult Index()
         {
-
             var allVehicle = _context.Vehicles.OrderByDescending(x => x.VehicleNr).ToList();
 
             return View(allVehicle);

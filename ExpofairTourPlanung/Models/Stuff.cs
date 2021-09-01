@@ -19,7 +19,7 @@ namespace ExpofairTourPlanung.Models
         public string EmployeeName2 { get; set; }
         [StringLength(100)]
         public string EmployeeType { get; set; }
-        [Required(ErrorMessage = "Bitte geben Sie eine eindeutige Mitarbeiternummer ein"), MaxLength(100)]
+        [Required(ErrorMessage = "Bitte geben Sie eine Mitarbeiternummer ein"), MaxLength(100)]
         public string EmployeeNr { get; set; }
         [StringLength(500)]
         public string Comments { get; set; }

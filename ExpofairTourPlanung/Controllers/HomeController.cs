@@ -79,6 +79,23 @@ namespace ExpofairTourPlanung.Controllers
             return View(allJobs);
         }
 
+        [HttpGet]
+        public IActionResult GetJobDetail(int id)
+        {
+            if (id == 0)
+                return BadRequest();
+
+            var jobFromDb = _context.Job2Tours.SingleOrDefault(x => x.IdTourJob == id);
+
+            if (jobFromDb == null)
+                return NotFound();
+
+            if (jobFromDb.Comment == null) jobFromDb.Comment = "";
+
+            return Ok(jobFromDb);
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

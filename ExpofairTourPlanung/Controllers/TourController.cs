@@ -60,11 +60,29 @@ namespace ExpofairTourPlanung.Controllers
             return new SelectList(employeeSelectItems, "EmployeeNr", "EmployeeName");
         }
 
+        private SelectList _getTourNames()
+        {
+
+            int i = 1;
+
+            var tourNameSelectItems = new List<TourNameSelectItem>();
+
+            while (i < 9) 
+            {
+                String tour = "Tour " + i.ToString();
+                tourNameSelectItems.Add(new TourNameSelectItem { TourName = tour, TourDesc = tour });
+                i++;
+            }
+            return new SelectList(tourNameSelectItems, "TourName", "TourDesc");
+        }
+
+
 
         public IActionResult CreateEditTour( int id)
         {
 
-       
+            ViewBag.Tournames = _getTourNames();
+
             if ( id != 0)
             {
 
@@ -107,7 +125,7 @@ namespace ExpofairTourPlanung.Controllers
                     ViewBag.Vehicles = _getAllVehicles( tourdate );
                     ViewBag.Employees = _getStuff( tourdate );
 
-                    var freeJobsFromDb = _context.Job2Tours.Where(x => x.IdTour != id && x.JobDate == tourdate  ).ToList();
+                    var freeJobsFromDb = _context.Job2Tours.Where(x => x.IdTour != id && x.JobDate == tourdate && x.Service != "Selbstabholer" ).OrderByDescending(x => x.InOut).ThenBy(x => x.Time).ToList();
                     var tourJobsFromDb = _context.Job2Tours.Where(x => x.IdTour == id && x.JobDate == tourdate ).OrderBy(x => x.Ranking).ToList();
 
                     ViewBag.TourJobs= tourJobsFromDb;
@@ -123,9 +141,11 @@ namespace ExpofairTourPlanung.Controllers
                     return NotFound();
                 }
             }
-
             return View();
         }
+
+ 
+
         public IActionResult SaveTour(Tour tour)
         {
 

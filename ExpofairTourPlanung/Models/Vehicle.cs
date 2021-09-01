@@ -20,12 +20,11 @@ namespace ExpofairTourPlanung.Models
         [StringLength(500)]
         public string Comment { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
-        [Required(ErrorMessage = "Bitte geben Sie das Volumen ein")]
+        [Required(ErrorMessage = "Bitte geben Sie die Tonnage ein")]
         public decimal? NetWeight { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
-        [Required(ErrorMessage = "Bitte geben Sie die Tonnage ein")]
+        [Required(ErrorMessage = "Bitte geben Sie das Volumen ein")]
         public decimal? NetVolume { get; set; }
-        [StringLength(20)]
         public string Status { get; set; }
         [StringLength(300)]
         public string Owner { get; set; }

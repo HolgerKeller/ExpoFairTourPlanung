@@ -1,4 +1,5 @@
 ﻿@model List<Job2Tour>
+@using System.Text.RegularExpressions
 
 @{
     ViewData["Title"] = "Job Übersicht";
@@ -19,7 +20,7 @@
         <div class="col-3">
             <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" />
         </div>
-       <div class="col-2">
+        <div class="col-2">
             <button class="btn btn-primary" type="submit">Anzeigen</button>
         </div>
     </div>
@@ -31,11 +32,12 @@
 <table id="jobTable" class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
         <tr>
-            <th>Auslieferungdatum</th>
+            <th>Datum</th>
+            <th>An/Ab</th>
+            <th>Job<br/>Fertig bis</th>
             <th>Beschreibung</th>
             <th>Adresse</th>
             <th>Service</th>
-            <th>Lieferung/Rückgabe</th>
 
         </tr>
     </thead>
@@ -45,34 +47,58 @@
         @{
             foreach (Job2Tour job in Model)
             {
-                <tr>
-                    <td>@job.JobDate.ToString("dd.MM.yyyy") </td>
+                <tr onclick="showModal(@job.IdTourJob)">
+
+
+                    @{
+                        string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
+
+
+                        if (job.InOut == "Lieferung")
+                        {
+                            string returnDT = @job.JobDateReturn.ToString();
+                            returnDT = Regex.Replace(returnDT, "00:00:00$", "");
+
+
+                            if (!String.IsNullOrEmpty(job.Time)) {
+                                <td nowrap>@jobDT<br />@job.Time<br />(@returnDT)</td>
+                            }
+                            else
+                            {
+                                <td nowrap>@jobDT<br />(@returnDT)</td>
+                            }
+                        }
+                        else
+                        {
+                                <td nowrap>@jobDT<br />@job.Time</td>
+                        }
+                    }
+                    <td>@job.InOut</td>
+                    <td nowrap>@job.Number<br/>@job.ReadyTime</td>
                     <td>@job.Caption</td>
 
+                    @{
+                        if (job.Address != null)
+                        {
+                            string[] words = @job.Address.Split(';');
+                            <td>
+                                @words[0] <br />
+                                @words[3] <br />
+                                @words[1] @words[2]
+                            </td>
+                        }
+                        else
+                        {
+                            <td><br /></td>
+                        }
 
-               @{
-                   if (job.Address != null)
-                   {
-                       string[] words = @job.Address.Split(';');
-                        <td>
-                            @words[0] <br />
-                            @words[3] <br />
-                            @words[1] @words[2]
-                        </td>
-                   }
-                   else
-                   {
-                       <td><br /></td>
-                   }
+                    }
 
-                }
-
-                     <td>@job.Service</td>
-                     <td>@job.InOut</td>
+                    <td>@job.Service</td>
                     @*<td>
-                            <a asp-route-id="@jobPosting.Id" asp-controller="JobPosting" asp-action="CreateEditJobPosting" class="btn btn-warning">Edit</a>
-                            <button onclick="onClickedDeleteButton(@jobPosting.Id)" class="btn btn-danger">Löschen</button>
-                        </td>*@
+            <a asp-route-id="@jobPosting.Id" asp-controller="JobPosting" asp-action="CreateEditJobPosting" class="btn btn-warning">Edit</a>
+            <button onclick="onClickedDeleteButton(@jobPosting.Id)" class="btn btn-danger">Löschen</button>
+        </td>*@
                 </tr>
             }
         }
@@ -80,7 +106,59 @@
     </tbody>
 </table>
 
+<div class="modal fade" id="modalJobDetail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
+                <h6>Adresse:</h6>
+                <div id="modalAddress">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>Ansprechpartner:</h6>
+                <div id="modalContact">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>KontaktInfo:</h6>
+                <div id="modalContactPhone">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>Lieferzeit:</h6>
+                <div id="modalDeliveryStart">
+                </div>
+                <div id="modalDeliveryEnd">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>Abholzeit:</h6>
+                <div id="modalPickupStart">
+                </div>
+                <div id="modalPickupEnd">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>Kommentar:</h6>
+                <div id="modalComment">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>Inhalt:</h6>
+                <div id="modalStock">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -95,6 +173,43 @@
             @*document.getElementById("dateTo").value = '@ViewData["dateTo"]';*@
 
         });
+
+        function showModal(id) {
+
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetJobDetail")",
+                data: { id: id },
+                success: function (daten) {
+
+                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
+                    var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
+                    comment = comment.replace(/_*/g, "");
+
+                    var delStartDate = new Date(daten.deliveryTimeStart);
+
+
+                    $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
+                    $('#modalAddress').text(daten.address);
+                    $('#modalComment').text(comment);
+                    $('#modalStock').html(stock);
+
+                    $('#modalContact').text(daten.contact);
+                    $('#modalContactPhone').text(daten.contactPhone);
+
+                    $('#modalDeliveryStart').text(daten.deliveryTimeStart);
+                    $('#modalDeliveryEnd').text(daten.deliveryTimeEnd);
+
+                    $('#modalPickupStart').text(daten.pickupTimeStart);
+                    $('#modalPickupEnd').text(daten.pickupTimeEnd);
+
+                    $('#modalJobDetail').modal('show')
+
+                }
+             });
+        }
+
+
 
         @*function onClickedDeleteButton(id) {
 

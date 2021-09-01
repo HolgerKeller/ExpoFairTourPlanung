@@ -104,3 +104,41 @@ BEGIN
    Delete from [expofair].[Tour] where IdTour = @IdTour
 END
 GO
+
+CREATE OR ALTER PROCEDURE [expofair].[CreateSBTour] (
+	@SbDate VARCHAR(20)
+	)
+AS
+BEGIN
+	
+	DECLARE @IdTour int
+	
+	insert into [expofair].[Tour] (TourDate, TourName, IsSBTour) values ( convert(date, @SbDate),'SB-Tour', 1 )
+
+	SELECT @IdTour = IDENT_CURRENT ('[expofair].[Tour]')
+
+
+    DECLARE @Ranking INT
+
+	DECLARE @IdTourJob INT
+    
+	SET @Ranking = 0
+	
+	DECLARE Cur1 CURSOR READ_ONLY FOR SELECT t.IdTourJob from [expofair].[job2Tour] t where cast(t.JobDate as Date) = convert(date, @SbDate) and t.Service = 'Selbstabholer'  order by t.JobStartTime
+
+	Open Cur1 
+    
+	FETCH NEXT FROM Cur1 into @IdTourJob
+
+	   WHILE  @@fetch_status = 0
+       BEGIN
+
+	   set @Ranking = @Ranking + 1
+
+	   update [expofair].[job2Tour] set Ranking = @Ranking,IdTour = @IdTour where IdTourJob = @IdTourJob
+
+	   FETCH NEXT FROM Cur1 into @IdTourJob
+	   END
+     
+END
+GO

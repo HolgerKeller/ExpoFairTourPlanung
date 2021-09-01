@@ -51,6 +51,8 @@ namespace ExpofairTourPlanung.Controllers
 
             int IdTour = 0;
 
+            Boolean isSb = false;
+
             if (job.IdTourJob == 0)
             {
                 _context.Job2Tours.Add(job);
@@ -64,19 +66,28 @@ namespace ExpofairTourPlanung.Controllers
                     return NotFound();
                 }
 
-
                 jobFromDb.Time = job.Time;
                 jobFromDb.Comment = job.Comment;
                 jobFromDb.Stock = job.Stock;
 
                 IdTour = jobFromDb.IdTour.Value;
 
+                if (jobFromDb.Service == "Selbstabholer") isSb = true;
+
 
             }
 
             _context.SaveChanges();
 
-            return RedirectToAction("CreateEditTour", "Tour", new { id = IdTour });
+
+            if(isSb == true)
+            {
+                return RedirectToAction("ShowDetailSB", "Sb", new { id = IdTour });
+            }
+            else
+            {
+                return RedirectToAction("CreateEditTour", "Tour", new { id = IdTour });
+            }
         }
     }
 }

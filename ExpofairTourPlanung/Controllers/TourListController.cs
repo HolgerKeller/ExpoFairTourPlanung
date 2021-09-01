@@ -26,7 +26,7 @@ namespace ExpofairTourPlanung.Controllers
         public IActionResult Index()
         {
 
-            var allTours = _context.Tours.OrderByDescending(x => x.TourDate).ToList();
+            var allTours = _context.Tours.Where(x => x.IsSbtour != true).OrderByDescending(x => x.TourDate).ToList();
 
             return View( allTours );
         }
@@ -50,10 +50,5 @@ namespace ExpofairTourPlanung.Controllers
 
             return Ok();
         }
-
-
-
-
-
     }
 }

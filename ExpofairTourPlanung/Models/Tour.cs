@@ -43,6 +43,8 @@ namespace ExpofairTourPlanung.Models
         public string Sonstiges { get; set; }
         [StringLength(100)]
         public string CreatedBy { get; set; }
+        [Column("IsSBTour")]
+        public bool? IsSbtour { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime CreateTime { get; set; }
     }
