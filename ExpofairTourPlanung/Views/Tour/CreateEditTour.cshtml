@@ -25,16 +25,9 @@
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Tour">Tourdatum</label>
-                    @{
-                        if (Model == null)
-                        {
+                
                             <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
-                        }
-                        else
-                        {
-                            <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" disabled  />
-                        }
-                    }
+                        
                 </div>
                 <div class="col ">
                     <label for="Tour">Tourbezeichnung</label>
