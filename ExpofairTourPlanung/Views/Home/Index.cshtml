@@ -34,10 +34,11 @@
         <tr>
             <th>Datum</th>
             <th>An/Ab</th>
-            <th>Job<br/>Fertig bis</th>
+            <th>Job<br />Fertig bis</th>
             <th>Beschreibung</th>
             <th>Adresse</th>
             <th>Service</th>
+            <th>Tour</th>
 
         </tr>
     </thead>
@@ -60,7 +61,8 @@
                             returnDT = Regex.Replace(returnDT, "00:00:00$", "");
 
 
-                            if (!String.IsNullOrEmpty(job.Time)) {
+                            if (!String.IsNullOrEmpty(job.Time))
+                            {
                                 <td nowrap>@jobDT<br />@job.Time<br />(@returnDT)</td>
                             }
                             else
@@ -70,11 +72,23 @@
                         }
                         else
                         {
-                                <td nowrap>@jobDT<br />@job.Time</td>
+                            <td nowrap>@jobDT<br />@job.Time</td>
                         }
                     }
-                    <td>@job.InOut</td>
-                    <td nowrap>@job.Number<br/>@job.ReadyTime</td>
+
+
+
+                    @{
+                        if (job.IdJobState == 5)
+                        {
+                            <td>@job.InOut<br />Zulieferung</td>
+                        }
+                        else
+                        {
+                            <td>@job.InOut</td>
+                        }
+                    }
+                    <td nowrap>@job.Number<br />@job.ReadyTime</td>
                     <td>@job.Caption</td>
 
                     @{
@@ -95,10 +109,8 @@
                     }
 
                     <td>@job.Service</td>
-                    @*<td>
-            <a asp-route-id="@jobPosting.Id" asp-controller="JobPosting" asp-action="CreateEditJobPosting" class="btn btn-warning">Edit</a>
-            <button onclick="onClickedDeleteButton(@jobPosting.Id)" class="btn btn-danger">Löschen</button>
-        </td>*@
+                    <td>@job.TourName</td>
+
                 </tr>
             }
         }

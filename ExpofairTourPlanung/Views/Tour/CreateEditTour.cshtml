@@ -1,4 +1,5 @@
 ﻿@model ExpofairTourPlanung.Models.Tour
+@using System.Text.RegularExpressions
 
 @{
     ViewData["Title"] = "Tourdaten";
@@ -15,7 +16,7 @@
 
         <div class="card-body">
 
-            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
 
 
             @Html.Hidden("IdTour", (Model != null) ? Model.IdTour : 0)
@@ -25,20 +26,20 @@
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Tour">Tourdatum</label>
-                
-                            <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
-                        
+
+                    <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
+
                 </div>
                 <div class="col ">
                     <label for="Tour">Tourbezeichnung</label>
-                    @Html.DropDownListFor(model => Model.TourName, (SelectList)ViewBag.TourNames ,new { @class = "form-control", @placeholder = "Tourname" })
+                    @Html.DropDownListFor(model => Model.TourName, (SelectList)ViewBag.TourNames, new { @class = "form-control", @placeholder = "Tourname" })
                 </div>
             </div>
 
             @if (Model != null)
             {
 
-             <div class="row form-group">
+                <div class="row form-group">
                     <div class="col-6">
                         <label for="Tour">Fahrzeug</label>
                         @Html.DropDownListFor(model => Model.VehicleNr, (SelectList)ViewBag.Vehicles, "Welches Fahrzeug?", new { @class = "form-control", @placeholder = "Fahrzeug auswählen" })
@@ -48,8 +49,8 @@
                         @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @class = "form-control", @placeholder = "Wer ist der Fahrer?" })
 
                     </div>
-             </div>
-             <div class="row form-group">
+                </div>
+                <div class="row form-group">
                     <div class="col ">
                         <label for="Tour">Verantwortlicher</label>
                         @Html.DropDownListFor(model => Model.Master, (SelectList)ViewBag.Employees, "Wer ist Verantwortlich?", new { @class = "form-control", @placeholder = "Wer ist verantworlich?" })
@@ -57,17 +58,17 @@
                     </div>
                     <div class="col">
                         <label for="Tour">Team</label>
-                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @class = "form-control", @multiple = "multiple", @placeholder = "Wer ist weiterhin im Team?" })
+                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @class = "form-control", @multiple="multible" , @placeholder = "Wer ist weiterhin im Team?" })
 
                     </div>
-             </div>
+                </div>
 
-             <div class="row form-group">
+                <div class="row form-group">
                     <div class="col">
                         <label for="Tour">Kommentar</label>
                         <textarea rows="6" class="form-control" asp-for="Comment" placeholder="Hier können Sie einen generellen Kommentar eintragen."></textarea>
                     </div>
-             </div>
+                </div>
             }
         </div>
 
@@ -78,7 +79,7 @@
 </form>
 
 
-@if (Model != null )
+@if (Model != null)
 {
     <div class="card" style="margin-bottom: 15px;">
 
@@ -92,9 +93,9 @@
             }
             <table class="table table-sm table-hover">
                 <tr>
-                    <th class="col-1">&nbsp;</th>
                     <th class="col-1">Zeit</th>
-                    <th class="col-2">JobNr<br/>fertig bis</th>
+                    <th class="col-1">An/Ab</th>
+                    <th class="col-2">JobNr<br />fertig bis</th>
                     <th class="col-4">Bezeichnung</th>
                     <th class="col-3">Adresse</th>
 
@@ -103,56 +104,87 @@
 
 
 
-               @foreach (Job2Tour job in tourJobs)
+                @foreach (Job2Tour job in tourJobs)
                 {
 
-                        <tr onclick="showModal(@job.IdTourJob)">
-                            <td>@job.InOut</td>
+                    <tr onclick="showModal(@job.IdTourJob)">
+
+                        @{
+                            string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
 
 
-                            <td>@job.Time</td>
+                            if (job.InOut == "Lieferung")
+                            {
+                                string returnDT = @job.JobDateReturn.ToString();
+                                returnDT = Regex.Replace(returnDT, "00:00:00$", "");
 
 
-                            <td>@job.Number<br/>@job.ReadyTime</td>
-
-                            <td>@job.Caption</td>
-
-                            @{
-
-                                if (job.Address != null)
+                                if (!String.IsNullOrEmpty(job.Time))
                                 {
-                                    string[] words = @job.Address.Split(';');
-                                    <td>
-                                        @words[0] <br />
-                                        @words[3] <br />
-                                        @words[1] @words[2]
-                                    </td>
+                                    <td nowrap>@jobDT<br />@job.Time<br />(@returnDT)</td>
                                 }
                                 else
                                 {
-                                    <td>&nbsp;</td>
+                                    <td nowrap>@jobDT<br />(@returnDT)</td>
                                 }
+                            }
+                            else
+                            {
+                                <td nowrap>@jobDT<br />@job.Time</td>
+                            }
+                        }
 
+                        @{
+                            if (job.IdJobState == 5)
+                            {
+                                <td>@job.InOut<br />Zulieferung</td>
+                            }
+                            else
+                            {
+                                <td>@job.InOut</td>
+                            }
+                        }
+
+                        <td>@job.Number<br />@job.ReadyTime</td>
+
+                        <td>@job.Caption</td>
+
+                        @{
+
+                            if (job.Address != null)
+                            {
+                                string[] words = @job.Address.Split(';');
+                                <td>
+                                    @words[0] <br />
+                                    @words[3] <br />
+                                    @words[1] @words[2]
+                                </td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
                             }
 
+                        }
 
-                            <td class="text-right">
-                                <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
-                                    <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
-                                </button>
-                                <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
-                                    <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
-                                </button>
 
-                                <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
-                                    <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
-                                </button>
-                                <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
-                                    <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
-                                </a>
-                            </td>
-                        </tr>
-                 }
+                        <td class="text-right">
+                            <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Nach Vorn">
+                                <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
+                            </button>
+                            <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Nach Hinten">
+                                <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
+                            </button>
+
+                            <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
+                                <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
+                            </button>
+                            <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
+                                <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
 
             </table>
         </div>
@@ -181,49 +213,49 @@
 
 
 
-           @foreach (Job2Tour job in jobs)
-           {
-            <tr onclick="showModal(@job.IdTourJob)">
-                <td>@job.InOut</td>
+                @foreach (Job2Tour job in jobs)
+                {
+                    <tr onclick="showModal(@job.IdTourJob)">
+                        <td>@job.InOut</td>
 
 
-                <td>@job.Time</td>
-                                
-                
-                <td>@job.Number<br />@job.ReadyTime</td>
+                        <td>@job.Time</td>
 
-                <td>@job.Caption</td>
 
-                @{
+                        <td>@job.Number<br />@job.ReadyTime</td>
 
-                    if (job.Address != null)
-                    {
-                        string[] words = @job.Address.Split(';');
-                        <td>
-                            @words[0] <br />
-                            @words[3] <br />
-                            @words[1] @words[2]
-                        </td>
-                    }
-                    else
-                    {
-                        <td>&nbsp;</td>
-                    }
+                        <td>@job.Caption</td>
 
+                        @{
+
+                            if (job.Address != null)
+                            {
+                                string[] words = @job.Address.Split(';');
+                                <td>
+                                    @words[0] <br />
+                                    @words[3] <br />
+                                    @words[1] @words[2]
+                                </td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
+                            }
+
+                        }
+
+
+
+
+                        <td class="text-right">
+                            <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
+                                <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
+                            </button>
+                            @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
+                                    <span class="fa fa-info fa-lg" aria-hidden="true"></span>
+                                </button>*@
+                    </tr>
                 }
-
-
-
-
-                    <td class="text-right">
-                        <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
-                            <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
-                        </button>
-                        @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
-                    <span class="fa fa-info fa-lg" aria-hidden="true"></span>
-                </button>*@
-                </tr>
-            }
             </table>
         </div>
     </div>
@@ -251,7 +283,7 @@
 
                 </div>
 
-                 <hr class="col-xs-12">
+                <hr class="col-xs-12">
 
                 <h6>Inhalt:</h6>
                 <div id="modalStock">
@@ -274,18 +306,36 @@
 
     <script>
 
-        $(function () {
+        $(document).ready(function () {
+            $('#Team').SumoSelect({
+                outputAsCSV: true,
+                csvSepChar: ','
+            });
             $('#VehicleNr').SumoSelect();
             $('#Driver').SumoSelect();
             $('#Master').SumoSelect();
-            $('#Team').SumoSelect();
             $('#TourName').SumoSelect();
-        })
+
+            var team = @Html.Raw(Json.Serialize(Model.Team));
+
+            selectTeam(team);
+        });
+
+        function selectTeam(team) {
+
+            var members = team.split(",");
+
+            var arrayLength = members.length;
+            for (var i = 0; i < arrayLength; i++) {
+                $('#Team')[0].sumo.selectItem(members[i]);
+            }
+        }
+
 
 
         function showModal(id) {
 
- 
+
             $.ajax({
                 type: "GET",
                 url: "@Url.Action("GetJobDetail")",
@@ -329,7 +379,7 @@
                     $.ajax({
                         type: "POST",
                         url: "@Url.Action("DelJobFromTour")",
-                        data: { id: id, idJob: idJob  },
+                        data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
                                location.reload();
                         },
@@ -344,7 +394,7 @@
                     $.ajax({
                         type: "POST",
                         url: "@Url.Action("IncreaseJobRanking")",
-                        data: { id: id, idJob: idJob  },
+                        data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
                                location.reload();
                         },
@@ -359,7 +409,7 @@
                     $.ajax({
                         type: "POST",
                         url: "@Url.Action("DecreaseJobRanking")",
-                        data: { id: id, idJob: idJob  },
+                        data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
                                location.reload();
                         },

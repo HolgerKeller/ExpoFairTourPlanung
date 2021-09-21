@@ -48,6 +48,12 @@ namespace ExpofairTourPlanung.Controllers
 
         }
 
+        public IActionResult Reset(int id)
+        {
+            return RedirectToAction("CreateEditEmployee", 0);
+
+        }
+
         public IActionResult SaveEmployee(Stuff employee)
         {
 

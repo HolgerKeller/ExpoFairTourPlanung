@@ -1,10 +1,14 @@
 Use easyjob
 GO
+--create schema expofair
+GO
 drop TABLE [expofair].[job2Tour];
 GO
 create Table [expofair].[job2Tour] (
 IdTourJob INT NOT NULL IDENTITY(1,1),
 IdTour INT NULL,
+TourName NVARCHAR(200),
+SplitCounter INT NOT NULL,
 IdJob INT NOT NULL,
 IdJobState INT NOT NULL,
 IdProject INT NOT NULL,
@@ -13,6 +17,7 @@ Ranking INT NULL,
 Number NVARCHAR(30) NULL,
 Caption NVARCHAR(MAX) NULL,
 Comment NVARCHAR(MAX) NULL,
+HeadLine NVARCHAR(4000) NULL,
 JobDate Date NOT NULL,
 JobDateReturn Date NULL,
 JobStartTime DATETIME NULL,
@@ -31,8 +36,9 @@ PickupTimeEnd DATETIME NULL,
 Contact NVARCHAR(100) NULL,
 ContactPhone NVARCHAR(100) NULL,
 ReadyTime NVARCHAR(200) NULL,
+JobType NVARCHAR(50) NULL,
 PRIMARY KEY( IdTourJob),
-CONSTRAINT AK_JOB_IN_OUT UNIQUE(IdJob, In_Out)  WITH (IGNORE_DUP_KEY = ON)
+CONSTRAINT AK_JOB_IN_OUT UNIQUE(IdJob, In_Out, SplitCounter)  WITH (IGNORE_DUP_KEY = ON)
 );
 GO
 drop Table [expofair].[Tour];
@@ -40,7 +46,8 @@ GO
 create Table [expofair].[Tour] (
 IdTour INT NOT NULL IDENTITY(1,1),
 TourName NVARCHAR(200) NOT NULL,
-Comment NVARCHAR(MAX) NULL,
+Comment NVARCHAR(4000) NULL,
+Footer NVARCHAR(4000) NULL,
 TourDate DATE NOT NULL DEFAULT (GETDATE()),
 VehicleNr NVARCHAR(20) NULL,
 Driver  NVARCHAR(200) NULL,

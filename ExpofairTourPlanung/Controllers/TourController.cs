@@ -125,7 +125,7 @@ namespace ExpofairTourPlanung.Controllers
                     ViewBag.Vehicles = _getAllVehicles( tourdate );
                     ViewBag.Employees = _getStuff( tourdate );
 
-                    var freeJobsFromDb = _context.Job2Tours.Where(x => x.IdTour != id && x.JobDate == tourdate && x.Service != "Selbstabholer" ).OrderByDescending(x => x.InOut).ThenBy(x => x.Time).ToList();
+                    var freeJobsFromDb = _context.Job2Tours.Where(x => ( x.IdTour == null || x.IdTour == 0 ) && x.JobDate == tourdate && x.Service != "Selbstabholer" ).OrderByDescending(x => x.InOut).ThenBy(x => x.Time).ToList();
                     var tourJobsFromDb = _context.Job2Tours.Where(x => x.IdTour == id && x.JobDate == tourdate ).OrderBy(x => x.Ranking).ToList();
 
                     ViewBag.TourJobs= tourJobsFromDb;
@@ -211,7 +211,7 @@ namespace ExpofairTourPlanung.Controllers
                 Value = id
             };
 
-            var idJobParam = new SqlParameter()
+            var idTourJobParam = new SqlParameter()
             {
                 ParameterName = "@IdTourJob",
                 SqlDbType = System.Data.SqlDbType.Int,
@@ -220,14 +220,14 @@ namespace ExpofairTourPlanung.Controllers
                 Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustAddJobToTour @IdTour, @IdTourJob ", idTourParam, idJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustAddJobToTour @IdTour, @IdTourJob ", idTourParam, idTourJobParam);
 
             return Ok();
         }
         [HttpPost]
-        public IActionResult DelJobFromTour(int id, int idJob)
+        public IActionResult DelJobFromTour(int id, int idTourJob)
         {
-            if (id == 0 || idJob == 0)
+            if (id == 0 || idTourJob == 0)
                 return BadRequest();
 
             var idTourParam = new SqlParameter()
@@ -239,23 +239,23 @@ namespace ExpofairTourPlanung.Controllers
                 Value = id
             };
 
-            var idJobParam = new SqlParameter()
+            var idTourJobParam = new SqlParameter()
             {
-                ParameterName = "@IdJob",
+                ParameterName = "@IdTourJob",
                 SqlDbType = System.Data.SqlDbType.Int,
                 Direction = System.Data.ParameterDirection.Input,
                 Size = 10,
-                Value = idJob
+                Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustDelJobFromTour @IdTour, @IdJob ", idTourParam, idJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustDelJobFromTour @IdTour, @IdTourJob ", idTourParam, idTourJobParam);
 
             return Ok();
         }
         [HttpPost]
-        public IActionResult IncreaseJobRanking(int id, int idJob)
+        public IActionResult IncreaseJobRanking(int id, int idTourJob)
         {
-            if (id == 0 || idJob == 0)
+            if (id == 0 || idTourJob == 0)
                 return BadRequest();
 
             var idTourParam = new SqlParameter()
@@ -267,24 +267,24 @@ namespace ExpofairTourPlanung.Controllers
                 Value = id
             };
 
-            var idJobParam = new SqlParameter()
+            var idTourJobParam = new SqlParameter()
             {
-                ParameterName = "@IdJob",
+                ParameterName = "@IdTourJob",
                 SqlDbType = System.Data.SqlDbType.Int,
                 Direction = System.Data.ParameterDirection.Input,
                 Size = 10,
-                Value = idJob
+                Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustIncreaseJobRanking @IdTour, @IdJob ", idTourParam, idJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustIncreaseJobRanking @IdTour, @IdJob ", idTourParam, idTourJobParam);
 
             return Ok();
         }
 
         [HttpPost]
-        public IActionResult DecreaseJobRanking(int id, int idJob)
+        public IActionResult DecreaseJobRanking(int id, int idTourJob)
         {
-            if (id == 0 || idJob == 0)
+            if (id == 0 || idTourJob == 0)
                 return BadRequest();
 
             var idTourParam = new SqlParameter()
@@ -296,16 +296,16 @@ namespace ExpofairTourPlanung.Controllers
                 Value = id
             };
 
-            var idJobParam = new SqlParameter()
+            var idTourJobParam = new SqlParameter()
             {
                 ParameterName = "@IdJob",
                 SqlDbType = System.Data.SqlDbType.Int,
                 Direction = System.Data.ParameterDirection.Input,
                 Size = 10,
-                Value = idJob
+                Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustDecreaseJobRanking @IdTour, @IdJob ", idTourParam, idJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustDecreaseJobRanking @IdTour, @IdJob ", idTourParam, idTourJobParam);
 
             return Ok();
         }

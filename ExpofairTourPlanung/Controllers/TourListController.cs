@@ -23,10 +23,22 @@ namespace ExpofairTourPlanung.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string dateFrom)
         {
 
-            var allTours = _context.Tours.Where(x => x.IsSbtour != true).OrderByDescending(x => x.TourDate).ToList();
+            if (dateFrom == null)
+            {
+                dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+            }
+
+ 
+            ViewData["dateFrom"] = dateFrom;
+
+            _logger.LogInformation("dateFrom:" + dateFrom );
+
+            DateTime dateFromDT = DateTime.Parse(dateFrom);
+
+            var allTours = _context.Tours.Where(x => x.IsSbtour != true && x.TourDate >= dateFromDT).OrderByDescending(x => x.TourDate).ToList();
 
             return View( allTours );
         }

@@ -1,4 +1,5 @@
 ﻿@model ExpofairTourPlanung.Models.Tour
+@using System.Text.RegularExpressions
 
 @{
     ViewData["Title"] = "SB-Plan";
@@ -8,7 +9,7 @@
     <div class="card" style="margin-bottom: 15px;">
 
         <div class="card-header">
-            <h5>Selbstabholer-Plan erstellen:</h5>
+            <h5>Selbstabholer-Plan:</h5>
         </div>
 
         <div class="card-body">
@@ -22,7 +23,7 @@
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Tour">Datum</label>
-                    <input class="form-control" asp-for="TourDate" type="date" placeholder="SB-Jobs für welches Datum?" disabled="true" />
+                    <input class="form-control" asp-for="TourDate" type="date" placeholder="SB-Jobs für welches Datum?" disabled />
                 </div>
             </div>
         </div>
@@ -45,8 +46,8 @@
             }
             <table class="table table-sm table-hover">
                 <tr>
-                    <th class="col-1">&nbsp;</th>
                     <th class="col-1">Zeit</th>
+                    <th class="col-1">An/Ab</th>
                     <th class="col-2">JobNr<br />fertig bis</th>
                     <th class="col-4">Bezeichnung</th>
                     <th class="col-3">Adresse</th>
@@ -59,48 +60,79 @@
                 @foreach (Job2Tour job in sBJobs)
                 {
 
-                    <tr onclick="showModal(@job.IdTourJob)">
-                        <td>@job.InOut</td>
+            <tr onclick="showModal(@job.IdTourJob)">
+
+                @{
+                    string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
 
 
-                        <td>@job.Time</td>
+                    if (job.InOut == "Lieferung")
+                    {
+                        string returnDT = @job.JobDateReturn.ToString();
+                        returnDT = Regex.Replace(returnDT, "00:00:00$", "");
 
 
-                        <td>@job.Number<br />@job.ReadyTime</td>
-
-                        <td>@job.Caption</td>
-
-                        @{
-
-                            if (job.Address != null)
-                            {
-                                string[] words = @job.Address.Split(';');
-                                <td>
-                                    @words[0] <br />
-                                    @words[3] <br />
-                                    @words[1] @words[2]
-                                </td>
-                            }
-                            else
-                            {
-                                <td>&nbsp;</td>
-                            }
-
+                        if (!String.IsNullOrEmpty(job.Time))
+                        {
+                            <td nowrap>@jobDT<br />@job.Time<br />(@returnDT)</td>
                         }
+                        else
+                        {
+                            <td nowrap>@jobDT<br />(@returnDT)</td>
+                        }
+                    }
+                    else
+                    {
+                        <td nowrap>@jobDT<br />@job.Time</td>
+                    }
+                }
 
+                @{
+                    if (job.IdJobState == 5)
+                    {
+                        <td>@job.InOut<br />Zulieferung</td>
+                    }
+                    else
+                    {
+                        <td>@job.InOut</td>
+                    }
+                }
 
-                        <td class="text-right">
-                            <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
-                                <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
-                            </button>
-                            <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
-                                <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
-                            </button>
-                           <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
-                                <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
-                            </a>
+                <td>@job.Number<br />@job.ReadyTime</td>
+
+                <td>@job.Caption</td>
+
+                @{
+
+                    if (job.Address != null)
+                    {
+                        string[] words = @job.Address.Split(';');
+                        <td>
+                            @words[0] <br />
+                            @words[3] <br />
+                            @words[1] @words[2]
                         </td>
-                    </tr>
+                    }
+                    else
+                    {
+                        <td>&nbsp;</td>
+                    }
+
+                }
+
+
+                <td class="text-right">
+                    <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Vorn">
+                        <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
+                    </button>
+                    <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdJob)" class="btn btn-sm" aria-label="Nach Hinten">
+                        <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
+                    </button>
+                    <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
+                        <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                    </a>
+                </td>
+            </tr>
                 }
 
             </table>

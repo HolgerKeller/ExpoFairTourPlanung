@@ -12,6 +12,7 @@ CREATE OR ALTER PROCEDURE [expofair].[CustAddJobToTour] (
 AS
 BEGIN
 update [expofair].[job2Tour] set IdTour = @IdTour where IdTourJob = @IdTourJob
+update [expofair].[job2Tour] set TourName=(select TourName from [expofair].Tour where IdTour = @IdTour) where IdTourJob = @IdTourJob
 
 -- Set inital Ranking
 DECLARE @Ranking INT
@@ -34,7 +35,8 @@ GO
 --This Procedure Increases a Job Ranking  in the Job2Tour-Table to a Tour
 CREATE OR ALTER PROCEDURE [expofair].[CustIncreaseJobRanking] (
 	@IdTour int,
-	@IdJob int
+	@IdTourJob int
+
 	)
 AS
 BEGIN
@@ -44,14 +46,14 @@ DECLARE @MaxRanking INT
 select @MaxRanking =MAX(Ranking) from [expofair].[job2Tour] where IdTour = @IdTour
 
 DECLARE @Ranking INT
-select @Ranking = Ranking  from [expofair].[job2Tour] where IdJob = @IdJob and IdTour = @IdTour
+select @Ranking = Ranking  from [expofair].[job2Tour] where IdTourJob = @IdTourJob and IdTour = @IdTour
 
 
 IF @Ranking = @MaxRanking
 	RETURN
 ELSE
 	update [expofair].[job2Tour] set Ranking = @Ranking where IdTour = @IdTour and Ranking = @Ranking + 1
-	update [expofair].[job2Tour] set Ranking = @Ranking + 1 where IdTour = @IdTour and IdJob = @IdJob
+	update [expofair].[job2Tour] set Ranking = @Ranking + 1 where IdTour = @IdTour and IdTourJob = @IdTourJob
 RETURN
 END
 GO
@@ -60,7 +62,7 @@ GO
 --This Procedure Decreases a Job Ranking  in the Job2Tour-Table to a Tour
 CREATE OR ALTER PROCEDURE [expofair].[CustDecreaseJobRanking] (
 	@IdTour int,
-	@IdJob int
+	@IdTourJob int
 	)
 AS
 BEGIN
@@ -70,13 +72,13 @@ DECLARE @MinRanking INT
 select @MinRanking = Min(Ranking) from [expofair].[job2Tour] where IdTour = @IdTour
 
 DECLARE @Ranking INT
-select @Ranking = Ranking  from [expofair].[job2Tour] where IdJob = @IdJob and IdTour = @IdTour
+select @Ranking = Ranking  from [expofair].[job2Tour] where IdTourJob = @IdTourJob and IdTour = @IdTour
 
 IF @Ranking < 2
 	RETURN
 ELSE
 	update [expofair].[job2Tour] set Ranking = @Ranking where IdTour = @IdTour and Ranking = @Ranking - 1
-	update [expofair].[job2Tour] set Ranking = @Ranking - 1 where IdTour = @IdTour and IdJob = @IdJob
+	update [expofair].[job2Tour] set Ranking = @Ranking - 1 where IdTour = @IdTour and IdTourJob = @IdTourJob
 RETURN
 END
 GO
@@ -84,26 +86,30 @@ GO
 -- Delete Job from Tour
 CREATE OR ALTER PROCEDURE [expofair].[CustDelJobFromTour] (
 	@IdTour int,
-	@IdJob int
+	@IdTourJob int
 	)
 AS
 BEGIN
-update [expofair].[job2Tour] set IdTour = 0, Ranking = 0 where IdJob = @IdJob and IdTour = @IdTour
+update [expofair].[job2Tour] set IdTour = 0, Ranking = 0 where IdTourJob = @IdTourJob and IdTour = @IdTour
 DECLARE @Weight FLOAT
 select @Weight = sum(Weight) from [expofair].[job2Tour] where IdTour = @IdTour
 update [expofair].Tour set Weight = @Weight where IdTour = @IdTour
 END
 GO
 
+--#######################################
+
 CREATE OR ALTER PROCEDURE [expofair].[CustDeleteTour] (
 	@IdTour int
 	)
 AS
 BEGIN
-   Update  [expofair].[job2Tour] set IdTour = 0, Ranking = 0 where IdTour = @IdTour
+   Update  [expofair].[job2Tour] set IdTour = 0, Ranking = 0, TourName = NULL where IdTour = @IdTour
    Delete from [expofair].[Tour] where IdTour = @IdTour
 END
 GO
+
+--########################################
 
 CREATE OR ALTER PROCEDURE [expofair].[CreateSBTour] (
 	@SbDate VARCHAR(20)
@@ -113,7 +119,7 @@ BEGIN
 	
 	DECLARE @IdTour int
 	
-	insert into [expofair].[Tour] (TourDate, TourName, IsSBTour) values ( convert(date, @SbDate),'SB-Tour', 1 )
+	insert into [expofair].[Tour] (TourDate, TourName, IsSBTour) values ( convert(date, @SbDate),'Tour SB', 1 )
 
 	SELECT @IdTour = IDENT_CURRENT ('[expofair].[Tour]')
 
@@ -135,7 +141,7 @@ BEGIN
 
 	   set @Ranking = @Ranking + 1
 
-	   update [expofair].[job2Tour] set Ranking = @Ranking,IdTour = @IdTour where IdTourJob = @IdTourJob
+	   update [expofair].[job2Tour] set Ranking = @Ranking,IdTour = @IdTour, TourName = 'Tour SB' where IdTourJob = @IdTourJob
 
 	   FETCH NEXT FROM Cur1 into @IdTourJob
 	   END

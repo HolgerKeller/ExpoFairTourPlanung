@@ -4,8 +4,25 @@
     ViewData["Title"] = "Touren Übersicht";
 }
 
-<h3>Aktuell vorhandene Tourenpläne</h3>
+<h3>Tourenpläne</h3>
 <br />
+
+<form asp-controller="TourList" asp-action="Index" enctype="multipart/form-data">
+    <div class="row form-group">
+        <div class="col-2">
+            <div class="col-form-label">
+                Von:
+            </div>
+        </div>
+        <div class="col-3">
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" />
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary" type="submit">Anzeigen</button>
+        </div>
+    </div>
+</form>
+
 
 <table id="tourTable" class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
@@ -49,10 +66,16 @@
 
 @section Scripts {
     <script>
-    $(document).ready(function () {
-    $('#tourTable').DataTable();
 
+    $(document).ready(function () {
+            $('#tourTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                }
+            });
+            document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
     });
+
     function onClickedDeleteTourButton(id) {
 
             Swal.fire({

@@ -16,6 +16,7 @@ namespace ExpofairTourPlanung.Models
         public int IdTourJob { get; set; }
         public int? IdTour { get; set; }
         public int IdJob { get; set; }
+        public int SplitCounter { get; set; } 
         public int IdJobState { get; set; }
         public int IdProject { get; set; }
         public int? IdAddress { get; set; }
@@ -24,6 +25,7 @@ namespace ExpofairTourPlanung.Models
         public string Number { get; set; }
         public string Caption { get; set; }
         public string Comment { get; set; }
+        public string HeadLine { get; set; }
         [Column(TypeName = "date")]
         public DateTime JobDate { get; set; }
         [Column(TypeName = "date")]
@@ -36,6 +38,8 @@ namespace ExpofairTourPlanung.Models
         [Required]
         [StringLength(100)]
         public string Status { get; set; }
+        [StringLength(100)]
+        public string TourName { get; set; }
         [StringLength(300)]
         public string Address { get; set; }
         public string Stock { get; set; }
