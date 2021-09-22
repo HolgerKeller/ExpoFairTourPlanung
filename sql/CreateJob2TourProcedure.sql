@@ -148,3 +148,68 @@ BEGIN
      
 END
 GO
+CREATE OR ALTER PROCEDURE [expofair].[CustCloneJob] (
+	@IdTourJob int
+	)
+AS
+BEGIN
+
+INSERT INTO [expofair].[job2Tour] (
+IdJob,
+IdJobState,
+IdProject,
+IdAddress,
+Number,
+Caption,
+Comment,
+JobDate,
+Service,
+Status,
+Address,
+In_Out,
+Ranking,
+JobDateReturn,
+DeliveryTimeStart,
+DeliveryTimeEnd,
+PickupTimeStart,
+PickupTimeEnd,
+Contact,
+ContactPhone,
+JobStartTime,
+Time,
+ReadyTime,
+SplitCounter,
+JobType,
+Stock
+)
+SELECT 
+	IdJob,
+	IdJobState,
+	IdProject,
+	IdAddress,
+	(select Number from [expofair].[job2Tour] where IdTourJob = @IdTourJob) + ' (Dup)',
+	(select Caption from [expofair].[job2Tour] where IdTourJob = @IdTourJob) + ' (Dup)',
+	Comment,
+	JobDate,
+	Service,
+	Status,
+	Address,
+	In_Out,
+	Ranking,
+	JobDateReturn,
+	DeliveryTimeStart,
+	DeliveryTimeEnd,
+	PickupTimeStart,
+	PickupTimeEnd,
+	Contact,
+	ContactPhone,
+	JobStartTime,
+	Time,
+	ReadyTime,
+	(select SplitCounter from [expofair].[job2Tour] where IdTourJob = @IdTourJob) + 1,
+	JobType,
+	Stock
+	FROM 
+		[expofair].[job2Tour] where IdTourJob = @IdTourJob
+END
+GO

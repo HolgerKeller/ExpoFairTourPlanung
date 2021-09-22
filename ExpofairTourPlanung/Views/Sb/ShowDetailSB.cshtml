@@ -90,7 +90,7 @@
                 @{
                     if (job.IdJobState == 5)
                     {
-                        <td>@job.InOut<br />Zulieferung</td>
+                        <td>@job.InOut<br />Zumietung</td>
                     }
                     else
                     {
@@ -107,11 +107,23 @@
                     if (job.Address != null)
                     {
                         string[] words = @job.Address.Split(';');
-                        <td>
-                            @words[0] <br />
-                            @words[3] <br />
-                            @words[1] @words[2]
-                        </td>
+                                <td>
+                                    @words[0] <br />
+                                    @{
+                                        if (@words[1] != "")
+                                        {
+                                            @words[1] <br />
+                                        }
+                                        if (@words[4] != "")
+                                        {
+                                            @words[4] <br />
+                                        }
+                                        if (@words[2] != "")
+                                        {
+                                            <text>@words[2]  @words[3]</text>
+                                        }
+                                    }
+                                </td>
                     }
                     else
                     {

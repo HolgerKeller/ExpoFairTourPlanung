@@ -5,7 +5,6 @@
     ViewData["Title"] = "Tourdaten";
 }
 
-
 <form asp-controller="Tour" asp-action="SaveTour" enctype="multipart/form-data">
 
     <div class="card" style="margin-bottom: 15px;">
@@ -42,11 +41,11 @@
                 <div class="row form-group">
                     <div class="col-6">
                         <label for="Tour">Fahrzeug</label>
-                        @Html.DropDownListFor(model => Model.VehicleNr, (SelectList)ViewBag.Vehicles, "Welches Fahrzeug?", new { @class = "form-control", @placeholder = "Fahrzeug auswählen" })
+                        @Html.DropDownListFor(model => Model.VehicleNr, (SelectList)ViewBag.Vehicles, "Welche Fahrzeuge?", new { @class = "form-control", @multiple = "multible", @placeholder = "Fahrzeug auswählen" })
                     </div>
                     <div class="col">
                         <label for="Tour">Fahrer</label>
-                        @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer ist der Fahrer?", new { @class = "form-control", @placeholder = "Wer ist der Fahrer?" })
+                        @Html.DropDownListFor(model => Model.Driver, (SelectList)ViewBag.Employees, "Wer sind die Fahrer?", new { @class = "form-control", @multiple = "multible", @placeholder = "Wer ist der Fahrer?" })
 
                     </div>
                 </div>
@@ -58,7 +57,7 @@
                     </div>
                     <div class="col">
                         <label for="Tour">Team</label>
-                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @class = "form-control", @multiple="multible" , @placeholder = "Wer ist weiterhin im Team?" })
+                        @Html.DropDownListFor(model => Model.Team, (SelectList)ViewBag.Employees, new { @class = "form-control", @multiple = "multible", @placeholder = "Wer ist weiterhin im Team?" })
 
                     </div>
                 </div>
@@ -66,7 +65,14 @@
                 <div class="row form-group">
                     <div class="col">
                         <label for="Tour">Kommentar</label>
-                        <textarea rows="6" class="form-control" asp-for="Comment" placeholder="Hier können Sie einen generellen Kommentar eintragen."></textarea>
+                        <textarea rows="6" class="form-control" asp-for="Comment" placeholder="Hier können Sie einen Kommentar eintragen. Der Text wird vor den Jobs dargestellt."></textarea>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col">
+                        <label for="Tour">Abschlusstext</label>
+                        <textarea rows="6" class="form-control" asp-for="Footer" placeholder="Hier können Sie einen Text hinterlegen, der nach den Jobs angezeigt wird."></textarea>
                     </div>
                 </div>
             }
@@ -102,8 +108,6 @@
                     <th class="col-1">&nbsp;</th>
                 </tr>
 
-
-
                 @foreach (Job2Tour job in tourJobs)
                 {
 
@@ -137,7 +141,7 @@
                         @{
                             if (job.IdJobState == 5)
                             {
-                                <td>@job.InOut<br />Zulieferung</td>
+                                <td>@job.InOut<br />Zumietung</td>
                             }
                             else
                             {
@@ -154,11 +158,23 @@
                             if (job.Address != null)
                             {
                                 string[] words = @job.Address.Split(';');
-                                <td>
-                                    @words[0] <br />
-                                    @words[3] <br />
-                                    @words[1] @words[2]
-                                </td>
+                                                <td>
+                                                    @words[0] <br />
+                                                    @{
+                                                        if (@words[1] != "")
+                                                        {
+                                                            @words[1] <br />
+                                                        }
+                                                        if (@words[4] != "")
+                                                        {
+                                                            @words[4] <br />
+                                                        }
+                                                        if (@words[2] != "")
+                                                        {
+                                                            <text>@words[2]  @words[3]</text>
+                                                        }
+                                                    }
+                                                </td>
                             }
                             else
                             {
@@ -167,16 +183,15 @@
 
                         }
 
-
                         <td class="text-right">
-                            <button onclick="onClickedDecreaseJobRankingButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Nach Vorn">
+                            <button onclick="onClickedDecreaseJobRankingButton(event, @Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Nach Vorn">
                                 <span class="fa fa-arrow-up fa-lg" aria-hidden="true"></span>
                             </button>
-                            <button onclick="onClickedIncreaseJobRankingButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Nach Hinten">
+                            <button onclick="onClickedIncreaseJobRankingButton(event, @Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Nach Hinten">
                                 <span class="fa fa-arrow-down fa-lg" aria-hidden="true"></span>
                             </button>
 
-                            <button onclick="onClickedDelJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
+                            <button onclick="onClickedDelJobButton(event, @Model.IdTour, @job.IdTourJob)" class="btn btn-default btn-sm" aria-label="Entfernen">
                                 <span class="fa fa-minus fa-lg" aria-hidden="true"></span>
                             </button>
                             <a asp-route-id="@job.IdTourJob" asp-controller="Job" asp-action="EditJob" class="btn btn-sm" aria-label="Bearbeiten">
@@ -211,8 +226,6 @@
                     <th class="col-1">&nbsp;</th>
                 </tr>
 
-
-
                 @foreach (Job2Tour job in jobs)
                 {
                     <tr onclick="showModal(@job.IdTourJob)">
@@ -227,34 +240,46 @@
                         <td>@job.Caption</td>
 
                         @{
-
                             if (job.Address != null)
                             {
                                 string[] words = @job.Address.Split(';');
-                                <td>
-                                    @words[0] <br />
-                                    @words[3] <br />
-                                    @words[1] @words[2]
-                                </td>
+                                                <td>
+                                                    @words[0] <br />
+                                                    @{ 
+                                                        if (@words[1] != "")
+                                                        {
+                                                    @words[1] <br />
+                                                        }
+                                                        if (@words[4] != "")
+                                                        {
+                                                    @words[4] <br />
+                                                        }
+                                                        if (@words[2] != "")
+                                                        {
+                                                   <text>@words[2]  @words[3]</text>
+                                                            }
+                                                    }
+                                                </td>
                             }
                             else
                             {
                                 <td>&nbsp;</td>
                             }
-
                         }
 
+                    <td class="text-right">
+                        <button onclick="onClickedAddJobButton(event, @Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
+                            <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
+                        </button>
+                        <button onclick="onClickedCloneJobButton( event, @job.IdTourJob )" class="btn btn-sm" aria-label="Duplizieren">
+                            <span class="fa fa-clone fa-lg" aria-hidden="true"></span>
+                        </button>
 
 
-
-                        <td class="text-right">
-                            <button onclick="onClickedAddJobButton(@Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
-                                <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
-                            </button>
-                            @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
-                                    <span class="fa fa-info fa-lg" aria-hidden="true"></span>
-                                </button>*@
-                    </tr>
+                        @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
+            <span class="fa fa-info fa-lg" aria-hidden="true"></span>
+        </button>*@
+</tr>
                 }
             </table>
         </div>
@@ -304,36 +329,90 @@
     <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-    <script>
 
-        $(document).ready(function () {
+    @if (Model != null)
+    {
+        <script>
+
+        $(document).ready(function() {
             $('#Team').SumoSelect({
-                outputAsCSV: true,
+                    outputAsCSV: true,
                 csvSepChar: ','
             });
-            $('#VehicleNr').SumoSelect();
-            $('#Driver').SumoSelect();
+            $('#VehicleNr').SumoSelect({
+                    outputAsCSV: true,
+                csvSepChar: ','
+            });
+            $('#Driver').SumoSelect({
+                    outputAsCSV: true,
+                csvSepChar: ','
+            });
             $('#Master').SumoSelect();
             $('#TourName').SumoSelect();
 
-            var team = @Html.Raw(Json.Serialize(Model.Team));
 
-            selectTeam(team);
+                    selectDriver(@Html.Raw(Json.Serialize(Model.Driver)));
+                    selectVehicle(@Html.Raw(Json.Serialize(Model.VehicleNr)));
+                    selectTeam(@Html.Raw(Json.Serialize(Model.Team)));
+
+                });
+
+            function selectTeam(team) {
+                if (team) {
+                var members = team.split(",");
+                var arrayLength = members.length;
+                    for (var i = 0; i < arrayLength; i++) {
+                        $('#Team')[0].sumo.selectItem(members[i]);
+                    }
+                }
+            }
+            function selectDriver(driver) {
+                if (driver) {
+                var members = driver.split(",");
+                var arrayLength = members.length;
+                    for (var i = 0; i < arrayLength; i++) {
+                        $('#Driver')[0].sumo.selectItem(members[i]);
+                    }
+                }
+            }
+            function selectVehicle(vehicle) {
+                if (vehicle) {
+                var members = vehicle.split(",");
+                var arrayLength = members.length;
+                    for (var i = 0; i < arrayLength; i++) {
+                        $('#VehicleNr')[0].sumo.selectItem(members[i]);
+                    }
+                }
+            }
+        </script>
+    }
+    else
+    {
+        <script>
+
+        $(document).ready(function() {
+            $('#Team').SumoSelect({
+                    outputAsCSV: true,
+                csvSepChar: ','
+            });
+            $('#VehicleNr').SumoSelect({
+                    outputAsCSV: true,
+                csvSepChar: ','
+            });
+            $('#Driver').SumoSelect({
+                    outputAsCSV: true,
+                csvSepChar: ','
+            });
+            $('#Master').SumoSelect();
+            $('#TourName').SumoSelect();
         });
 
-        function selectTeam(team) {
+        </script>
+    }
 
-            var members = team.split(",");
+<script>
 
-            var arrayLength = members.length;
-            for (var i = 0; i < arrayLength; i++) {
-                $('#Team')[0].sumo.selectItem(members[i]);
-            }
-        }
-
-
-
-        function showModal(id) {
+            function showModal(id) {
 
 
             $.ajax({
@@ -342,8 +421,8 @@
                 data: { id: id },
                 success: function (daten) {
 
-                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
-                    var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
+                        var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
+                        var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
                     comment = comment.replace(/_*/g, "");
 
                     $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
@@ -354,11 +433,11 @@
                     $('#modalJobDetail').modal('show')
 
                 }
-             });
+    });
         }
 
 
-        function onClickedAddJobButton(id, idTourJob) {
+function onClickedAddJobButton(e, id, idTourJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -366,14 +445,15 @@
                         url: "@Url.Action("AddJob2Tour")",
                         data: { id: id, idTourJob: idTourJob },
                         success: function (msg) {
-                               location.reload();
+                        location.reload();
                         },
                         error: function (msg) {
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
+                    e.stopPropagation();
         }
-        function onClickedDelJobButton(id, idJob) {
+        function onClickedDelJobButton(e, id, idJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -381,14 +461,15 @@
                         url: "@Url.Action("DelJobFromTour")",
                         data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
-                               location.reload();
+                        location.reload();
                         },
                         error: function (msg) {
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
-        }
-                function onClickedIncreaseJobRankingButton(id, idJob) {
+                    e.stopPropagation();
+                }
+                function onClickedIncreaseJobRankingButton(e, id, idJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -396,14 +477,15 @@
                         url: "@Url.Action("IncreaseJobRanking")",
                         data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
-                               location.reload();
+                        location.reload();
                         },
                         error: function (msg) {
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
-        }
-        function onClickedDecreaseJobRankingButton(id, idJob) {
+                    e.stopPropagation();
+                }
+        function onClickedDecreaseJobRankingButton(e, id, idJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -411,17 +493,50 @@
                         url: "@Url.Action("DecreaseJobRanking")",
                         data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
-                               location.reload();
+                        location.reload();
                         },
                         error: function (msg) {
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
+            e.stopPropagation();
         }
 
+    function onClickedCloneJobButton( e, id ) {
+
+            Swal.fire({
+                title: 'Möchtest du den Job wirklich duplizieren?',
+                icon: 'error',
+                showCloseButton: true,
+                focusConfirm: false,
+                confirmButtonText:
+                    'Ja, Clonen!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    alert(id);
+
+                    $.ajax({
+                        type: "GET",
+                        url: "@Url.Action("CloneJobById")",
+                        data: { id: id },
+                        success: function (msg) {
+                            Swal.fire('Der Job wurde Dubliziert !', '', 'success').then((result) => {
+                                location.reload();
+                            });
+                        },
+                        error: function (msg) {
+                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
+                        }
+                    });
+                }
+            })
+        e.stopPropagation();
+    }
 
 
 
-    </script>
 
-}
+</script>
+
+    }

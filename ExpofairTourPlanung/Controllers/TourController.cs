@@ -144,8 +144,6 @@ namespace ExpofairTourPlanung.Controllers
             return View();
         }
 
- 
-
         public IActionResult SaveTour(Tour tour)
         {
 
@@ -186,6 +184,7 @@ namespace ExpofairTourPlanung.Controllers
                 tourFromDb.VehicleNr = tour.VehicleNr;
                 tourFromDb.Driver = tour.Driver;
                 tourFromDb.Comment = tour.Comment;
+                tourFromDb.Footer = tour.Footer;
                 tourFromDb.Team = tour.Team;
                 tourFromDb.Master = tour.Master;
 
@@ -309,6 +308,27 @@ namespace ExpofairTourPlanung.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        public IActionResult CloneJobById(int id)
+        {
+            if ( id == 0)
+                return BadRequest();
+
+            var idTourJobParam = new SqlParameter()
+            {
+                ParameterName = "@IdTourJob",
+                SqlDbType = System.Data.SqlDbType.Int,
+                Direction = System.Data.ParameterDirection.Input,
+                Size = 10,
+                Value = id
+            };
+
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustCloneJob @IdTourJob ",  idTourJobParam);
+
+            return Ok();
+        }
+
 
         [HttpGet]
         public IActionResult GetJobDetail(int id)

@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="col-3">
-            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" />
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" onchange="this.form.submit()" />
         </div>
         <div class="col-2">
             <button class="btn btn-primary" type="submit">Anzeigen</button>
@@ -63,7 +63,7 @@
 
                             if (!String.IsNullOrEmpty(job.Time))
                             {
-                                <td nowrap>@jobDT<br />@job.Time<br />(@returnDT)</td>
+                                <td nowrap>@jobDT<br />@job.Time Uhr<br />(@returnDT)</td>
                             }
                             else
                             {
@@ -72,7 +72,7 @@
                         }
                         else
                         {
-                            <td nowrap>@jobDT<br />@job.Time</td>
+                            <td nowrap>@jobDT<br />@job.Time Uhr</td>
                         }
                     }
 
@@ -81,7 +81,7 @@
                     @{
                         if (job.IdJobState == 5)
                         {
-                            <td>@job.InOut<br />Zulieferung</td>
+                            <td>@job.InOut<br />Zumietung</td>
                         }
                         else
                         {
@@ -95,11 +95,23 @@
                         if (job.Address != null)
                         {
                             string[] words = @job.Address.Split(';');
-                            <td>
-                                @words[0] <br />
-                                @words[3] <br />
-                                @words[1] @words[2]
-                            </td>
+                                        <td>
+                                            @words[0] <br />
+                                            @{
+                                                if (@words[1] != "")
+                                                {
+                                                    @words[1] <br />
+                                                }
+                                                if (@words[4] != "")
+                                                {
+                                                    @words[4] <br />
+                                                }
+                                                if (@words[2] != "")
+                                                {
+                                                    <text>@words[2]  @words[3]</text>
+                                                }
+                                            }
+                                        </td>
                         }
                         else
                         {
@@ -184,6 +196,7 @@
             document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
             @*document.getElementById("dateTo").value = '@ViewData["dateTo"]';*@
 
+ 
         });
 
         function showModal(id) {
@@ -220,7 +233,6 @@
                 }
              });
         }
-
 
 
         @*function onClickedDeleteButton(id) {

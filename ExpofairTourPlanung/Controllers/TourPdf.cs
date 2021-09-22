@@ -11,6 +11,7 @@ using System.IO;
 using iText.Kernel.Events;
 using iText.Kernel.Geom;
 using iText.Kernel.Font;
+using iText.Kernel.Colors;
 using iText.IO.Font.Constants;
 using iText.Layout.Renderer;
 using iText.Layout.Layout;
@@ -19,7 +20,6 @@ using ExpofairTourPlanung.Data;
 using Microsoft.Extensions.Logging;
 using ExpofairTourPlanung.Models;
 using iText.Layout.Borders;
-using iText.Kernel.Colors;
 
 namespace ExpofairTourPlanung.Controllers
 {
@@ -28,7 +28,7 @@ namespace ExpofairTourPlanung.Controllers
 
         private readonly ILogger<TourPdf> _logger;
 
-        static private  EasyjobDbContext _context;
+        static private EasyjobDbContext _context;
 
         public TourPdf(EasyjobDbContext context, ILogger<TourPdf> logger)
         {
@@ -58,14 +58,29 @@ namespace ExpofairTourPlanung.Controllers
                 float topMargin = 20 + handler.GetTableHeight();
                 doc.SetMargins(topMargin, 20, 20, 20);
 
+
+                if (!string.IsNullOrEmpty(tourFromDb.Comment)) {
+
+                    Table mainTable1 = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth();
+
+                    Cell cell1 = getCell(1, 3, "").Add(formatContent(tourFromDb.Comment)).SetBorderBottom(Border.NO_BORDER);
+
+                    mainTable1.AddCell(cell1);
+
+                    cell1 = getCell(1,3,"").Add(formatContent("Team: " + getStuffNames(tourFromDb.Team))).SetBorderBottom(Border.NO_BORDER);
+
+                    mainTable1.AddCell(cell1);
+
+                    doc.Add(mainTable1);
+
+                }
+
                 Table mainTable = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth();
 
-                mainTable.AddHeaderCell(new Paragraph("Uhrzeit"));
-
-                int defaultFontSize = 10;
+                mainTable.AddHeaderCell(new Paragraph(new Text("Uhrzeit").SetBold()));
 
                 Cell cellHeader = new Cell(1, 2);
-                cellHeader.Add(new Paragraph("Arbeitsplan"));
+                cellHeader.Add(new Paragraph(new Text("Arbeitsplan").SetBold()));
                 mainTable.AddHeaderCell(cellHeader);
 
                 //Cell cellContent = new Cell().SetBorder(Border.NO_BORDER).SetBorderBottom(new SolidBorder(ColorConstants.BLACK, 1)).SetPaddingBottom(10);
@@ -75,117 +90,152 @@ namespace ExpofairTourPlanung.Controllers
                 Cell cellContent = new Cell().SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
                 Cell cellAdresse = new Cell().SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
 
-                cellTime.Add(new Paragraph("05:30"));
-                cellTime.SetFontSize(defaultFontSize);
-                cellContent.Add(new Paragraph("Arbeitsbeginn:" + tourFromDb.TourName));
-                cellContent.SetFontSize(defaultFontSize);
-                cellAdresse.Add(new Paragraph(""));
+                //cellTime.Add(new Paragraph(""));
+                //cellTime.SetFontSize(defaultFontSize);
+                //cellContent.Add(new Paragraph("Arbeitsbeginn:" + tourFromDb.TourName));
+                //cellContent.SetFontSize(defaultFontSize);
+                //cellAdresse.Add(new Paragraph(""));
 
-                mainTable.AddCell(cellTime);
-                mainTable.AddCell(cellContent);
-                mainTable.AddCell(cellAdresse);
+                //mainTable.AddCell(cellTime);
+                //mainTable.AddCell(cellContent);
+                //mainTable.AddCell(cellAdresse);
 
-                cellTime = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
-                cellContent = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
-                cellAdresse = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+                //cellTime = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+                //cellContent = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
+                //cellAdresse = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
 
-                cellTime.Add(new Paragraph(""));
-                cellContent.Add(new Paragraph("Team: " + getStuffNames(tourFromDb.Team)));
-                cellAdresse.Add(new Paragraph(""));
+                //cellTime.Add(new Paragraph(""));
+                //cellContent.Add(new Paragraph("Team: " + getStuffNames(tourFromDb.Team)));
+                //cellAdresse.Add(new Paragraph(""));
 
-                mainTable.AddCell(cellTime);
-                mainTable.AddCell(cellContent);
-                mainTable.AddCell(cellAdresse);
+                //mainTable.AddCell(cellTime);
+                //mainTable.AddCell(cellContent);
+                //mainTable.AddCell(cellAdresse);
 
-                if (tourFromDb.Comment != null)
-                {
-                    cellTime = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
-                    cellContent = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
-                    cellAdresse = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+                //if (!string.IsNullOrEmpty(tourFromDb.Comment))
+                //{
+                //    cellTime = getCell("TIME");
+                //    cellContent = getCell("CONTENT");
+                //    cellAdresse = getCell("ADRESSE");
 
-                    cellTime.Add(new Paragraph(""));
-                    cellContent.Add(new Paragraph(tourFromDb.Comment));
-                    cellAdresse.Add(new Paragraph(""));
+                //    cellTime.Add(new Paragraph(""));
 
-                    mainTable.AddCell(cellTime);
-                    mainTable.AddCell(cellContent);
-                    mainTable.AddCell(cellAdresse);
+                //    cellContent.Add(formatContent(tourFromDb.Comment));
+                //    cellAdresse.Add(new Paragraph(""));
 
-                }
+                //    mainTable.AddCell(cellTime);
+                //    mainTable.AddCell(cellContent);
+                //    mainTable.AddCell(cellAdresse);
+                //}
 
                 int cellColor = 0;
 
+                Color greyColor = new DeviceRgb(229, 229, 229);
+
                 foreach (var job in jobs)
                 {
-                    
-                    cellTime = new Cell().SetFontSize(defaultFontSize).SetPaddingBottom(5).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
-                    cellContent = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
-                    cellAdresse = new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
 
- 
+                    cellTime = getCell(1,1,"TIME");
+                    cellContent = getCell(1,1,"CONTENT");
+                    cellAdresse = getCell(1,1,"ADR");
+
                     if (cellColor == 1)
                     {
-                        cellTime.SetBackgroundColor(ColorConstants.LIGHT_GRAY);
-                        cellContent.SetBackgroundColor(ColorConstants.LIGHT_GRAY);
-                        cellAdresse.SetBackgroundColor(ColorConstants.LIGHT_GRAY);
-                         cellColor = 0;
+                        cellTime.SetBackgroundColor(greyColor);
+                        cellContent.SetBackgroundColor(greyColor);
+                        cellAdresse.SetBackgroundColor(greyColor);
+                        cellColor = 0;
                     }
                     else
                     {
                         cellColor++;
                     }
 
+                    if (!String.IsNullOrEmpty(job.HeadLine))
+                    {
+                        Cell cellTime1 = getCell(1,1,"TIME");
+                        Cell cellContent1 = getCell(1,1,"CONTENT");
+                        Cell cellAdresse1 = getCell(1,1,"ADR");
+
+                        cellTime1.Add(new Paragraph(""));
+                        cellAdresse1.Add(new Paragraph(""));
+                        cellContent1.Add(formatContent(job.HeadLine));
+
+                        mainTable.AddCell(cellTime1);
+                        mainTable.AddCell(cellContent1);
+                        mainTable.AddCell(cellAdresse1);
+                    }
+
                     string time = "";
-                    if( job.Time != null )
+
+                    if (!String.IsNullOrEmpty(job.Time))
                     {
                         time = time + job.Time + "\n";
                     }
                     time = time + job.InOut + "\n";
                     time = time + job.Number + "\n";
-                    if(job.JobDateReturn != null)
+                    if (job.JobDateReturn != null)
                     {
                         time = time + "(" + job.JobDateReturn?.ToString("dd.MM.yyyy") + ")\n";
                     }
 
-                    cellTime.Add(new Paragraph(time));
+                    cellTime.Add(formatContent(time));
 
                     string content = "";
 
-                    if (job.Stock != null) content = content + job.Stock;
+                    if (!String.IsNullOrEmpty(job.Stock)) content += job.Stock;
 
-                    if (job.Comment != null) content = content + job.Comment;
+                    if (!String.IsNullOrEmpty(job.Comment)) content += job.Comment;
 
 
-                    cellContent.Add(new Paragraph(content));
+                    cellContent.Add(formatContent(content));
 
                     string address = "";
 
-                    if (job.Address != null)
+                    if (!String.IsNullOrEmpty(job.Address))
                     {
                         string[] words = job.Address.Split(';');
-                        address = words[0] + "\n" + words[3] + "\n" + words[1] +" "+  words[2] ;
+
+                        if (!String.IsNullOrEmpty(words[0])) address += words[0];
+                        if (!String.IsNullOrEmpty(words[1])) address += "\n" + words[1];
+                        if (!String.IsNullOrEmpty(words[4])) address += "\n" + words[4];
+                        if (!String.IsNullOrEmpty(words[3])) address += "\n" + words[2] + " " + words[3];
                     }
 
-                    if( job.ReadyTime != null )
+                    if (!String.IsNullOrEmpty(job.ReadyTime))
                     {
-                        address = address + "\n fertig bis:" + job.ReadyTime;
+                        address = address + "\n fertig bis: " + job.ReadyTime + " Uhr";
 
                     }
 
-                    cellAdresse.Add(new Paragraph(address));
+                    cellAdresse.Add(formatContent(address));
 
                     mainTable.AddCell(cellTime);
                     mainTable.AddCell(cellContent);
                     mainTable.AddCell(cellAdresse);
-
- 
                 }
 
 
-                Cell cellTableEnd = new Cell(1, 3).SetBorderTop(Border.NO_BORDER).Add(new Paragraph(""));
+         
+
+                Cell cellTableEnd = new Cell(1, 3).SetBorderTop(Border.NO_BORDER).Add(formatContent(""));
                 mainTable.AddCell(cellTableEnd);
 
                 doc.Add(mainTable);
+
+
+                if (!string.IsNullOrEmpty(tourFromDb.Footer))
+                {
+
+                    Table mainTable1 = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth();
+
+                    Cell cell1 = getCell(1, 3,"").Add(formatContent(tourFromDb.Footer));
+
+                    mainTable1.AddCell(cell1);
+
+                    doc.Add(mainTable1);
+
+                }
 
                 doc.Flush();
                 doc.Close();
@@ -215,6 +265,69 @@ namespace ExpofairTourPlanung.Controllers
             }
             return StuffNames;
         }
+
+        Paragraph formatContent(string content)
+        {
+
+            Paragraph para = new();
+
+            string bold = "##"; // Bold
+            string red = "**";  // Red
+
+            bool containsBold = content.Contains(bold);
+            bool containsRed = content.Contains(red);
+
+            if (!containsBold && !containsRed)
+            {
+                para.Add(content);
+                return para;
+            }
+
+            string[] boldSeparatingStrings = { "##" };
+            string[] words = content.Split(boldSeparatingStrings, System.StringSplitOptions.RemoveEmptyEntries);
+
+            bool isBold = content.StartsWith("##");
+
+            foreach (var word in words)
+            {
+                if (isBold)
+                {
+                    // word is bold
+                    para.Add(new Text(word).SetBold());
+                    isBold = false;
+                } else
+                {
+                    para.Add(word);
+                    isBold = true;
+                }
+            }
+            return para;
+        }
+
+        Cell getCell( int rowspan, int colspan, string type ) {
+
+            int defaultFontSize = 10;
+
+
+            if (type == "TIME")
+            {
+                return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+            }
+            else if (type == "CONTENT")
+            {
+                return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
+            } 
+            else if (type == "ADR")
+            {
+                return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+            } else
+            {
+                return new Cell(rowspan, colspan).SetFontSize(defaultFontSize);
+            }
+         }
+
+
+
 
 
         private class TableHeaderEventHandler : IEventHandler
