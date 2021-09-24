@@ -13,9 +13,9 @@ namespace ExpofairTourPlanung.Models
     {
         [Key]
         public int IdTour { get; set; }
-        [Required]
         [StringLength(200)]
         public string TourName { get; set; }
+        public int TourNr { get; set; }
         public string Comment { get; set; }
         public string Footer { get; set; }
         [Column(TypeName = "date")]

@@ -60,28 +60,9 @@ namespace ExpofairTourPlanung.Controllers
             return new SelectList(employeeSelectItems, "EmployeeNr", "EmployeeName");
         }
 
-        private SelectList _getTourNames()
-        {
-
-            int i = 1;
-
-            var tourNameSelectItems = new List<TourNameSelectItem>();
-
-            while (i < 9) 
-            {
-                String tour = "Tour " + i.ToString();
-                tourNameSelectItems.Add(new TourNameSelectItem { TourName = tour, TourDesc = tour });
-                i++;
-            }
-            return new SelectList(tourNameSelectItems, "TourName", "TourDesc");
-        }
-
-
-
+ 
         public IActionResult CreateEditTour( int id)
         {
-
-            ViewBag.Tournames = _getTourNames();
 
             if ( id != 0)
             {
@@ -162,6 +143,25 @@ namespace ExpofairTourPlanung.Controllers
                 //tour.TourDate = DateTime.Now;
                 //tour.TourName = "Tour " + DateTime.Now.ToString("dd.MM.yyyy");
                 //tour.CreateTime = DateTime.Now;
+                tour.IsSbtour = false;
+                tour.TourNr = 0;
+
+                DateTime tourdate = tour.TourDate;
+
+ 
+                var maxTourNr = _context.Tours.Where(x => x.TourDate == tourdate && x.IsSbtour != true).DefaultIfEmpty().Max(i => (int?)i.TourNr);
+
+
+                if(maxTourNr == null)
+                {
+                    maxTourNr = 0;
+                }
+
+                tour.TourNr = (int)maxTourNr + 1;
+
+                tour.TourName = "Tour " + tour.TourNr;
+
+
 
                 _context.Tours.Add(tour);
             }
@@ -180,6 +180,8 @@ namespace ExpofairTourPlanung.Controllers
                 }
 
                 tourFromDb.TourName = tour.TourName;
+                //tourFromDb.TourNr = tour.TourNr;
+                //tourFromDb.IsSbtour = tour.IsSbtour;
                 tourFromDb.TourDate = tour.TourDate;
                 tourFromDb.VehicleNr = tour.VehicleNr;
                 tourFromDb.Driver = tour.Driver;

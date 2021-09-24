@@ -119,7 +119,7 @@ BEGIN
 	
 	DECLARE @IdTour int
 	
-	insert into [expofair].[Tour] (TourDate, TourName, IsSBTour) values ( convert(date, @SbDate),'Tour SB', 1 )
+	insert into [expofair].[Tour] (TourDate, TourName, IsSBTour, TourNr) values ( convert(date, @SbDate),'Tour SB', 1, 1 )
 
 	SELECT @IdTour = IDENT_CURRENT ('[expofair].[Tour]')
 

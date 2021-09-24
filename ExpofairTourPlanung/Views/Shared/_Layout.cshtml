@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Expofair</title>
 
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/sumoselect.min.css" />
@@ -13,72 +12,96 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.css" />
     <link rel="stylesheet" href="~/lib/Font-Awesome/css/regular.min.css">
     <link rel="stylesheet" href="~/lib/Font-Awesome/css/solid.min.css">
-
     <style>
         body {
             min-height: 75rem;
             padding-top: 6.5rem;
         }
-    
+        .navbar-light .nav-item.active {
+            color: white;
+            background-color: red;
+        }
     </style >
     </head >
-    <body >
-        <header >
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-top bg-white border-bottom box-shadow mb-3" >
-        <div class="container" >
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-top bg-white border-bottom box-shadow mb-3">
+            <div class="container">
 
-        <a href="#" class="navbar-brand" >
-        <img src="~/images/Expofair_Logo_transparent_RGB.png" height="50" alt="Expofair-Tour-Planung" >
-        </a >
+                <a href="#" class="navbar-brand">
+                    <img src="~/images/Expofair_Logo_transparent_RGB.png" height="50" alt="Expofair-Tour-Planung">
+                </a>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-        aria-expanded="false" aria-label="Toggle navigation" >
-        <span class="navbar-toggler-icon" > </span >
-        </button >
-        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" >
-        <partial name="_LoginPartial" / >
-        <ul class="navbar-nav flex-grow-1" >
-        <li id="Jobs" class="nav-item" >
-        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" > Jobübersicht</a >
-        </li >
-        <li class="nav-item" id="Tour">
-        <a class="nav-link text-dark" asp-area="" asp-controller="TourList" asp-action="Index" > Tourübersicht</a >
-        </li >
-        <li class="nav-item" id="SB">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Sb" asp-action="Index" > Selbstabholer</a >
-        </li >
-        <li class="nav-item dropdown" id="Admin" >
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-        Administration
-        </a >
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown" >
-        <a class="dropdown-item" asp-area="" asp-controller="Stuff" asp-action="Index" > Mitarbeiter</a >
-        <a class="dropdown-item" asp-area="" asp-controller="Vehicle" asp-action="Index" > Fahrzeuge</a >
-        </div >
-        </li >
-        </ul >
-        </div >
-        </div >
-        </nav >
-        </header >
-        <div class="container" >
-        <main role="main" class="pb-3" >
-        @RenderBody()
-        </main >
-        </div >
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"> </span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li id="Jobs" class="nav-item active">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"> Jobübersicht</a>
+                        </li>
+                        <li class="nav-item" id="Tour">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TourList" asp-action="Index"> Tourübersicht</a>
+                        </li>
+                        <li class="nav-item" id="SB">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sb" asp-action="Index"> Selbstabholer</a>
+                        </li>
+                        <li class="nav-item dropdown" id="Admin">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Administration
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" asp-area="" asp-controller="Stuff" asp-action="Index"> Mitarbeiter</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Vehicle" asp-action="Index"> Fahrzeuge</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-        <footer class="border-top footer text-muted" >
-        <div class="container" >
-        &copy; 2021 - Nexos Computer- <a asp-area="" asp-controller="Home" asp-action="Privacy" > Privacy</a >
-        </div >
-        </footer >
-        <script src="~/lib/jquery/dist/jquery.min.js" > </script >
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - Nexos Computer- <a asp-area="" asp-controller="Home" asp-action="Privacy"> Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true" > </script >
-        <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js" > </script >
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js" > </script >
-        <script src="~/js/jquery.sumoselect.min.js" > </script >
-        @RenderSection("Scripts", required: false)
-        </body >
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/jquery.sumoselect.min.js"></script>
+    
+    <script type="text/javascript">
+        $(function () {
+            var page = sessionStorage.getItem('page');
+            var navbar = document.querySelectorAll('li');
+            if (page == null) {
+                $(navbar[0]).addClass('active');
+            } else {
+                navbar.forEach((item, index) => {
+                    if (item.children[0].href == page) {
+                        $(item).addClass('active').siblings().removeClass('active');
+                    }
+                });
+            }
+        })
+
+        $(document).on('click', 'ul li', function () {
+            var x = this.children[0].href;
+            sessionStorage.setItem('page', x);
+        });
+
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
         </html >

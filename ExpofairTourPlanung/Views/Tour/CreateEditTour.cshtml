@@ -20,23 +20,35 @@
 
             @Html.Hidden("IdTour", (Model != null) ? Model.IdTour : 0)
 
+
             @*<input hidden asp-for="IdTour" />*@
 
-            <div class="row form-group">
-                <div class="col-6">
-                    <label for="Tour">Tourdatum</label>
+            <input hidden asp-for="IsSbtour" value="false" />
 
-                    <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
-
-                </div>
-                <div class="col ">
-                    <label for="Tour">Tourbezeichnung</label>
-                    @Html.DropDownListFor(model => Model.TourName, (SelectList)ViewBag.TourNames, new { @class = "form-control", @placeholder = "Tourname" })
-                </div>
-            </div>
-
-            @if (Model != null)
+            @if (Model == null)
             {
+                <div class="row form-group">
+                    <div class="col-6">
+                        <label for="Tour">Tourdatum</label>
+
+                        <input class="form-control" asp-for="TourDate" type="date" placeholder="Wann soll die Tour stattfinden" />
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row form-group">
+                    <div class="col-6">
+                        <label for="Tour">Datum:</label>
+                        <input class="form-control" asp-for="TourDate" type="date" readonly />
+                    </div>
+                    <div class="col">
+                        <label for="Tour">Tourname:</label>
+                        <input class="form-control" asp-for="TourName" type="text" placeholder="Bitte legen Sie einen Tournamen fest" />
+
+                    </div>
+                </div>
 
                 <div class="row form-group">
                     <div class="col-6">

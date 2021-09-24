@@ -45,7 +45,7 @@ drop Table [expofair].[Tour];
 GO
 create Table [expofair].[Tour] (
 IdTour INT NOT NULL IDENTITY(1,1),
-TourName NVARCHAR(200) NOT NULL,
+TourName NVARCHAR(200) NULL,
 Comment NVARCHAR(4000) NULL,
 Footer NVARCHAR(4000) NULL,
 TourDate DATE NOT NULL DEFAULT (GETDATE()),
@@ -62,6 +62,7 @@ Sackkarre NVARCHAR(100) NULL,
 Sonstiges NVARCHAR(200) NULL,
 CreatedBy VARCHAR(100) NULL,
 IsSBTour BIT NULL,
+TourNr INT NULL,
 CreateTime DATETIME NOT NULL DEFAULT (GETDATE()),
 PRIMARY KEY(IdTour)
 );
