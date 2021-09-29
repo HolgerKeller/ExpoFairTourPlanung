@@ -1,6 +1,8 @@
 Use easyjob
 GO
 --create schema expofair
+--delete from [expofair].[job2Tour] where 1=1
+--delete from [expofair].[Tour] where 1=1
 GO
 drop TABLE [expofair].[job2Tour];
 GO
@@ -37,6 +39,7 @@ Contact NVARCHAR(100) NULL,
 ContactPhone NVARCHAR(100) NULL,
 ReadyTime NVARCHAR(200) NULL,
 JobType NVARCHAR(50) NULL,
+DeliveryType NVARCHAR(50) NULL,
 PRIMARY KEY( IdTourJob),
 CONSTRAINT AK_JOB_IN_OUT UNIQUE(IdJob, In_Out, SplitCounter)  WITH (IGNORE_DUP_KEY = ON)
 );

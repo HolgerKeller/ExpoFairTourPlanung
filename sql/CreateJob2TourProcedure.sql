@@ -108,6 +108,64 @@ BEGIN
    Delete from [expofair].[Tour] where IdTour = @IdTour
 END
 GO
+--#######################################
+
+CREATE OR ALTER PROCEDURE [expofair].[GetExpoEvents] (
+	@EventDate VARCHAR(20)
+	)
+AS
+BEGIN
+ select In_Out,JobType, Address, count(Address) Count from [expofair].[job2Tour] where cast(JobDate as Date) = convert(date, @EventDate) and ( IdTour is Null or IdTour <> 0 ) and JobType <> '.Bessemerstraße' group by In_Out,Jobtype, Address order by In_Out,Jobtype, Address
+END
+GO
+
+--#######################################
+
+CREATE OR ALTER PROCEDURE [expofair].[CreateTourFromEvents] (
+	@EventDate VARCHAR(20),
+	@EventString VARCHAR(4000)
+	)
+AS
+BEGIN
+
+    DECLARE @TourNr int
+
+    select  @TourNr = max( TourNr ) from [expofair].[Tour] where TourDate = @EventDate
+
+    set @TourNr = ISNULL(@TourNr,0) + 1
+
+	DECLARE @IdTour int
+	
+    insert into [expofair].[Tour] (TourDate, TourName, IsSBTour, TourNr) values ( convert(date, @EventDate), 'Tour ' + CAST(@TourNr as varchar(10)) , 0, @TourNr )
+
+	SELECT @IdTour = IDENT_CURRENT ('[expofair].[Tour]')
+
+
+    DECLARE @Ranking INT
+
+	DECLARE @IdTourJob INT
+    
+	SET @Ranking = 0
+	
+	DECLARE Cur1 CURSOR READ_ONLY FOR SELECT t.IdTourJob from [expofair].[job2Tour] t where cast(t.JobDate as Date) = convert(date, @EventDate) and t.Address IN (SELECT Item FROM [expofair].SimpleSplitFunction( @EventString, ',')) order by t.Address, t.JobStartTime
+
+	Open Cur1 
+    
+	FETCH NEXT FROM Cur1 into @IdTourJob
+
+	   WHILE  @@fetch_status = 0
+       BEGIN
+
+	   set @Ranking = @Ranking + 1
+
+	   update [expofair].[job2Tour] set Ranking = @Ranking,IdTour = @IdTour, TourName = 'Tour ' + CAST(@TourNr as varchar(10)) where IdTourJob = @IdTourJob
+
+	   FETCH NEXT FROM Cur1 into @IdTourJob
+	   END
+
+     close Cur1
+END
+GO
 
 --########################################
 
@@ -146,6 +204,7 @@ BEGIN
 	   FETCH NEXT FROM Cur1 into @IdTourJob
 	   END
      
+	 Close Cur1
 END
 GO
 CREATE OR ALTER PROCEDURE [expofair].[CustCloneJob] (
@@ -213,3 +272,24 @@ SELECT
 		[expofair].[job2Tour] where IdTourJob = @IdTourJob
 END
 GO
+
+CREATE OR ALTER FUNCTION [expofair].SimpleSplitFunction
+(
+  @List      nvarchar(max),
+  @Delimiter nchar(1)
+)
+RETURNS @t table (Item nvarchar(max))
+AS
+BEGIN
+  SET @List += @Delimiter;
+  ;WITH a(f,t) AS  
+  (
+    SELECT CAST(1 AS bigint), CHARINDEX(@Delimiter, @List)
+    UNION ALL
+    SELECT t + 1, CHARINDEX(@Delimiter, @List, t + 1) 
+    FROM a WHERE CHARINDEX(@Delimiter, @List, t + 1) > 0
+  )  
+  INSERT @t SELECT SUBSTRING(@List, f, t - f) FROM a OPTION (MAXRECURSION 0);
+  RETURN;  
+END
+GO			

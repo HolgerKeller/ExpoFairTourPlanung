@@ -36,7 +36,8 @@ JobStartTime,
 Time,
 ReadyTime,
 SplitCounter,
-JobType
+JobType,
+DeliveryType
 )
 SELECT 
        t1.IdJob,
@@ -50,7 +51,7 @@ SELECT
 	   t3.Caption Service,
        t4.Caption Status,
 	   	   ISNULL(t2.Company,'') +  ';' + ISNULL(t2.Surname,'')  + ';' +  ISNULL(t2.Zip,'') + ';' + ISNULL(t2.City,'') +  ';' + ISNULL(t2.Street,'') Adresse,
-	   'Lieferung',
+	   'OUT',
 	   0,
 	   t1.DayTimeIn,
 	   t5.DeliveryTimeStart,
@@ -63,7 +64,8 @@ SELECT
 	   convert(varchar(5), t5.DeliveryTimeStart,108) + '-' + convert(varchar(5), t5.DeliveryTimeEnd,108),
 	   convert(varchar(5), t5.SetupEnd,108),
 	   1,
-	   (select x2.Caption FROM [easyjob].[dbo].[Project] x1, [easyjob].[dbo].[ProjectType] x2 where t1.IdProject = x1.IdProject and x2.IdProjectType = x1.IdProjectType)
+	   (select x2.Caption FROM [easyjob].[dbo].[Project] x1, [easyjob].[dbo].[ProjectType] x2 where t1.IdProject = x1.IdProject and x2.IdProjectType = x1.IdProjectType),
+	   'Lieferung'
  	FROM 
 		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4, [easyjob].[dbo].[CusProjectInfo] t5
  where  t1.IdJobState in (1,5) and cast(t1.DayTimeOut as Date) >= convert(date, @DateStart) and cast(t1.DayTimeOut as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState and t5.IdJob = t1.IdJob
@@ -92,7 +94,8 @@ JobStartTime,
 Time,
 ReadyTime,
 SplitCounter,
-JobType
+JobType,
+DeliveryType
 )
 SELECT 
        t1.IdJob,
@@ -105,8 +108,8 @@ SELECT
        t1.DayTimeIn,
 	   t3.Caption Service,
        t4.Caption Status,
-	   	   ISNULL(t2.Company,'') +  ';' + ISNULL(t2.Surname,'')  + ';' +  ISNULL(t2.Zip,'') + ';' + ISNULL(t2.City,'') +  ';' + ISNULL(t2.Street,'') Adresse,
-	   'Abholung',
+	   ISNULL(t2.Company,'') +  ';' + ISNULL(t2.Surname,'')  + ';' +  ISNULL(t2.Zip,'') + ';' + ISNULL(t2.City,'') +  ';' + ISNULL(t2.Street,'') Adresse,
+	   'IN',
 	   0,
 	   t5.DeliveryTimeStart,
        t5.DeliveryTimeEnd,
@@ -118,7 +121,8 @@ SELECT
 	   convert(varchar(5), t5.PickupTimeStart,108) + '-' + convert(varchar(5), t5.PickupTimeEnd,108),
 	   convert(varchar(5), t5.BreakdownEnd,108),
 	   1,
-	   (select x2.Caption FROM [easyjob].[dbo].[Project] x1, [easyjob].[dbo].[ProjectType] x2 where t1.IdProject = x1.IdProject and x2.IdProjectType = x1.IdProjectType)
+	   (select x2.Caption FROM [easyjob].[dbo].[Project] x1, [easyjob].[dbo].[ProjectType] x2 where t1.IdProject = x1.IdProject and x2.IdProjectType = x1.IdProjectType),
+	   'Abholung'
 	FROM 
 		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4 , [easyjob].[dbo].[CusProjectInfo] t5
  where  t1.IdJobState in  (1,5) and cast(t1.DayTimeIn as Date) >= convert(date, @DateStart) and cast(t1.DayTimeIn as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState  and t5.IdJob = t1.IdJob
@@ -132,6 +136,13 @@ SELECT
 	   update  [expofair].[job2Tour] set ReadyTime='' where ReadyTime='00:00'
 
 	   update  [expofair].[job2Tour] set Status='Zulieferung Bestätigt' where IdJobState=5
+
+
+	   update  [expofair].[job2Tour] set DeliveryType='Rückgabe' where DeliveryType='Abholung' and Service = 'Selbstabholer'
+
+	   update  [expofair].[job2Tour] set DeliveryType='Ausgabe' where DeliveryType='Lieferung' and Service = 'Selbstabholer'
+
+
 
 
  -- The Stock of the Job is concateneded into a string and add to the job
