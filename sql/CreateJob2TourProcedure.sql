@@ -121,6 +121,17 @@ GO
 
 --#######################################
 
+CREATE OR ALTER PROCEDURE [expofair].[CreatePacklistByTour] (
+	@IdTour INT
+	)
+AS
+BEGIN
+ select t1.IdStockType StockType, sum(t1.factor) Count, t1.Caption Caption, t1.Weight Weight, sum(t1.Factor) * t1.Weight SumWeight from [easyjob].[expofair].[stock2job] t1 where t1.IdTourJob IN (select IdTourJob from [expofair].[job2Tour] where IdTour=@IdTour) Group By t1.IdStockType, t1.Caption, t1.Weight
+END
+GO
+
+--#######################################
+
 CREATE OR ALTER PROCEDURE [expofair].[CreateTourFromEvents] (
 	@EventDate VARCHAR(20),
 	@EventString VARCHAR(4000)

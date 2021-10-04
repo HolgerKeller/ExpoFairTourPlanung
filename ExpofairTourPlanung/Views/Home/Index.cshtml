@@ -10,7 +10,7 @@
 
 
 
-<form asp-controller="Home" asp-action="Index" enctype="multipart/form-data">
+<form asp-controller="Home" id="Jobs" asp-action="Index" enctype="multipart/form-data">
     <div class="row form-group">
         <div class="col-2">
             <div class="col-form-label">
@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="col-3">
-            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" onchange="this.form.submit()" />
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY"  />
         </div>
         <div class="col-2">
             <button class="btn btn-primary" type="submit">Anzeigen</button>
@@ -26,109 +26,119 @@
     </div>
 </form>
 
-
-
 <hr />
-<table id="jobTable" class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>Datum</th>
-            <th>An/Ab</th>
-            <th>Job<br />Fertig bis</th>
-            <th>Beschreibung</th>
-            <th>Adresse</th>
-            <th>Service</th>
-            <th>Tour</th>
 
-        </tr>
-    </thead>
+@if (Model != null)
+{ 
 
-    <tbody>
+    <table id="jobTable" class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Datum</th>
+                <th>An/Ab</th>
+                <th>Job<br />Fertig bis</th>
+                <th>Beschreibung</th>
+                <th>Adresse</th>
+                <th>Service</th>
+                <th>Tour</th>
 
-        @{
-            foreach (Job2Tour job in Model)
-            {
-                <tr onclick="showModal(@job.IdTourJob)">
+            </tr>
+        </thead>
 
+        <tbody>
 
-                    @{
-                        string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
-
-
-                        if (job.InOut == "Lieferung")
-                        {
-                            string returnDT = @job.JobDateReturn.ToString();
-                            returnDT = Regex.Replace(returnDT, "00:00:00$", "");
+            @{
+                foreach (Job2Tour job in Model)
+                {
+                        <tr onclick="showModal(@job.IdTourJob)">
 
 
-                            if (!String.IsNullOrEmpty(job.Time))
-                            {
-                                <td nowrap>@jobDT<br />@job.Time Uhr<br />(@returnDT)</td>
+                            @{
+                                string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
+
+
+                                if (job.DeliveryType == "Lieferung")
+                                {
+                                    string returnDT = @job.JobDateReturn.ToString();
+                                    returnDT = Regex.Replace(returnDT, "00:00:00$", "");
+
+
+                                    if (!String.IsNullOrEmpty(job.Time))
+                                    {
+                                        <td nowrap>@jobDT<br />@job.Time Uhr<br />(@returnDT)</td>
+                                    }
+                                    else
+                                    {
+                                        <td nowrap>@jobDT<br />(@returnDT)</td>
+                                    }
+                                }
+                                else
+                                {
+                                    if (!String.IsNullOrEmpty(job.Time))
+                                    {
+                                        <td nowrap>@jobDT<br />@job.Time Uhr</td>
+                                    }
+                                    else
+                                    {
+                                        <td nowrap>@jobDT</td>
+                                    }
+                                }
                             }
-                            else
-                            {
-                                <td nowrap>@jobDT<br />(@returnDT)</td>
+
+
+
+                            @{
+                                if (job.IdJobState == 5)
+                                {
+                                    <td>@job.DeliveryType<br />Zumietung</td>
+                                }
+                                else
+                                {
+                                    <td>@job.DeliveryType</td>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <td nowrap>@jobDT<br />@job.Time Uhr</td>
-                        }
-                    }
+                            <td nowrap>@job.Number<br />@job.ReadyTime</td>
+                            <td>@job.Caption</td>
 
-
-
-                    @{
-                        if (job.IdJobState == 5)
-                        {
-                            <td>@job.InOut<br />Zumietung</td>
-                        }
-                        else
-                        {
-                            <td>@job.InOut</td>
-                        }
-                    }
-                    <td nowrap>@job.Number<br />@job.ReadyTime</td>
-                    <td>@job.Caption</td>
-
-                    @{
-                        if (job.Address != null)
-                        {
-                            string[] words = @job.Address.Split(';');
-                                        <td>
-                                            @words[0] <br />
-                                            @{
-                                                if (@words[1] != "")
-                                                {
-                                                    @words[1] <br />
-                                                }
-                                                if (@words[4] != "")
-                                                {
-                                                    @words[4] <br />
-                                                }
-                                                if (@words[2] != "")
-                                                {
-                                                    <text>@words[2]  @words[3]</text>
-                                                }
+                            @{
+                                if (job.Address != null)
+                                {
+                                    string[] words = @job.Address.Split(';');
+                                    <td>
+                                        @words[0] <br />
+                                        @{
+                                            if (@words[1] != "")
+                                            {
+                                                @words[1] <br />
                                             }
-                                        </td>
-                        }
-                        else
-                        {
-                            <td><br /></td>
-                        }
+                                            if (@words[4] != "")
+                                            {
+                                                @words[4] <br />
+                                            }
+                                            if (@words[2] != "")
+                                            {
+                                                <text>@words[2]  @words[3]</text>
+                                            }
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td><br /></td>
+                                }
 
-                    }
+                            }
 
-                    <td>@job.Service</td>
-                    <td>@job.TourName</td>
+                            <td>@job.Service</td>
+                            <td>@job.TourName</td>
 
-                </tr>
+                        </tr>
+                }
             }
-        }
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
+                                    }
 
 <div class="modal fade" id="modalJobDetail" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -156,17 +166,13 @@
                 </div>
 
                 <hr class="col-xs-12">
-                <h6>Lieferzeit:</h6>
-                <div id="modalDeliveryStart">
-                </div>
-                <div id="modalDeliveryEnd">
+                <h6>Zeiten:</h6>
+                <div id="modalDateTime">
                 </div>
 
                 <hr class="col-xs-12">
-                <h6>Abholzeit:</h6>
-                <div id="modalPickupStart">
-                </div>
-                <div id="modalPickupEnd">
+                <h6>Gewicht in kg:</h6>
+                <div id="modalWeight">
                 </div>
 
                 <hr class="col-xs-12">
@@ -193,10 +199,9 @@
                     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
                 }
             });
-            document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
-            @*document.getElementById("dateTo").value = '@ViewData["dateTo"]';*@
 
- 
+                document.getElementById('dateFrom').value = '@ViewData["dateFrom"]';
+
         });
 
         function showModal(id) {
@@ -211,22 +216,30 @@
                     var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
                     comment = comment.replace(/_*/g, "");
 
-                    var delStartDate = new Date(daten.deliveryTimeStart);
+                    var jobDate = new Date(daten.jobDate).toLocaleDateString('de-DE');
+                    var time = daten.time;
+                    var readyTime = daten.readyTime;
 
+                    var dateTime = "Jobdatum: " + jobDate;
 
-                    $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
+                    if (daten.jobDateReturn ) {
+                        var jobDateReturn = new Date(daten.jobDateReturn).toLocaleDateString('de-DE');
+                        dateTime = dateTime + "<br />" + "Rückgabe: " + jobDateReturn;
+                    }
+                    if (time != "") {
+                        dateTime = dateTime + "<br />" + "Zeit: " + time + " Uhr";
+                    }
+                    if (readyTime != "") {
+                        dateTime = dateTime + "<br />" + "Fertig bis: " + readyTime + " Uhr";
+                    }
+
+                    $('#modalTitle').text(daten.number + " " + daten.caption + " (" + daten.deliveryType + ")");
                     $('#modalAddress').text(daten.address);
                     $('#modalComment').text(comment);
                     $('#modalStock').html(stock);
+                    $('#modalWeight').html(daten.weight);
 
-                    $('#modalContact').text(daten.contact);
-                    $('#modalContactPhone').text(daten.contactPhone);
-
-                    $('#modalDeliveryStart').text(daten.deliveryTimeStart);
-                    $('#modalDeliveryEnd').text(daten.deliveryTimeEnd);
-
-                    $('#modalPickupStart').text(daten.pickupTimeStart);
-                    $('#modalPickupEnd').text(daten.pickupTimeEnd);
+                    $('#modalDateTime').html(dateTime);
 
                     $('#modalJobDetail').modal('show')
 

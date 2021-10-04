@@ -133,7 +133,7 @@ SELECT
        update  [expofair].[job2Tour] set Time = replace( Time, '-00:00','') where Time like '%00:00'  
 
 
-	   update  [expofair].[job2Tour] set ReadyTime='' where ReadyTime='00:00'
+	   update  [expofair].[job2Tour] set ReadyTime='' where ReadyTime='00:00' or ReadyTime='00:01'
 
 	   update  [expofair].[job2Tour] set Status='Zulieferung Bestätigt' where IdJobState=5
 
@@ -147,7 +147,7 @@ SELECT
 
  -- The Stock of the Job is concateneded into a string and add to the job
 
--- SELECT factor, CASE WHEN caption IS NULL THEN (SELECT caption FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) ELSE caption END AS Artikelbeschreibung, 
+-- SELECT idstocktype, factor, CASE WHEN caption IS NULL THEN (SELECT caption FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) ELSE caption END AS Artikelbeschreibung, 
 --                                       (SELECT weight FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) AS Gewicht 
 --                                       FROM stocktype2job 
 --                                       WHERE 
@@ -194,14 +194,36 @@ SELECT
 			Close cur2
 			DEALLOCATE cur2 
 
+
+
+
 			update [expofair].[job2Tour] set Stock = @STOCK where IdJob = @ID
 
 			update [easyjob].[expofair].[job2Tour] set Comment = (select substring(Comment,1,PATINDEX('%[_][_]%', Comment)-1) from [easyjob].[expofair].[job2Tour] where IdTourJob=@TOURJOB ) where IdTourJob=@TOURJOB and Comment like '%[_][_]%'
 			update [easyjob].[expofair].[job2Tour] set Comment = (select substring(Comment,1,PATINDEX('%Storno%', Comment)-1) from [easyjob].[expofair].[job2Tour] where IdTourJob=@TOURJOB ) where IdTourJob=@TOURJOB and Comment like '%Storno%'
 			update [easyjob].[expofair].[job2Tour] set Comment = (select substring(Comment,1,PATINDEX('%Cancelation%', Comment)-1) from [easyjob].[expofair].[job2Tour] where IdTourJob=@TOURJOB ) where IdTourJob=@TOURJOB and Comment like '%Cancelation%'
 
+-----------------------------------------------------------------------------------------------------------
+-- insert into Stock2Job
+
+insert into [expofair].[stock2job] (
+IdTourJob, 
+IdStockType,
+Factor, 
+Caption,
+Weight
+) 
+SELECT @TOURJOB, idstocktype, factor, CASE WHEN caption IS NULL THEN (SELECT caption FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) ELSE caption END AS Artikelbeschreibung, 
+                                       (SELECT weight FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) AS Weight 
+                                       FROM stocktype2job 
+                                       WHERE 
+                                       idjob = @ID AND idstocktype2jobtype <> 4 AND idstocktype NOT IN (3530,4523) 
+                                       AND (idstocktype NOT in (SELECT idstocktype FROM stocktype WHERE customnumber LIKE 'Text%') OR idstocktype IS NULL) ORDER BY sortorder
 
 
+									   update [expofair].[job2Tour]  set Weight = (select sum(Factor * Weight) from [expofair].[stock2job] where IdTourJob = @TOURJOB ) where IdTourJob =  @TOURJOB
+
+-----------------------------------------------------------------------------------------------------------
 	        FETCH NEXT FROM Cur1 into @TOURJOB, @ID
      END
 

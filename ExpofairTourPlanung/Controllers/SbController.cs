@@ -9,24 +9,43 @@ using ExpofairTourPlanung.Data;
 using ExpofairTourPlanung.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http;
 
 namespace ExpofairTourPlanung.Controllers
 {
     public class SbController : Controller
     {
         private readonly EasyjobDbContext _context;
-        private readonly ILogger<TourListController> _logger;
+        private readonly ILogger<SbController> _logger;
 
-        public SbController(EasyjobDbContext context, ILogger<TourListController> logger)
+        public SbController(EasyjobDbContext context, ILogger<SbController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string dateFrom)
         {
 
-            var allTours = _context.Tours.Where(x => x.IsSbtour == true).OrderByDescending(x => x.TourDate).ToList();
+            if (dateFrom == null)
+            {
+
+                dateFrom = this.HttpContext.Session.GetString("dateFrom");
+
+                if (dateFrom == null)
+                {
+                    dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+                }
+            }
+
+            ViewData["dateFrom"] = dateFrom;
+            this.HttpContext.Session.SetString("dateFrom", dateFrom);
+
+            _logger.LogInformation("DateFrom:" + dateFrom);
+
+            DateTime dateFromDT = DateTime.Parse(dateFrom);
+
+            var allTours = _context.Tours.Where(x => x.IsSbtour == true && x.TourDate >= dateFromDT).OrderByDescending(x => x.TourDate).ToList();
 
             return View(allTours);
         }
@@ -61,6 +80,8 @@ namespace ExpofairTourPlanung.Controllers
 
 
             DateTime tourdate = tour.TourDate;
+
+            ViewData["dateFrom"] = tourdate;
 
             var dateFromParam = new SqlParameter()
             {

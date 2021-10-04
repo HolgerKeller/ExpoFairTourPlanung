@@ -3,6 +3,8 @@ GO
 --create schema expofair
 --delete from [expofair].[job2Tour] where 1=1
 --delete from [expofair].[Tour] where 1=1
+--delete from [expofair].[stock2job] where 1=1
+
 GO
 drop TABLE [expofair].[job2Tour];
 GO
@@ -105,4 +107,16 @@ EndDate  Date Null,
 PRIMARY KEY(IdStuff)
 );
 GO
-
+drop TABLE [expofair].[stock2job];
+GO
+create Table [expofair].[stock2job] (
+IdStock INT NOT NULL IDENTITY(1,1),
+IdTourJob INT NULL,
+IdStockType INT  NULL,
+Factor INT NULL,
+Caption NVARCHAR(200) NULL,
+Weight DECIMAL NULL,
+Volume DECIMAL NULL,
+Status NVARCHAR(10) NULL,
+PRIMARY KEY( IdStock)
+)

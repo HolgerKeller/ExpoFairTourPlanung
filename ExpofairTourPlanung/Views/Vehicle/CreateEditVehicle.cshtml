@@ -85,8 +85,11 @@
 
     <div class="card-footer">
         <button class="btn btn-primary" type="submit">Speichern</button>
-        <button class="btn btn-secondary" onclick='window.location = "@Url.Action("CreateEditVehicle", "Vehicle")";'>Neues Fahrzeug</button>
-        <button class="btn btn-secondary" onclick='window.location = "@Url.Action("Index", "Vehicle")";'>Übersicht</button>
+
+        <a class="btn btn-secondary" type="Reset" asp-area="" asp-controller="Vehicle" asp-action="Reset">Neues Fahrzeug</a>
+        <a class="btn btn-secondary" asp-area="" asp-controller="Vehicle" asp-action="Index">Übersicht</a>
+
+
     </div>
     </div>
 </form>

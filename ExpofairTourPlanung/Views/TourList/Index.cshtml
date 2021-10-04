@@ -7,7 +7,7 @@
 <h3>Tourenpläne</h3>
 <br />
 
-<form asp-controller="TourList" asp-action="Index" enctype="multipart/form-data">
+<form asp-controller="TourList" id="Tourlist" asp-action="Index" enctype="multipart/form-data">
     <div class="row form-group">
         <div class="col-2">
             <div class="col-form-label">
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="col-3">
-            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" onchange="this.form.submit()"/>
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY"  />
         </div>
         <div class="col-2">
             <button class="btn btn-primary" type="submit">Anzeigen</button>
@@ -23,49 +23,53 @@
     </div>
 </form>
 
+@if (Model != null)
+{
 
-<table id="tourTable" class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>Tourdatum</th>
-            <th>Tourname</th>
-            <th>Aktionen</th>
-        </tr>
-    </thead>
+    <table id="tourTable" class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Tourdatum</th>
+                <th>Tourname</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
 
-    <tbody>
+        <tbody>
 
-        @{
-            foreach (Tour tour in Model)
-            {
-                <tr>
-                    <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
-                    <td>@tour.TourName</td>
-                    <td class="text-right">
-                        <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
-                            <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
-                        </a>
-                        <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
-                            <span class="fa fa-file-pdf fa-lg" aria-hidden="true"></span>
-                        </button>
-
-                        <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
-                            <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
-                        </button>
-                    </td>
-                </tr>
+            @{
+                foreach (Tour tour in Model)
+                {
+                    <tr>
+                        <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
+                        <td>@tour.TourName</td>
+                        <td class="text-right">
+                            <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
+                                <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                            </a>
+                            <button onclick="onClickedCreateTourPDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
+                                <span class="fa fa-truck fa-lg" aria-hidden="true"></span>
+                            </button>
+                            <button onclick="onClickedCreateAllStockPDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
+                                <span class="fa fa-clipboard-list fa-lg" aria-hidden="true"></span>
+                            </button>
+                            <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
+                                <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
             }
-        }
 
-    </tbody>
-</table>
-
-
-<a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Tourenplan anlegen</a>
+        </tbody>
+    </table>
 
 
-@section Scripts {
-    <script>
+    <a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Tourenplan anlegen</a>
+}
+
+    @section Scripts {
+        <script>
 
     $(document).ready(function () {
             $('#tourTable').DataTable({
@@ -74,19 +78,18 @@
                 }
             });
 
-        document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
+            document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
         });
 
     function onClickedDeleteTourButton(id) {
-
-            Swal.fire({
+           Swal.fire({
                 title: 'Möchtest du den Tourenplan wirklich löschen?',
                 icon: 'error',
                 showCloseButton: true,
                 focusConfirm: false,
                 confirmButtonText:
                     'Ja, löschen!',
-            }).then((result) => {
+           }).then((result) => {
                 if (result.isConfirmed) {
 
                     // Backend call to delete tour by id
@@ -104,14 +107,18 @@
                         }
                     });
                 }
-            })
+           })
     }
 
+    function onClickedCreateTourPDF( id ) {
+        var win = window.open("/TourPdf/CreateTourPdf/" + id, '_blank');
+        win.document.title = "Tourenplan für Tour";
+    }
 
-    function onClickedCreatePDF( id ) {
-        window.open("/TourPdf/CreateTourPdf/"+ id, '_blank');
-            }
+            function onClickedCreateAllStockPDF( id ) {
+        var win = window.open("/TourPacklistPdf/CreateAllStockPdf/" + id, '_blank');
+        win.document.title = "Packliste für Tour";
+    }
 
-
-    </script>
-}
+        </script>
+    }

@@ -40,13 +40,16 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li id="Jobs" class="nav-item active">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"> Jobübersicht</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Jobübersicht</a>
                         </li>
                         <li class="nav-item" id="Tour">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="TourList" asp-action="Index"> Tourübersicht</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TourList" asp-action="Index">Tourübersicht</a>
                         </li>
                         <li class="nav-item" id="SB">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sb" asp-action="Index"> Selbstabholer</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sb" asp-action="Index">Selbstabholer</a>
+                        </li>
+                        <li class="nav-item" id="Event">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Groß-Ereignis</a>
                         </li>
                         <li class="nav-item dropdown" id="Admin">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -89,6 +92,9 @@
                 $(navbar[0]).addClass('active');
             } else {
                 navbar.forEach((item, index) => {
+
+//                    alert(item.children[0].href);
+
                     if (item.children[0].href == page) {
                         $(item).addClass('active').siblings().removeClass('active');
                     }

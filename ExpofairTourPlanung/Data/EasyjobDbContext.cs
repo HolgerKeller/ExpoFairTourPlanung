@@ -25,8 +25,12 @@ namespace ExpofairTourPlanung.Data
         public virtual DbSet<Stuff> Stuffs { get; set; }
         public virtual DbSet<Tour> Tours { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
+        public virtual DbSet<ExpoEvent> ExpoEvents { get; set; }
+        public virtual DbSet<Stock2jobSP> Stock2JobSPs { get; set; }
 
-         protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 

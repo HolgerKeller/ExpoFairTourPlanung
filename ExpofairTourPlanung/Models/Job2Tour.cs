@@ -67,5 +67,6 @@ namespace ExpofairTourPlanung.Models
         public string ContactPhone { get; set; }
         [StringLength(200)]
         public string ReadyTime { get; set; }
+        public string DeliveryType { get; set; }
     }
 }

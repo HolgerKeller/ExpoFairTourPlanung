@@ -9,6 +9,7 @@ using ExpofairTourPlanung.Data;
 using ExpofairTourPlanung.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http;
 
 namespace ExpofairTourPlanung.Controllers
 {
@@ -28,11 +29,20 @@ namespace ExpofairTourPlanung.Controllers
 
             if (dateFrom == null)
             {
-                dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+                dateFrom = this.HttpContext.Session.GetString("dateFrom");
+
+                if (dateFrom == null)
+                {
+                    dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+                }
+//                return View();
             }
 
  
             ViewData["dateFrom"] = dateFrom;
+
+            this.HttpContext.Session.SetString("dateFrom", dateFrom);
+
 
             _logger.LogInformation("dateFrom:" + dateFrom );
 

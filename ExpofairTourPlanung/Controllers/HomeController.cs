@@ -1,5 +1,6 @@
 ﻿using ExpofairTourPlanung.Data;
 using ExpofairTourPlanung.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +25,6 @@ namespace ExpofairTourPlanung.Controllers
             _logger = logger;
         }
 
-  
-
         public IActionResult Index(string dateFrom)
         {
 
@@ -34,7 +33,13 @@ namespace ExpofairTourPlanung.Controllers
 
             if (dateFrom == null)
             {
-                dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+
+               dateFrom = this.HttpContext.Session.GetString("dateFrom");
+
+               if( dateFrom == null)
+                {
+                    dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+                }
             }
 
             if (dateTo == null)
@@ -43,10 +48,9 @@ namespace ExpofairTourPlanung.Controllers
             }
 
             ViewData["dateFrom"] = dateFrom;
+            this.HttpContext.Session.SetString("dateFrom", dateFrom);
 
             _logger.LogInformation("dateFrom:" + dateFrom + " dateTo:" + dateTo);
-
-
 
             var dateFromParam = new SqlParameter()
             {

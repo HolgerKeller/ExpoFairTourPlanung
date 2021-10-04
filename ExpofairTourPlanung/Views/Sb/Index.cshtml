@@ -7,55 +7,75 @@
 <h3>SB-Pläne</h3>
 <br />
 
-<table id="tourTable" class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>Tourdatum</th>
-            <th>Tourname</th>
-            <th>Aktionen</th>
-        </tr>
-    </thead>
+<form asp-controller="Sb" id="Tourlist" asp-action="Index" enctype="multipart/form-data">
+    <div class="row form-group">
+        <div class="col-2">
+            <div class="col-form-label">
+                Datum:
+            </div>
+        </div>
+        <div class="col-3">
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY"  />
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary" type="submit">Anzeigen</button>
+        </div>
+    </div>
+</form>
 
-    <tbody>
+@if (Model != null)
+{
 
-        @{
-            foreach (Tour tour in Model)
-            {
-                <tr>
-                    <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
-                    <td>@tour.TourName</td>
-                    <td class="text-right">
-                        <a asp-route-id="@tour.IdTour" asp-controller="Sb" asp-action="ShowDetailSB" class="btn btn-default" aria-label="Bearbeiten">
-                            <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
-                        </a>
-                        <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
-                            <span class="fa fa-file-pdf fa-lg" aria-hidden="true"></span>
-                        </button>
+    <table id="tourTable" class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Tourdatum</th>
+                <th>Tourname</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
 
-                        <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
-                            <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
-                        </button>
-                    </td>
-                </tr>
+        <tbody>
+
+            @{
+                foreach (Tour tour in Model)
+                {
+                    <tr>
+                        <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
+                        <td>@tour.TourName</td>
+                        <td class="text-right">
+                            <a asp-route-id="@tour.IdTour" asp-controller="Sb" asp-action="ShowDetailSB" class="btn btn-default" aria-label="Bearbeiten">
+                                <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                            </a>
+                            <button onclick="onClickedCreatePDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
+                                <span class="fa fa-file-pdf fa-lg" aria-hidden="true"></span>
+                            </button>
+
+                            <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
+                                <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
             }
-        }
 
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-
-
-<a class="btn btn-primary" asp-controller="Sb" asp-action="CreateSbTour">SB-Plan anlegen</a>
+    <a class="btn btn-primary" asp-controller="Sb" asp-action="CreateSbTour">SB-Plan anlegen</a>
+}
 
 
 
-
-@section Scripts {
-    <script>
+    @section Scripts {
+        <script>
     $(document).ready(function () {
-    $('#tourTable').DataTable();
+        $('#tourTable').DataTable();
+
+            document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
 
     });
+
     function onClickedDeleteTourButton(id) {
 
             Swal.fire({
@@ -92,5 +112,5 @@
             }
 
 
-    </script>
-}
+        </script>
+    }

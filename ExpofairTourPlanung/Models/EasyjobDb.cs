@@ -17,12 +17,13 @@ namespace ExpofairTourPlanung.Models
         {
         }
 
-        public virtual DbSet<Job2Tour> Job2Tours { get; set; }
+        public virtual DbSet<Stock2job> Stock2jobs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=NB-HK-01;Database=easyjob;Trusted_Connection=True;");
             }
         }
@@ -31,10 +32,10 @@ namespace ExpofairTourPlanung.Models
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<Job2Tour>(entity =>
+            modelBuilder.Entity<Stock2job>(entity =>
             {
-                entity.HasKey(e => e.IdTourJob)
-                    .HasName("PK__job2Tour__C7FEF4AB2226B6CE");
+                entity.HasKey(e => e.IdStock)
+                    .HasName("PK__stock2jo__2A9EF4E3DFD02A59");
             });
 
             OnModelCreatingPartial(modelBuilder);

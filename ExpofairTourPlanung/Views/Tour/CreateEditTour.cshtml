@@ -5,7 +5,7 @@
     ViewData["Title"] = "Tourdaten";
 }
 
-<form asp-controller="Tour" asp-action="SaveTour" enctype="multipart/form-data">
+<form asp-controller="Tour" Id="Tour" asp-action="SaveTour" enctype="multipart/form-data">
 
     <div class="card" style="margin-bottom: 15px;">
 
@@ -129,7 +129,7 @@
                             string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
 
 
-                            if (job.InOut == "Lieferung")
+                            if (job.DeliveryType == "Lieferung" || job.DeliveryType == "Ausgabe")
                             {
                                 string returnDT = @job.JobDateReturn.ToString();
                                 returnDT = Regex.Replace(returnDT, "00:00:00$", "");
@@ -153,11 +153,11 @@
                         @{
                             if (job.IdJobState == 5)
                             {
-                                <td>@job.InOut<br />Zumietung</td>
+                                <td>@job.DeliveryType<br />Zumietung</td>
                             }
                             else
                             {
-                                <td>@job.InOut</td>
+                                <td>@job.DeliveryType</td>
                             }
                         }
 
@@ -241,7 +241,7 @@
                 @foreach (Job2Tour job in jobs)
                 {
                     <tr onclick="showModal(@job.IdTourJob)">
-                        <td>@job.InOut</td>
+                        <td>@job.DeliveryType</td>
 
 
                         <td>@job.Time</td>
@@ -308,23 +308,38 @@
             </div>
             <div class="modal-body">
 
-
-
                 <h6>Adresse:</h6>
                 <div id="modalAddress">
-
                 </div>
+
+                <hr class="col-xs-12">
+                <h6>Ansprechpartner:</h6>
+                <div id="modalContact">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>KontaktInfo:</h6>
+                <div id="modalContactPhone">
+                </div>
+
+                <hr class="col-xs-12">
+                <h6>Zeiten:</h6>
+                <div id="modalDateTime">
+                </div>
+
                 <hr class="col-xs-12">
                 <h6>Kommentar:</h6>
                 <div id="modalComment">
-
                 </div>
 
                 <hr class="col-xs-12">
+                <h6>Gewicht:</h6>
+                <div id="modalWeight">
+                </div>
 
+                <hr class="col-xs-12">
                 <h6>Inhalt:</h6>
                 <div id="modalStock">
-
                 </div>
 
             </div>
@@ -424,32 +439,52 @@
 
 <script>
 
-            function showModal(id) {
+        function showModal(id) {
 
-
-            $.ajax({
+             $.ajax({
                 type: "GET",
                 url: "@Url.Action("GetJobDetail")",
                 data: { id: id },
                 success: function (daten) {
 
-                        var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
-                        var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
+                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
+                    var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
                     comment = comment.replace(/_*/g, "");
 
-                    $('#modalTitle').text(daten.caption + " (" + daten.inOut + ")");
+                    var jobDate = new Date(daten.jobDate).toLocaleDateString('de-DE');
+                    var time = daten.time;
+                    var readyTime = daten.readyTime;
+
+                    var dateTime = "Jobdatum: " + jobDate;
+
+                    if (daten.jobDateReturn) {
+                        var jobDateReturn = new Date(daten.jobDateReturn).toLocaleDateString('de-DE');
+                        dateTime = dateTime + "<br />" + "Rückgabe: " + jobDateReturn;
+                    }
+                    if (time != "") {
+                        dateTime = dateTime + "<br />" + "Zeit: " + time + " Uhr";
+                    }
+                    if (readyTime != "") {
+                        dateTime = dateTime + "<br />" + "Fertig bis: " + readyTime + " Uhr";
+                    }
+
+                    $('#modalTitle').text(daten.number + " " + daten.caption + " (" + daten.deliveryType + ")");
                     $('#modalAddress').text(daten.address);
                     $('#modalComment').text(comment);
                     $('#modalStock').html(stock);
+                    $('#modalWeight').html(daten.weight);
+                    $('#modalDateTime').html(dateTime);
 
                     $('#modalJobDetail').modal('show')
 
                 }
-    });
+            });
         }
 
 
-function onClickedAddJobButton(e, id, idTourJob) {
+    function onClickedAddJobButton(e, id, idTourJob) {
+
+        $('form#Tour').submit();
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -525,8 +560,6 @@ function onClickedAddJobButton(e, id, idTourJob) {
                     'Ja, Clonen!',
             }).then((result) => {
                 if (result.isConfirmed) {
-
-                    alert(id);
 
                     $.ajax({
                         type: "GET",
