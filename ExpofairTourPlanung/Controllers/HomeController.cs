@@ -30,7 +30,6 @@ namespace ExpofairTourPlanung.Controllers
 
             string dateTo = null;
 
-
             if (dateFrom == null)
             {
 
@@ -42,10 +41,7 @@ namespace ExpofairTourPlanung.Controllers
                 }
             }
 
-            if (dateTo == null)
-            {
-                dateTo = dateFrom;
-            }
+            dateTo = dateFrom;
 
             ViewData["dateFrom"] = dateFrom;
             this.HttpContext.Session.SetString("dateFrom", dateFrom);

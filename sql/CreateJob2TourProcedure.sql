@@ -115,7 +115,7 @@ CREATE OR ALTER PROCEDURE [expofair].[GetExpoEvents] (
 	)
 AS
 BEGIN
- select In_Out,JobType, Address, count(Address) Count from [expofair].[job2Tour] where cast(JobDate as Date) = convert(date, @EventDate) and ( IdTour is Null or IdTour <> 0 ) and JobType <> '.Bessemerstraﬂe' group by In_Out,Jobtype, Address order by In_Out,Jobtype, Address
+ select In_Out,JobType, Address, count(Address) Count from [expofair].[job2Tour] where cast(JobDate as Date) = convert(date, @EventDate) and ( IdTour is Null or IdTour = 0 ) and JobType <> '.Bessemerstraﬂe' group by In_Out,Jobtype, Address order by In_Out,Jobtype, Address
 END
 GO
 
@@ -126,7 +126,7 @@ CREATE OR ALTER PROCEDURE [expofair].[CreatePacklistByTour] (
 	)
 AS
 BEGIN
- select t1.IdStockType StockType, sum(t1.factor) Count, t1.Caption Caption, t1.Weight Weight, sum(t1.Factor) * t1.Weight SumWeight from [easyjob].[expofair].[stock2job] t1 where t1.IdTourJob IN (select IdTourJob from [expofair].[job2Tour] where IdTour=@IdTour) Group By t1.IdStockType, t1.Caption, t1.Weight
+ select t1.IdStockType StockType, sum(t1.factor) Count, t1.Caption Caption, t1.Weight Weight, sum(t1.Factor) * t1.Weight SumWeight from [easyjob].[expofair].[stock2job] t1 where t1.IdTourJob IN (select IdTourJob from [expofair].[job2Tour] where IdTour=@IdTour and In_Out = 'OUT') Group By t1.IdStockType, t1.Caption, t1.Weight
 END
 GO
 

@@ -69,52 +69,34 @@ namespace ExpofairTourPlanung.Controllers
                 float topMargin = 20 + handler.GetTableHeight();
                 doc.SetMargins(topMargin, 20, 20, 20);
 
+                Table mainTable = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth().SetBorderBottom(new SolidBorder(ColorConstants.BLACK, 1));
 
-                if (!string.IsNullOrEmpty(tourFromDb.Comment))
-                {
+                mainTable.AddHeaderCell(new Paragraph(new Text("Anzahl").SetBold()));
+                mainTable.AddHeaderCell(new Paragraph(new Text("Name").SetBold()));
+                mainTable.AddHeaderCell(new Paragraph(new Text("Vorhanden").SetBold()));
 
-                    Table mainTable1 = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth();
-
-                    Cell cell1 = getCell(1, 3, "").Add(formatContent(tourFromDb.Comment)).SetBorderBottom(Border.NO_BORDER);
-
-                    mainTable1.AddCell(cell1);
-
-                    cell1 = getCell(1, 3, "").Add(formatContent("Team: " + getStuffNames(tourFromDb.Team))).SetBorderBottom(Border.NO_BORDER);
-
-                    mainTable1.AddCell(cell1);
-
-                    doc.Add(mainTable1);
-
-                }
-
-                Table mainTable = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth();
-
-                mainTable.AddHeaderCell(new Paragraph(new Text("Uhrzeit").SetBold()));
-
-                Cell cellHeader = new Cell(1, 2);
-                cellHeader.Add(new Paragraph(new Text("Packliste").SetBold()));
-                mainTable.AddHeaderCell(cellHeader);
-
-                Cell cellTime = new Cell().SetBorderBottom(Border.NO_BORDER); ;
-                Cell cellContent = new Cell().SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
-                Cell cellAdresse = new Cell().SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+                Cell cellCount = new Cell().SetBorderBottom(Border.NO_BORDER).SetPadding(5).SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+                Cell cellContent = new Cell().SetPadding(5);
+                Cell cellAvail = new Cell().SetPadding(5);
 
                 int cellColor = 0;
-
                 Color greyColor = new DeviceRgb(224, 224, 224);
 
                 foreach (var stock in allStock)
                 {
 
-                    cellTime = getCell(1, 1, "TIME");
+                    cellCount = getCell(1, 1, "COUNT");
                     cellContent = getCell(1, 1, "CONTENT");
-                    cellAdresse = getCell(1, 1, "ADR");
+                    cellAvail = getCell(1, 1, "AVAIL");
+
+
 
                     if (cellColor == 1)
                     {
-                        cellTime.SetBackgroundColor(greyColor);
+                        cellCount.SetBackgroundColor(greyColor);
                         cellContent.SetBackgroundColor(greyColor);
-                        cellAdresse.SetBackgroundColor(greyColor);
+                        cellAvail.SetBackgroundColor(greyColor);
+
                         cellColor = 0;
                     }
                     else
@@ -122,33 +104,34 @@ namespace ExpofairTourPlanung.Controllers
                         cellColor++;
                     }
 
+                    Div divCount = new Div().SetTextAlignment(TextAlignment.RIGHT).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetMarginRight(5).SetFontSize(10);
+                    divCount.Add(new Paragraph(stock.Count.ToString()));
+                    cellCount.Add(divCount);
 
+                    Div divContent = new Div().SetTextAlignment(TextAlignment.LEFT).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetMarginLeft(5).SetFontSize(10);
+                    divContent.Add(new Paragraph(stock.Caption));
+                    cellContent.Add(divContent);
+
+                    cellAvail.Add(new Paragraph(""));
+
+                    mainTable.AddCell(cellCount);
+                    mainTable.AddCell(cellContent);
+                    mainTable.AddCell(cellAvail);
                 }
-
-                Cell cellTableEnd = new Cell(1, 3).SetBorderTop(Border.NO_BORDER).Add(formatContent(""));
-                mainTable.AddCell(cellTableEnd);
 
                 doc.Add(mainTable);
 
-
-                if (!string.IsNullOrEmpty(tourFromDb.Footer))
-                {
-
-                    Table mainTable1 = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth();
-
-                    Cell cell1 = getCell(1, 3, "").Add(formatContent(tourFromDb.Footer));
-
-                    mainTable1.AddCell(cell1);
-
-                    doc.Add(mainTable1);
-
-                }
+                Cell cellTableEnd = new Cell(1, 3).SetBorderTop(Border.NO_BORDER).Add(formatContent(""));
+                mainTable.AddCell(cellTableEnd);
 
                 doc.Flush();
                 doc.Close();
                 pdfBytes = stream.ToArray();
             }
-            return new FileContentResult(pdfBytes, "application/pdf");
+            var fileResult = new FileContentResult(pdfBytes, "application/pdf");
+            fileResult.FileDownloadName = "Packliste" + "_" + tourFromDb.TourDate.ToString("ddMMyyyy") + "_" + tourFromDb.TourNr.ToString() + ".pdf";
+
+            return (fileResult);
         }
 
         static string getStuffNames(string StuffNumbers)
@@ -209,6 +192,9 @@ namespace ExpofairTourPlanung.Controllers
                     isBold = true;
                 }
             }
+
+
+
             return para;
         }
 
@@ -218,17 +204,17 @@ namespace ExpofairTourPlanung.Controllers
             int defaultFontSize = 10;
 
 
-            if (type == "TIME")
+            if (type == "COUNT")
             {
-                return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+                return new Cell().SetFontSize(defaultFontSize).SetHorizontalAlignment(HorizontalAlignment.RIGHT).SetBorder(Border.NO_BORDER).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
             }
             else if (type == "CONTENT")
             {
                 return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
             }
-            else if (type == "ADR")
+            else if (type == "AVAIL")
             {
-                return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+                return new Cell().SetFontSize(defaultFontSize).SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1)).SetBorderLeft(new SolidBorder(ColorConstants.BLACK, 1));
             }
             else
             {
@@ -286,48 +272,39 @@ namespace ExpofairTourPlanung.Controllers
             private void InitHeaderTable(Tour tour)
             {
 
-                Table subTable = new Table(1).UseAllAvailableWidth();
+                var culture = new System.Globalization.CultureInfo("de-DE");
 
-                subTable.SetBorder(Border.NO_BORDER);
+                table = new Table(UnitValue.CreatePercentArray(new float[] { 3, 3, 3, 2 })).UseAllAvailableWidth().SetMarginBottom(5);
 
-                Cell cell11 = new Cell().Add(new Paragraph("Fahrer").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetBorder(Border.NO_BORDER); ;
-                cell11.SetBorderBottom(new SolidBorder(ColorConstants.BLACK, 1)).SetHeight(36);
-
+                Cell cell1 = new Cell().Add(new Paragraph("Fahrer").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
                 Div div1 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0);
                 div1.Add(new Paragraph(TourPacklistPdf.getStuffNames(tour.Driver)).SetFontSize(12));
-                cell11.Add(div1);
-                subTable.AddCell(cell11);
-
-                Cell cell12 = new Cell().Add(new Paragraph("Verantwortlich").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetBorder(Border.NO_BORDER).SetHeight(36);
-
-
-                Div div2 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
-                div2.Add(new Paragraph(TourPacklistPdf.getStuffNames(tour.Master)).SetFontSize(12));
-                cell12.Add(div2);
-                subTable.AddCell(cell12);
-
-
-                table = new Table(4).UseAllAvailableWidth();
-
-                Cell cell1 = new Cell().Add(subTable);
-                cell1.SetPadding(0);
-
+                cell1.Add(div1);
                 table.AddCell(cell1);
 
                 Cell cell2 = new Cell().Add(new Paragraph("Datum").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
                 cell2.Add(new Paragraph(tour.TourDate.ToString("dd.MM.yyyy")).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
                 table.AddCell(cell2);
 
-                var culture = new System.Globalization.CultureInfo("de-DE");
-
                 Cell cell3 = new Cell().Add(new Paragraph("Wochentag").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
                 cell3.Add(new Paragraph(culture.DateTimeFormat.GetDayName(tour.TourDate.DayOfWeek)).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
                 table.AddCell(cell3);
 
-                Cell cell4 = new Cell().Add(new Paragraph("LKW").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
-                cell4.Add(new Paragraph(tour.VehicleNr).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(15));
+                Cell cell4 = new Cell(2, 1).Add(new Paragraph("LKW").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                cell4.Add(new Paragraph(tour.VehicleNr).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
                 table.AddCell(cell4);
 
+                Cell cell12 = new Cell().Add(new Paragraph("Verantwortlich").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
+                Div div2 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
+                div2.Add(new Paragraph(TourPacklistPdf.getStuffNames(tour.Master)).SetFontSize(12));
+                cell12.Add(div2);
+                table.AddCell(cell12);
+
+                Cell cell22 = new Cell(1, 2).Add(new Paragraph("Tourname").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
+                Div div22 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
+                div22.Add(new Paragraph(tour.TourName).SetFontSize(12));
+                cell22.Add(div22);
+                table.AddCell(cell22);
 
             }
         }

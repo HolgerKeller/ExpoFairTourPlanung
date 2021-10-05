@@ -2,17 +2,17 @@
 @using System.Text.RegularExpressions
 
 @{
-    ViewData["Title"] = "Gross-Ereignis";
+    ViewData["Title"] = "Events";
 }
 
-<h3>Grossereignis</h3>
+<h3>Events</h3>
 <br />
 
 <form asp-controller="Event" asp-action="Index" enctype="multipart/form-data">
     <div class="row form-group">
         <div class="col-2">
             <div class="col-form-label">
-                Von:
+                Am:
             </div>
         </div>
         <div class="col-3">
@@ -28,47 +28,56 @@
 @if (Model != null)
 {
 
-<form asp-controller="Event" asp-action="CreateTour" onsubmit="sendSelected()" enctype="multipart/form-data">
-    @Html.Hidden("Date", @ViewData["dateFrom"])
-    @Html.Hidden("EventList", "")
+    <form asp-controller="Event" asp-action="CreateTour" onsubmit="sendSelected()" enctype="multipart/form-data">
+        @Html.Hidden("Date", @ViewData["dateFrom"])
+        @Html.Hidden("EventList", "")
 
 
 
-    <table id="EventTable" class="table table-bordered table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Event</th>
-                <th>An/Ab</th>
-                <th>Adresse</th>
-                <th>Anzahl Jobs</th>
-                <th>Auswahl</th>
+        <table id="EventTable" class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Event</th>
+                    <th>An/Ab</th>
+                    <th>Adresse</th>
+                    <th>Anzahl Jobs</th>
+                    <th>Auswahl</th>
 
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                foreach (ExpoEvent expoEvent in Model)
-                {
+                </tr>
+            </thead>
+            <tbody>
+                @{
+
+                    foreach (ExpoEvent expoEvent in Model)
+                    {
                         <tr>
                             <td>@expoEvent.JobType</td>
                             <td>@expoEvent.In_Out</td>
 
-                            <td>@Regex.Replace(@Regex.Replace(@expoEvent.Address, ";+$", ""),";","; ")</td>
- 
+                            <td>@Regex.Replace(@Regex.Replace(@expoEvent.Address, ";+$", ""), ";", "; ")</td>
+
                             <td>@expoEvent.Count</td>
-                            <td><input type="checkbox" value="@expoEvent.Address" /> </td> 
+                            <td><input type="checkbox" value="@expoEvent.Address" /> </td>
                         </tr>
+                    }
                 }
-            }
-        </tbody>
-    </table>
-    <div class="col-2">
-        <button class="btn btn-primary" type="submit" >Erzeuge Tour</button>
-    </div>
-</form>
-    }
-    @section Scripts {
-        <script>
+            </tbody>
+        </table>
+        <div class="col-2">
+            <button class="btn btn-primary" type="submit">Erzeuge Tour</button>
+        </div>
+    </form>
+}
+else
+{
+    <h5>Für diesen Tag ist keine Event geplant.</h5>
+
+}
+
+
+
+@section Scripts {
+    <script>
         $(document).ready(function () {
             document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
         });
@@ -83,5 +92,5 @@
                 document.getElementById("EventList").value = sList;
             }
 
-        </script>
-    }
+    </script>
+}
