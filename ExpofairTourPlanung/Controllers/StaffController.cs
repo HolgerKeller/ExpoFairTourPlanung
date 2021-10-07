@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace ExpofairTourPlanung.Controllers
 {
-    public class StuffController : Controller
+    public class StaffController : Controller
     {
         private readonly EasyjobDbContext _context;
         private readonly ILogger<TourController> _logger;
 
-        public StuffController(EasyjobDbContext context, ILogger<TourController> logger)
+        public StaffController(EasyjobDbContext context, ILogger<TourController> logger)
         {
             _context = context;
             _logger = logger;
@@ -27,7 +27,7 @@ namespace ExpofairTourPlanung.Controllers
 
             if (id != 0)
             {
-                var employeeFromDb = _context.Stuffs.SingleOrDefault(x => x.IdStuff == id);
+                var employeeFromDb = _context.Staffs.SingleOrDefault(x => x.IdStaff == id);
 
                 //if ((jobPostingFromDb.OwnerUsername != User.Identity.Name) && !User.IsInRole("Admin"))
                 //{
@@ -54,26 +54,26 @@ namespace ExpofairTourPlanung.Controllers
 
         }
 
-        public IActionResult SaveEmployee(Stuff employee)
+        public IActionResult SaveEmployee(Staff employee)
         {
 
             if (!ModelState.IsValid)
             {
 
-                return RedirectToAction("CreateEditEmployee", new { id = employee.IdStuff });
+                return RedirectToAction("CreateEditEmployee", new { id = employee.IdStaff });
 
             }
 
 
-            if (employee.IdStuff == 0)
+            if (employee.IdStaff == 0)
             {
           
 
-                _context.Stuffs.Add(employee);
+                _context.Staffs.Add(employee);
             }
             else
             {
-                var employeeFromDb = _context.Stuffs.SingleOrDefault(x => x.IdStuff == employee.IdStuff);
+                var employeeFromDb = _context.Staffs.SingleOrDefault(x => x.IdStaff == employee.IdStaff);
 
                 if (employeeFromDb == null)
                 {
@@ -96,7 +96,7 @@ namespace ExpofairTourPlanung.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("CreateEditEmployee", new { id = employee.IdStuff });
+            return RedirectToAction("CreateEditEmployee", new { id = employee.IdStaff });
         }
 
         [HttpPost]
@@ -105,12 +105,12 @@ namespace ExpofairTourPlanung.Controllers
             if (id == 0)
                 return BadRequest();
 
-            var employeeFromDb = _context.Stuffs.SingleOrDefault(x => x.IdStuff == id);
+            var employeeFromDb = _context.Staffs.SingleOrDefault(x => x.IdStaff == id);
 
             if (employeeFromDb == null)
                 return NotFound();
 
-            _context.Stuffs.Remove(employeeFromDb);
+            _context.Staffs.Remove(employeeFromDb);
             _context.SaveChanges();
 
             return Ok();
@@ -119,7 +119,7 @@ namespace ExpofairTourPlanung.Controllers
         public IActionResult Index()
         {
 
-            var allemployee = _context.Stuffs.OrderByDescending(x => x.EmployeeName1).ToList();
+            var allemployee = _context.Staffs.OrderByDescending(x => x.EmployeeName1).ToList();
 
             return View(allemployee);
         }

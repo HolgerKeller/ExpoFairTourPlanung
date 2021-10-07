@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpofairTourPlanung.Models
 {
-    [Table("Stuff", Schema = "expofair")]
-    public partial class Stuff
+    [Table("Staff", Schema = "expofair")]
+    public partial class Staff
     {
         [Key]
-        public int IdStuff { get; set; }
+        public int IdStaff { get; set; }
         [Required(ErrorMessage = "Bitte geben Sie den Mitarbeiternamen ein"), MaxLength(100)]
         public string EmployeeName1 { get; set; }
         [StringLength(100)]

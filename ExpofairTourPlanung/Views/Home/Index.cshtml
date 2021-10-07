@@ -226,10 +226,10 @@
                         var jobDateReturn = new Date(daten.jobDateReturn).toLocaleDateString('de-DE');
                         dateTime = dateTime + "<br />" + "Rückgabe: " + jobDateReturn;
                     }
-                    if (time != "") {
+                    if (daten.time && time != "") {
                         dateTime = dateTime + "<br />" + "Zeit: " + time + " Uhr";
                     }
-                    if (readyTime != "") {
+                    if (daten.readyTime && readyTime != "") {
                         dateTime = dateTime + "<br />" + "Fertig bis: " + readyTime + " Uhr";
                     }
 

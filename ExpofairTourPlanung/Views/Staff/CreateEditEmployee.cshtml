@@ -1,11 +1,11 @@
-﻿@model ExpofairTourPlanung.Models.Stuff
+﻿@model ExpofairTourPlanung.Models.Staff
 
 @{
     ViewData["Title"] = "Mitarbeiterdaten";
 }
 
 
-<form asp-controller="Stuff" asp-action="SaveEmployee" enctype="multipart/form-data">
+<form asp-controller="Staff" asp-action="SaveEmployee" enctype="multipart/form-data">
 
     <div class="card" style="margin-bottom: 15px;">
 
@@ -18,7 +18,7 @@
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
 
-            @Html.Hidden("IdStuff", (Model != null) ? Model.IdStuff : 0)
+            @Html.Hidden("IdStaff", (Model != null) ? Model.IdStaff : 0)
 
 
             <div class="row form-group">
@@ -84,8 +84,8 @@
 
     <div class="card-footer">
         <button class="btn btn-primary" type="submit">Speichern</button>
-        <a class="btn btn-secondary" type="Reset" asp-area="" asp-controller="Stuff" asp-action="Reset">Neu Mitarbeiter</a>
-        <a class="btn btn-secondary" asp-area="" asp-controller="Stuff" asp-action="Index">Übersicht</a>
+        <a class="btn btn-secondary" type="Reset" asp-area="" asp-controller="Staff" asp-action="Reset">Neu Mitarbeiter</a>
+        <a class="btn btn-secondary" asp-area="" asp-controller="Staff" asp-action="Index">Übersicht</a>
     </div>
     </div>
 </form>

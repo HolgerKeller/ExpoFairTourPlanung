@@ -20,6 +20,7 @@ using ExpofairTourPlanung.Data;
 using Microsoft.Extensions.Logging;
 using ExpofairTourPlanung.Models;
 using iText.Layout.Borders;
+using System.Text.RegularExpressions;
 
 namespace ExpofairTourPlanung.Controllers
 {
@@ -73,7 +74,7 @@ namespace ExpofairTourPlanung.Controllers
 
                     if (!string.IsNullOrEmpty(tourFromDb.Team))
                     {
-                        Cell cell2 = getCell(1, 3, "").Add(formatContent("Team: " + getStuffNames(tourFromDb.Team))).SetBorderBottom(Border.NO_BORDER);
+                        Cell cell2 = getCell(1, 3, "").Add(formatContent("Team: " + getStaffNames(tourFromDb.Team))).SetBorderBottom(Border.NO_BORDER);
                         mainTable1.AddCell(cell2);
                     }
 
@@ -162,14 +163,19 @@ namespace ExpofairTourPlanung.Controllers
 
                     string address = "";
 
-                    if (!String.IsNullOrEmpty(job.Address))
-                    {
-                        string[] words = job.Address.Split(';');
+                    //if (!String.IsNullOrEmpty(job.Address))
+                    //{
+                    //    string[] words = job.Address.Split(';');
 
-                        if (!String.IsNullOrEmpty(words[0])) address += words[0];
-                        if (!String.IsNullOrEmpty(words[1])) address += "\n" + words[1];
-                        if (!String.IsNullOrEmpty(words[4])) address += "\n" + words[4];
-                        if (!String.IsNullOrEmpty(words[3])) address += "\n" + words[2] + " " + words[3];
+                    //    if (!String.IsNullOrEmpty(words[0])) address += words[0];
+                    //    if (!String.IsNullOrEmpty(words[1])) address += "\n" + words[1];
+                    //    if (!String.IsNullOrEmpty(words[4])) address += "\n" + words[4];
+                    //    if (!String.IsNullOrEmpty(words[3])) address += "\n" + words[2] + " " + words[3];
+                    //}
+
+                    if (!String.IsNullOrEmpty(job.AddressTXT))
+                    {
+                        address = Regex.Replace(job.AddressTXT, "(\r \r|\r+)", "\r");
                     }
 
                     if (!String.IsNullOrEmpty(job.ReadyTime))
@@ -211,26 +217,26 @@ namespace ExpofairTourPlanung.Controllers
             return (fileResult);
         }
 
-        static string getStuffNames(string StuffNumbers)
+        static string getStaffNames(string StaffNumbers)
         {
-            string StuffNames = "";
-            if (StuffNumbers != null)
+            string StaffNames = "";
+            if (StaffNumbers != null)
             {
-                string[] numbers = StuffNumbers.Split(',');
+                string[] numbers = StaffNumbers.Split(',');
                 if (numbers != null)
                 {
                     foreach (var num in numbers)
                     {
-                        var employees = _context.Stuffs.Where(x => x.EmployeeNr == num).ToList();
+                        var employees = _context.Staffs.Where(x => x.EmployeeNr == num).ToList();
                         foreach (var employee in employees)
                         {
-                            StuffNames = StuffNames + employee.EmployeeName1 + ',';
+                            StaffNames = StaffNames + employee.EmployeeName1 + ',';
                         }
                     }
-                    StuffNames = StuffNames.Remove(StuffNames.Length - 1, 1);
+                    StaffNames = StaffNames.Remove(StaffNames.Length - 1, 1);
                 }
             }
-            return StuffNames;
+            return StaffNames;
         }
 
         Paragraph formatContent(string content)
@@ -349,7 +355,7 @@ namespace ExpofairTourPlanung.Controllers
 
                 Cell cell1 = new Cell().Add(new Paragraph("Fahrer").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
                 Div div1 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0);
-                div1.Add(new Paragraph(TourPdf.getStuffNames(tour.Driver)).SetFontSize(12));
+                div1.Add(new Paragraph(TourPdf.getStaffNames(tour.Driver)).SetFontSize(12));
                 cell1.Add(div1);
                 table.AddCell(cell1);
 
@@ -362,12 +368,16 @@ namespace ExpofairTourPlanung.Controllers
                 table.AddCell(cell3);
 
                 Cell cell4 = new Cell(2,1).Add(new Paragraph("LKW").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
-                cell4.Add(new Paragraph(tour.VehicleNr).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
+
+                if(!String.IsNullOrEmpty(tour.VehicleNr))
+                {
+                    cell4.Add(new Paragraph(tour.VehicleNr).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
+                }
                 table.AddCell(cell4);
 
                 Cell cell12 = new Cell().Add(new Paragraph("Verantwortlich").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
                 Div div2 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
-                div2.Add(new Paragraph(TourPdf.getStuffNames(tour.Master)).SetFontSize(12));
+                div2.Add(new Paragraph(TourPdf.getStaffNames(tour.Master)).SetFontSize(12));
                 cell12.Add(div2);
                 table.AddCell(cell12);
 

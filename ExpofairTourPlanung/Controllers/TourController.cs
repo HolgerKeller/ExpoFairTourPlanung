@@ -45,12 +45,12 @@ namespace ExpofairTourPlanung.Controllers
             return new SelectList(vehicleSelectItems, "VehicleNr", "VehicleName");
         }
 
-        private SelectList _getStuff( DateTime date )
+        private SelectList _getStaff( DateTime date )
         {
 
            // DateTime date = DateTime.Now;
 
-            var employees = _context.Stuffs.Where(x => x.IsActiv == true && (x.StartDate <= date && x.EndDate >= date)).ToList();
+            var employees = _context.Staffs.Where(x => x.IsActiv == true && (x.StartDate <= date && x.EndDate >= date)).ToList();
 
             var employeeSelectItems = new List<EmployeeSelectItem>();
             foreach (var employee in employees)
@@ -104,7 +104,7 @@ namespace ExpofairTourPlanung.Controllers
                     var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustCopyJobsByDate @DateStart, @DateEnd", dateFromParam, dateToParam);
 
                     ViewBag.Vehicles = _getAllVehicles( tourdate );
-                    ViewBag.Employees = _getStuff( tourdate );
+                    ViewBag.Employees = _getStaff( tourdate );
 
                     var freeJobsFromDb = _context.Job2Tours.Where(x => ( x.IdTour == null || x.IdTour == 0 ) && x.JobDate == tourdate && x.Service != "Selbstabholer" ).OrderByDescending(x => x.InOut).ThenBy(x => x.Time).ToList();
                     var tourJobsFromDb = _context.Job2Tours.Where(x => x.IdTour == id && x.JobDate == tourdate ).OrderBy(x => x.Ranking).ToList();

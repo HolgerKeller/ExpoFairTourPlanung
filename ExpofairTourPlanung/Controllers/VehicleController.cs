@@ -113,6 +113,12 @@ namespace ExpofairTourPlanung.Controllers
             return Ok();
         }
 
+        public IActionResult Reset(int id)
+        {
+            return RedirectToAction("CreateEditVehicle", 0);
+
+        }
+
         public IActionResult Index()
         {
             var allVehicle = _context.Vehicles.OrderByDescending(x => x.VehicleNr).ToList();

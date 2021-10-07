@@ -1,5 +1,5 @@
 ﻿
-@model List<Stuff>
+@model List<Staff>
 
 @{
     ViewData["Title"] = "Mitarbeiter-Übersicht";
@@ -8,7 +8,7 @@
 <h3>Verfügbare Mitarbeiter</h3>
 <br />
 
-<table id="stuffTable" class="table table-bordered table-striped table-hover">
+<table id="StaffTable" class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
         <tr>
             <th>Mitarbeitername</th>
@@ -20,18 +20,18 @@
     <tbody>
 
         @{
-            foreach (Stuff employee in Model)
+            foreach (Staff employee in Model)
             {
                 <tr>
                     <td>@employee.EmployeeName1 </td>
                     <td>@employee.Status</td>
 
                     <td>
-                        <a asp-route-id="@employee.IdStuff" asp-controller="Stuff" asp-action="CreateEditEmployee" class="btn btn-default" aria-label="Bearbeiten">
+                        <a asp-route-id="@employee.IdStaff" asp-controller="Staff" asp-action="CreateEditEmployee" class="btn btn-default" aria-label="Bearbeiten">
                             <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                         </a>
 
-                        <button onclick="onClickedDeleteVehicleButton(@employee.IdStuff)" class="btn btn-default" aria-label="Löschen">
+                        <button onclick="onClickedDeleteVehicleButton(@employee.IdStaff)" class="btn btn-default" aria-label="Löschen">
                             <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
                         </button>
                     </td>
@@ -43,12 +43,12 @@
 </table>
 
 
-<a class="btn btn-primary" asp-controller="Stuff" asp-action="CreateEditEmployee">Neuen Mitarbeiter anlegen</a>
+<a class="btn btn-primary" asp-controller="Staff" asp-action="CreateEditEmployee">Neuen Mitarbeiter anlegen</a>
 
 @section Scripts {
     <script>
     $(document).ready(function () {
-    $('#stuffTable').DataTable();
+    $('#StaffTable').DataTable();
 
     });
     function onClickedDeleteEmployeeButton(id) {

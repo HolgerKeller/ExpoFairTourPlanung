@@ -167,30 +167,44 @@
 
                         @{
 
-                            if (job.Address != null)
+                            if (job.AddressTXT != null)
                             {
-                                string[] words = @job.Address.Split(';');
+                                //string[] words = @job.Address.Split(';');
+
+                                //string Addr = Regex.Replace(@job.AddressTXT, "(\r\n|\r|\n)+", "\r");
+                                string Addr = Regex.Replace(Regex.Replace(@job.AddressTXT, "(\r \r|\r+)", "\r"), "(\r\n|\r|\n)", "<br />");
+
                                                 <td>
-                                                    @words[0] <br />
-                                                    @{
-                                                        if (@words[1] != "")
-                                                        {
-                                                            @words[1] <br />
-                                                        }
-                                                        if (@words[4] != "")
-                                                        {
-                                                            @words[4] <br />
-                                                        }
-                                                        if (@words[2] != "")
-                                                        {
-                                                            <text>@words[2]  @words[3]</text>
-                                                        }
-                                                    }
+
+
+
+                                                    @{ WriteLiteral(Addr); }
+                                                    
+
+
                                                 </td>
-                            }
-                            else
-                            {
-                                <td>&nbsp;</td>
+
+
+        @*@words[0] <br />
+        @{
+            if (@words[1] != "")
+            {
+                @words[1] <br />
+            }
+            if (@words[4] != "")
+            {
+                @words[4] <br />
+            }
+            if (@words[2] != "")
+            {
+                <text>@words[2]  @words[3]</text>
+            }
+        }*@
+
+                                                }
+                                                else
+                                                {
+<td>&nbsp;</td>
                             }
 
                         }
@@ -461,10 +475,10 @@
                         var jobDateReturn = new Date(daten.jobDateReturn).toLocaleDateString('de-DE');
                         dateTime = dateTime + "<br />" + "Rückgabe: " + jobDateReturn;
                     }
-                    if (time != "") {
+                    if (daten.time && time != "") {
                         dateTime = dateTime + "<br />" + "Zeit: " + time + " Uhr";
                     }
-                    if (readyTime != "") {
+                    if (daten.readyTime && readyTime != "") {
                         dateTime = dateTime + "<br />" + "Fertig bis: " + readyTime + " Uhr";
                     }
 

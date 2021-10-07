@@ -22,7 +22,7 @@ namespace ExpofairTourPlanung.Data
         }
 
         public virtual DbSet<Job2Tour> Job2Tours { get; set; }
-        public virtual DbSet<Stuff> Stuffs { get; set; }
+        public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<Tour> Tours { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
         public virtual DbSet<ExpoEvent> ExpoEvents { get; set; }
@@ -40,10 +40,10 @@ namespace ExpofairTourPlanung.Data
                     .HasName("PK__job2Tour__C7FEF4ABE2DEF2D7");
             });
 
-            modelBuilder.Entity<Stuff>(entity =>
+            modelBuilder.Entity<Staff>(entity =>
             {
-                entity.HasKey(e => e.IdStuff)
-                    .HasName("PK__Stuff__2B1267242F26DE37");
+                entity.HasKey(e => e.IdStaff)
+                    .HasName("PK__Staff__2B1267242F26DE37");
             });
 
             modelBuilder.Entity<Tour>(entity =>

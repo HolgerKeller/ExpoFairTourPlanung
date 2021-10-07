@@ -71,6 +71,7 @@ namespace ExpofairTourPlanung.Controllers
                 jobFromDb.Stock = job.Stock;
                 jobFromDb.ReadyTime = job.ReadyTime;
                 jobFromDb.HeadLine = job.HeadLine;
+                jobFromDb.AddressTXT = job.AddressTXT;
 
                 IdTour = jobFromDb.IdTour.Value;
 

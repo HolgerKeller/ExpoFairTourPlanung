@@ -28,6 +28,7 @@ JobStartTime DATETIME NULL,
 Service NVARCHAR(100) NOT NULL,
 Status NVARCHAR(100) NOT NULL,
 Address NVARCHAR(300) NULL,
+AddressTXT NVARCHAR(300) NULL,
 Stock NVARCHAR(MAX) NULL,
 Weight DECIMAL NULL,
 Volume DECIMAL NULL,
@@ -90,10 +91,10 @@ PRIMARY KEY(IdVehicle)
 );
 GO
 
-drop Table [expofair].[Stuff];
+drop Table [expofair].[Staff];
 GO
-create Table [expofair].[Stuff] (
-IdStuff INT NOT NULL IDENTITY(1,1),
+create Table [expofair].[Staff] (
+IdStaff INT NOT NULL IDENTITY(1,1),
 EmployeeName1 NVARCHAR(100) NULL,
 EmployeeName2 NVARCHAR(100) NULL,
 EmployeeType NVARCHAR(100) NULL,
@@ -104,7 +105,7 @@ Status NVARCHAR(20) NULL,
 Employer NVARCHAR(300) NULL,
 StartDate Date NULL,
 EndDate  Date Null,
-PRIMARY KEY(IdStuff)
+PRIMARY KEY(IdStaff)
 );
 GO
 drop TABLE [expofair].[stock2job];

@@ -42,6 +42,7 @@ namespace ExpofairTourPlanung.Models
         public string TourName { get; set; }
         [StringLength(300)]
         public string Address { get; set; }
+        public string AddressTXT { get; set; }
         public string Stock { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? Weight { get; set; }
