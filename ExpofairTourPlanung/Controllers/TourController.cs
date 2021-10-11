@@ -277,7 +277,7 @@ namespace ExpofairTourPlanung.Controllers
                 Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustIncreaseJobRanking @IdTour, @IdJob ", idTourParam, idTourJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustIncreaseJobRanking @IdTour, @IdTourJob ", idTourParam, idTourJobParam);
 
             return Ok();
         }
@@ -299,14 +299,14 @@ namespace ExpofairTourPlanung.Controllers
 
             var idTourJobParam = new SqlParameter()
             {
-                ParameterName = "@IdJob",
+                ParameterName = "@IdTourJob",
                 SqlDbType = System.Data.SqlDbType.Int,
                 Direction = System.Data.ParameterDirection.Input,
                 Size = 10,
                 Value = idTourJob
             };
 
-            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustDecreaseJobRanking @IdTour, @IdJob ", idTourParam, idTourJobParam);
+            var CopyJobs = _context.Database.ExecuteSqlRaw("exec expofair.CustDecreaseJobRanking @IdTour, @IdTourJob ", idTourParam, idTourJobParam);
 
             return Ok();
         }

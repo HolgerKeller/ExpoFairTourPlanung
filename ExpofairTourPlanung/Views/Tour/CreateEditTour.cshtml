@@ -102,7 +102,21 @@
     <div class="card" style="margin-bottom: 15px;">
 
         <div class="card-header">
-            <h5>folgende Jobs sind der Tour zugeordnet:</h5>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-8">
+                        <h5>folgende Jobs sind der Tour zugeordnet:</h5>
+                    </div>
+                    <div class="col-4">
+                        <h5>Gesamtgewicht:  @Model.Weight Kg</h5>
+                        </div>
+                </div>
+            </div>
+
+
+
+            
         </div>
 
         <div class="card-body">
@@ -163,7 +177,7 @@
 
                         <td>@job.Number<br />@job.ReadyTime</td>
 
-                        <td>@job.Caption</td>
+                        <td>@job.Caption<br />Gewicht: @job.Weight Kg </td>
 
                         @{
 
@@ -234,7 +248,12 @@
     <div class="card" style="margin-bottom: 15px;">
 
         <div class="card-header">
-            <h5>folgende Jobs sind bisher keiner Tour zugeordnet:</h5>
+            <div class="col-8">
+                <h5>folgende Jobs sind bisher keiner Tour zugeordnet:</h5>
+            </div>
+            <div class="col-4">
+                <h5>Gesamtmasse:</h5>
+            </div>
         </div>
 
         <div class="card-body">
@@ -512,9 +531,10 @@
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
+                    myEventHandler(e);
                     e.stopPropagation();
         }
-        function onClickedDelJobButton(e, id, idJob) {
+        function onClickedDelJobButton(e, id, idTourJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -528,25 +548,29 @@
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
-                    e.stopPropagation();
-                }
-                function onClickedIncreaseJobRankingButton(e, id, idJob) {
 
+                    myEventHandler(e);
+                    //e.stopPropagation();
+                }
+                function onClickedIncreaseJobRankingButton(e, id, idTourJob) {
+  
                     // Backend call to Add Job to the tour
                     $.ajax({
                         type: "POST",
                         url: "@Url.Action("IncreaseJobRanking")",
                         data: { id: id, idTourJob: idTourJob  },
                         success: function (msg) {
-                        location.reload();
+                         location.reload();
                         },
                         error: function (msg) {
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
-                    e.stopPropagation();
+
+                    myEventHandler(e);
+                   // e.stopPropagation();
                 }
-        function onClickedDecreaseJobRankingButton(e, id, idJob) {
+        function onClickedDecreaseJobRankingButton(e, id, idTourJob) {
 
                     // Backend call to Add Job to the tour
                     $.ajax({
@@ -560,7 +584,9 @@
                             Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
                         }
                     });
-            e.stopPropagation();
+
+            myEventHandler(e);
+            //e.stopPropagation();
         }
 
     function onClickedCloneJobButton( e, id ) {
@@ -590,10 +616,24 @@
                     });
                 }
             })
-        e.stopPropagation();
+        myEventHandler(e);
+        //e.stopPropagation();
     }
 
+    function myEventHandler(e) {
 
+        if (!e)
+            e = window.event;
+
+        //IE9 & Other Browsers
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        //IE8 and Lower
+        else {
+            e.cancelBubble = true;
+        }
+    }
 
 
 </script>
