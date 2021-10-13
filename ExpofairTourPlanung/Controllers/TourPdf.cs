@@ -81,7 +81,7 @@ namespace ExpofairTourPlanung.Controllers
                     doc.Add(mainTable1);
                 }
 
-                Table mainTable = new Table(UnitValue.CreatePercentArray(new float[] { 20, 60, 20 })).UseAllAvailableWidth().SetBorderBottom(new SolidBorder(ColorConstants.BLACK, 1));
+                Table mainTable = new Table(UnitValue.CreatePercentArray(new float[] { 15, 65, 20 })).UseAllAvailableWidth().SetBorderBottom(new SolidBorder(ColorConstants.BLACK, 1));
 
                 mainTable.AddHeaderCell(new Paragraph(new Text("Uhrzeit").SetBold()));
 
@@ -93,6 +93,18 @@ namespace ExpofairTourPlanung.Controllers
                 Cell cellTime = new Cell().SetBorderBottom(Border.NO_BORDER); ;
                 Cell cellContent = new Cell().SetBorder(Border.NO_BORDER).SetPaddingBottom(5);
                 Cell cellAdresse = new Cell().SetBorder(Border.NO_BORDER).SetBorderRight(new SolidBorder(ColorConstants.BLACK, 1));
+
+                cellTime = getCell(1, 1, "TIME");
+                cellContent = getCell(1, 1, "CONTENT");
+                cellAdresse = getCell(1, 1, "ADR");
+
+                cellTime.Add(formatContent("##" + tourFromDb.StartWorkDay + "##"));
+                cellAdresse.Add(new Paragraph(""));
+                cellContent.Add(formatContent("##ARBEITSBEGINN##"));
+
+                mainTable.AddCell(cellTime);
+                mainTable.AddCell(cellContent);
+                mainTable.AddCell(cellAdresse);
 
 
                 int cellColor = 0;
@@ -106,7 +118,9 @@ namespace ExpofairTourPlanung.Controllers
                     cellContent = getCell(1,1,"CONTENT");
                     cellAdresse = getCell(1,1,"ADR");
 
- //                   if (cellColor == 1)
+
+
+                    //                   if (cellColor == 1)
 
                     if (job.InOut.Equals("OUT"))
                     {

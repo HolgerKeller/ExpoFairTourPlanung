@@ -189,6 +189,7 @@ namespace ExpofairTourPlanung.Controllers
                 tourFromDb.Footer = tour.Footer;
                 tourFromDb.Team = tour.Team;
                 tourFromDb.Master = tour.Master;
+                tourFromDb.StartWorkDay = tour.StartWorkDay;
 
             }
 

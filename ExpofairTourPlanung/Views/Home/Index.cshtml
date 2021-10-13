@@ -31,7 +31,7 @@
 @if (Model != null)
 { 
 
-    <table id="jobTable" class="table table-bordered table-striped table-hover">
+    <table id="jobTable" class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
                 <th>Datum</th>
@@ -50,89 +50,91 @@
             @{
                 foreach (Job2Tour job in Model)
                 {
-                        <tr onclick="showModal(@job.IdTourJob)">
+
+                    <tr onclick="showModal(@job.IdTourJob)" style="@if(job.InOut == "OUT"){<text>background-color:#F2F3F4</text>}">
+
+                        @{
+                        string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
 
 
-                            @{
-                                string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
+                        if (job.InOut == "OUT")
+                        {
+
+                            string returnDT = @job.JobDateReturn.ToString();
+                            returnDT = Regex.Replace(returnDT, "00:00:00$", "");
 
 
-                                if (job.DeliveryType == "Lieferung")
-                                {
-                                    string returnDT = @job.JobDateReturn.ToString();
-                                    returnDT = Regex.Replace(returnDT, "00:00:00$", "");
-
-
-                                    if (!String.IsNullOrEmpty(job.Time))
-                                    {
-                                        <td nowrap>@jobDT<br />@job.Time Uhr<br />(@returnDT)</td>
-                                    }
-                                    else
-                                    {
-                                        <td nowrap>@jobDT<br />(@returnDT)</td>
-                                    }
+                            if (!String.IsNullOrEmpty(job.Time))
+                            {
+                                    <td nowrap>@jobDT<br />@job.Time Uhr<br />(@returnDT)</td>
                                 }
                                 else
                                 {
-                                    if (!String.IsNullOrEmpty(job.Time))
-                                    {
-                                        <td nowrap>@jobDT<br />@job.Time Uhr</td>
-                                    }
-                                    else
-                                    {
-                                        <td nowrap>@jobDT</td>
-                                    }
+                                    <td nowrap>@jobDT<br />(@returnDT)</td>
                                 }
                             }
-
-
-
-                            @{
-                                if (job.IdJobState == 5)
+                            else
+                            {
+                               
+                                if (!String.IsNullOrEmpty(job.Time))
                                 {
-                                    <td>@job.DeliveryType<br />Zumietung</td>
+                                    <td nowrap>@jobDT<br />@job.Time Uhr</td>
                                 }
                                 else
                                 {
-                                    <td>@job.DeliveryType</td>
+                                    <td nowrap>@jobDT</td>
                                 }
                             }
-                            <td nowrap>@job.Number<br />@job.ReadyTime</td>
-                            <td>@job.Caption</td>
+                        }
 
-                            @{
-                                if (job.Address != null)
-                                {
-                                    string[] words = @job.Address.Split(';');
-                                    <td>
-                                        @words[0] <br />
-                                        @{
-                                            if (@words[1] != "")
-                                            {
-                                                @words[1] <br />
-                                            }
-                                            if (@words[4] != "")
-                                            {
-                                                @words[4] <br />
-                                            }
-                                            if (@words[2] != "")
-                                            {
-                                                <text>@words[2]  @words[3]</text>
-                                            }
+
+
+                        @{
+                            if (job.IdJobState == 5)
+                            {
+                                <td>@job.DeliveryType<br />Zumietung</td>
+                            }
+                            else
+                            {
+                                <td>@job.DeliveryType</td>
+                            }
+                        }
+                        <td nowrap>@job.Number<br />@job.ReadyTime</td>
+                        <td>@job.Caption</td>
+
+                        @{
+                            if (job.Address != null)
+                            {
+                                string[] words = @job.Address.Split(';');
+                                <td>
+                                    @words[0] <br />
+                                    @{
+                                        if (@words[1] != "")
+                                        {
+                                            @words[1] <br />
                                         }
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td><br /></td>
-                                }
-
+                                        if (@words[4] != "")
+                                        {
+                                            @words[4] <br />
+                                        }
+                                        if (@words[2] != "")
+                                        {
+                                            <text>@words[2]  @words[3]</text>
+                                        }
+                                    }
+                                </td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
                             }
 
-                            <td>@job.Service</td>
-                            <td>@job.TourName</td>
+                        }
 
-                        </tr>
+                        <td>@job.Service</td>
+                        <td>@job.TourName</td>
+
+                    </tr>
                 }
             }
 
@@ -141,7 +143,7 @@
                                     }
 
 <div class="modal fade" id="modalJobDetail" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTitle">Modal title</h5>
@@ -182,7 +184,8 @@
 
                 <hr class="col-xs-12">
                 <h6>Inhalt:</h6>
-                <div id="modalStock">
+
+                <div class="table-responsive" id="modalStock">
                 </div>
 
             </div>
@@ -212,9 +215,11 @@
                 data: { id: id },
                 success: function (daten) {
 
-                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
                     var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
                     comment = comment.replace(/_*/g, "");
+
+                    address = daten.addressTXT.replace(/(?:\r\n|\r|\n)/g, "<br>");
+
 
                     var jobDate = new Date(daten.jobDate).toLocaleDateString('de-DE');
                     var time = daten.time;
@@ -234,15 +239,53 @@
                     }
 
                     $('#modalTitle').text(daten.number + " " + daten.caption + " (" + daten.deliveryType + ")");
-                    $('#modalAddress').text(daten.address);
+                    $('#modalAddress').html(address);
                     $('#modalComment').text(comment);
-                    $('#modalStock').html(stock);
                     $('#modalWeight').html(daten.weight);
-
                     $('#modalDateTime').html(dateTime);
 
-                    $('#modalJobDetail').modal('show')
+                    var str = daten.stock;
 
+                    var table = document.createElement('TABLE');
+                    table.setAttribute('class', 'table table-bordered col-xs-12')//this is bootstraps classes
+                    var tbdy = document.createElement('TBODY');
+                    table.appendChild(tbdy);
+
+                    var output = document.getElementById("modalStock");
+                        
+                    var temp = new Array();
+                    temp = str.split("\r");
+                    for (var zxc2 = 0; zxc2 < temp.length; zxc2++) {
+
+                        var temp1 = new Array();
+                        temp1 = temp[zxc2].split("\t");
+
+                        if (temp1[1] != undefined) {
+
+                            if (temp1[0] != "") {
+                                var tr = document.createElement('TR');
+                                tbdy.appendChild(tr);
+
+                                var td = document.createElement('TD');
+                                td.appendChild(document.createTextNode(temp1[0]));
+                                tr.appendChild(td);
+
+                                var td1 = document.createElement('TD');
+                                td1.appendChild(document.createTextNode(temp1[1]));
+                                tr.appendChild(td1);
+                            } else {
+                                var value = td1.innerText + "\n" + temp1[1];
+                                td1.innerText = value;
+                            }
+                        }
+                    }
+
+                    if (output.hasChildNodes) {
+                        output.removeChild(output.lastChild);
+                    }
+                    output.appendChild(table);
+
+                    $('#modalJobDetail').modal('show')
                 }
              });
         }

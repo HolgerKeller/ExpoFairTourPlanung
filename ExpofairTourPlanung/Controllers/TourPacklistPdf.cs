@@ -21,6 +21,8 @@ using Microsoft.Extensions.Logging;
 using ExpofairTourPlanung.Models;
 using iText.Layout.Borders;
 using Microsoft.EntityFrameworkCore;
+using iText.Forms;
+using iText.Forms.Fields;
 
 namespace ExpofairTourPlanung.Controllers
 {
@@ -82,14 +84,15 @@ namespace ExpofairTourPlanung.Controllers
                 int cellColor = 0;
                 Color greyColor = new DeviceRgb(224, 224, 224);
 
+                int lfd = 0;
                 foreach (var stock in allStock)
                 {
+
+                    lfd++;
 
                     cellCount = getCell(1, 1, "COUNT");
                     cellContent = getCell(1, 1, "CONTENT");
                     cellAvail = getCell(1, 1, "AVAIL");
-
-
 
                     if (cellColor == 1)
                     {
@@ -112,7 +115,10 @@ namespace ExpofairTourPlanung.Controllers
                     divContent.Add(new Paragraph(stock.Caption));
                     cellContent.Add(divContent);
 
-                    cellAvail.Add(new Paragraph(""));
+
+                    cellAvail.SetNextRenderer(new CheckboxCellRenderer(cellAvail, "cb" + lfd));
+                    cellAvail.SetHeight(50);
+                   // cellAvail.Add(new Paragraph(""));
 
                     mainTable.AddCell(cellCount);
                     mainTable.AddCell(cellContent);
@@ -219,6 +225,43 @@ namespace ExpofairTourPlanung.Controllers
             else
             {
                 return new Cell(rowspan, colspan).SetFontSize(defaultFontSize);
+            }
+        }
+
+        private class CheckboxCellRenderer : CellRenderer
+        {
+            // The name of the check box field
+            protected internal String name;
+
+            public CheckboxCellRenderer(Cell modelElement, String name)
+                : base(modelElement)
+            {
+                 this.name = name;
+            }
+
+            // If renderer overflows on the next area, iText uses getNextRender() method to create a renderer for the overflow part.
+            // If getNextRenderer isn't overriden, the default method will be used and thus a default rather than custom
+            // renderer will be created
+            public override IRenderer GetNextRenderer()
+            {
+                return new CheckboxCellRenderer((Cell)GetModelElement(), name);
+            }
+
+            public override void Draw(DrawContext drawContext)
+            {
+                PdfAcroForm form = PdfAcroForm.GetAcroForm(drawContext.GetDocument(), true);
+
+                // Define the coordinates of the middle
+                float x = (GetOccupiedAreaBBox().GetLeft() + GetOccupiedAreaBBox().GetRight()) / 2;
+                float y = (GetOccupiedAreaBBox().GetTop() + GetOccupiedAreaBBox().GetBottom()) / 2;
+
+                // Define the position of a check box that measures 20 by 20
+                Rectangle rect = new Rectangle(x - 10, y - 10, 20, 20);
+
+                // The 4th parameter is the initial value of checkbox: 'Yes' - checked, 'Off' - unchecked
+                // By default, checkbox value type is cross.
+                PdfButtonFormField checkBox = PdfFormField.CreateCheckBox(drawContext.GetDocument(), rect, name, "Off");
+                form.AddField(checkBox);
             }
         }
 

@@ -52,6 +52,13 @@
 
                 <div class="row form-group">
                     <div class="col-6">
+                        <label for="Tour">Arbeitsbeginn:</label>
+                        <input class="form-control" asp-for="StartWorkDay" type="text" value="8:00 Uhr"/>
+                    </div>
+                 
+                </div>
+                <div class="row form-group">
+                    <div class="col-6">
                         <label for="Tour">Fahrzeug</label>
                         @Html.DropDownListFor(model => Model.VehicleNr, (SelectList)ViewBag.Vehicles, "Welche Fahrzeuge?", new { @class = "form-control", @multiple = "multible", @placeholder = "Fahrzeug auswählen" })
                     </div>
@@ -331,7 +338,7 @@
     </div>
 }
 <div class="modal fade" id="modalJobDetail" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTitle">Modal title</h5>
@@ -372,11 +379,11 @@
 
                 <hr class="col-xs-12">
                 <h6>Inhalt:</h6>
-                <div id="modalStock">
+                <div class="table-responsive" id="modalStock">
                 </div>
 
+
             </div>
-        </div>
     </div>
 </div>
 
@@ -474,15 +481,17 @@
 
         function showModal(id) {
 
-             $.ajax({
+            $.ajax({
                 type: "GET",
                 url: "@Url.Action("GetJobDetail")",
                 data: { id: id },
                 success: function (daten) {
 
-                    var stock = daten.stock.replace(/(?:\r\n|\r|\n)/g, "<br>");
                     var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
                     comment = comment.replace(/_*/g, "");
+
+                    address = daten.addressTXT.replace(/(?:\r\n|\r|\n)/g, "<br>");
+
 
                     var jobDate = new Date(daten.jobDate).toLocaleDateString('de-DE');
                     var time = daten.time;
@@ -490,7 +499,7 @@
 
                     var dateTime = "Jobdatum: " + jobDate;
 
-                    if (daten.jobDateReturn) {
+                    if (daten.jobDateReturn ) {
                         var jobDateReturn = new Date(daten.jobDateReturn).toLocaleDateString('de-DE');
                         dateTime = dateTime + "<br />" + "Rückgabe: " + jobDateReturn;
                     }
@@ -502,16 +511,55 @@
                     }
 
                     $('#modalTitle').text(daten.number + " " + daten.caption + " (" + daten.deliveryType + ")");
-                    $('#modalAddress').text(daten.address);
+                    $('#modalAddress').html(address);
                     $('#modalComment').text(comment);
-                    $('#modalStock').html(stock);
                     $('#modalWeight').html(daten.weight);
                     $('#modalDateTime').html(dateTime);
 
-                    $('#modalJobDetail').modal('show')
+                    var str = daten.stock;
 
+                    var table = document.createElement('TABLE');
+                    table.setAttribute('class', 'table table-bordered col-xs-12')//this is bootstraps classes
+                    var tbdy = document.createElement('TBODY');
+                    table.appendChild(tbdy);
+
+                    var output = document.getElementById("modalStock");
+
+                    var temp = new Array();
+                    temp = str.split("\r");
+                    for (var zxc2 = 0; zxc2 < temp.length; zxc2++) {
+
+                        var temp1 = new Array();
+                        temp1 = temp[zxc2].split("\t");
+
+                        if (temp1[1] != undefined) {
+
+                            if (temp1[0] != "") {
+                                var tr = document.createElement('TR');
+                                tbdy.appendChild(tr);
+
+                                var td = document.createElement('TD');
+                                td.appendChild(document.createTextNode(temp1[0]));
+                                tr.appendChild(td);
+
+                                var td1 = document.createElement('TD');
+                                td1.appendChild(document.createTextNode(temp1[1]));
+                                tr.appendChild(td1);
+                            } else {
+                                var value = td1.innerText + "\n" + temp1[1];
+                                td1.innerText = value;
+                            }
+                        }
+                    }
+
+                    if (output.hasChildNodes) {
+                        output.removeChild(output.lastChild);
+                    }
+                    output.appendChild(table);
+
+                    $('#modalJobDetail').modal('show')
                 }
-            });
+             });
         }
 
 
@@ -553,7 +601,7 @@
                     //e.stopPropagation();
                 }
                 function onClickedIncreaseJobRankingButton(e, id, idTourJob) {
-  
+
                     // Backend call to Add Job to the tour
                     $.ajax({
                         type: "POST",

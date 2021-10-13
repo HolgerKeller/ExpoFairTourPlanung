@@ -17,6 +17,7 @@ namespace ExpofairTourPlanung.Models
         public string TourName { get; set; }
         public int TourNr { get; set; }
         public string Comment { get; set; }
+        public string StartWorkDay { get; set; }
         public string Footer { get; set; }
         [Column(TypeName = "date")]
         public DateTime TourDate { get; set; }
