@@ -4,10 +4,10 @@
     ViewData["Title"] = "Touren Übersicht";
 }
 
-<h3>Tourenpläne</h3>
+<h3>Touren</h3>
 <br />
 
-<form asp-controller="TourList" id="Tourlist" asp-action="Index" enctype="multipart/form-data">
+<form asp-controller="Delivery" id="Delivery" asp-action="List" enctype="multipart/form-data">
     <div class="row form-group">
         <div class="col-2">
             <div class="col-form-label">
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="col-3">
-            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY"  />
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" />
         </div>
         <div class="col-2">
             <button class="btn btn-primary" type="submit">Anzeigen</button>
@@ -44,7 +44,7 @@
                         <td>@tour.TourDate.ToString("dd.MM.yyyy") </td>
                         <td>@tour.TourName</td>
                         <td class="text-right">
-                            <a asp-route-id="@tour.IdTour" asp-controller="Tour" asp-action="CreateEditTour" class="btn btn-default" aria-label="Bearbeiten">
+                            <a asp-route-id="@tour.IdTour" asp-controller="Delivery" asp-action="OpenTour" class="btn btn-default" aria-label="Bearbeiten">
                                 <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
                             </a>
                             <button onclick="onClickedCreateTourPDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
@@ -52,9 +52,6 @@
                             </button>
                             <button onclick="onClickedCreateAllStockPDF(@tour.IdTour)" class="btn btn-default" aria-label="PDF">
                                 <span class="fa fa-clipboard-list fa-lg" aria-hidden="true"></span>
-                            </button>
-                            <button onclick="onClickedDeleteTourButton(@tour.IdTour)" class="btn btn-default" aria-label="Löschen">
-                                <span class="fa fa-trash-alt fa-lg" aria-hidden="true"></span>
                             </button>
                         </td>
                     </tr>
@@ -64,12 +61,18 @@
         </tbody>
     </table>
 
+    <div id="partialList">
 
-    <a class="btn btn-primary" asp-controller="Tour" asp-action="CreateEditTour">Tourenplan anlegen</a>
+    </div>
+
+
+
+
+
 }
 
-    @section Scripts {
-        <script>
+@section Scripts {
+    <script>
 
     $(document).ready(function () {
             $('#tourTable').DataTable({
@@ -81,34 +84,6 @@
             document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
         });
 
-    function onClickedDeleteTourButton(id) {
-           Swal.fire({
-                title: 'Möchtest du den Tourenplan wirklich löschen?',
-                icon: 'error',
-                showCloseButton: true,
-                focusConfirm: false,
-                confirmButtonText:
-                    'Ja, löschen!',
-           }).then((result) => {
-                if (result.isConfirmed) {
-
-                    // Backend call to delete tour by id
-                    $.ajax({
-                        type: "POST",
-                        url: "@Url.Action("DelTourById")",
-                        data: { id: id },
-                        success: function (msg) {
-                            Swal.fire('Wurde gelöscht!', '', 'success').then((result) => {
-                                location.reload();
-                            });
-                        },
-                        error: function (msg) {
-                            Swal.fire('Ups, etwas ist schief gelaufen!', '', 'error')
-                        }
-                    });
-                }
-           })
-    }
 
     function onClickedCreateTourPDF( id ) {
         var win = window.open("/TourPdf/CreateTourPdf/" + id, '_blank');
@@ -120,5 +95,5 @@
         win.document.title = "Packliste für Tour";
     }
 
-        </script>
-    }
+    </script>
+}

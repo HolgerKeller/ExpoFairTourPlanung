@@ -26,37 +26,38 @@ using iText.Forms.Fields;
 
 namespace ExpofairTourPlanung.Controllers
 {
-    public class TourPacklistPdf : Controller
+    public class JobPacklistPdf : Controller
     {
 
         private readonly ILogger<TourPdf> _logger;
 
         static private EasyjobDbContext _context;
 
-        public TourPacklistPdf(EasyjobDbContext context, ILogger<TourPdf> logger)
+        public JobPacklistPdf(EasyjobDbContext context, ILogger<TourPdf> logger)
         {
             _context = context;
             _logger = logger;
         }
 
         [HttpGet]
-        public ActionResult CreateAllStockPdf(int id)
+        public ActionResult CreateJobStockPdf(int id)
         {
             byte[] pdfBytes;
 
+//            TODO Job Holen
 
-            var tourFromDb = _context.Tours.SingleOrDefault(x => x.IdTour == id);
+            var jobFromDb = _context.Job2Tours.SingleOrDefault(x => x.IdJob == id && x.InOut == "OUT");
 
-            var idTour = new Microsoft.Data.SqlClient.SqlParameter()
+            var jobList = new Microsoft.Data.SqlClient.SqlParameter()
             {
-                ParameterName = "@IdTour",
+                ParameterName = "@Jobs",
                 SqlDbType = System.Data.SqlDbType.VarChar,
                 Direction = System.Data.ParameterDirection.Input,
                 Size = 10,
-                Value = id
+                Value = id.ToString()
             };
 
-            var allStock = _context.Stock2JobSPs.FromSqlRaw("exec expofair.CreatePacklistByTour @IdTour", idTour);
+            var allStock = _context.Stock2JobSPs.FromSqlRaw("exec expofair.CreatePacklistByJobs @Jobs", jobList);
 
             using (var stream = new System.IO.MemoryStream())
             using (var wri = new PdfWriter(stream))
@@ -64,7 +65,7 @@ namespace ExpofairTourPlanung.Controllers
             using (var doc = new Document(pdf, PageSize.A4, false))
             {
 
-                TableHeaderEventHandler handler = new TableHeaderEventHandler(doc, tourFromDb);
+                TableHeaderEventHandler handler = new TableHeaderEventHandler(doc, jobFromDb);
                 pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, handler);
 
                 // Calculate top margin to be sure that the table will fit the margin.
@@ -150,32 +151,11 @@ namespace ExpofairTourPlanung.Controllers
                 pdfBytes = stream.ToArray();
             }
             var fileResult = new FileContentResult(pdfBytes, "application/pdf");
-            fileResult.FileDownloadName = "Packliste" + "_" + tourFromDb.TourDate.ToString("ddMMyyyy") + "_" + tourFromDb.TourNr.ToString() + ".pdf";
+            fileResult.FileDownloadName = "Packliste" + "_" + jobFromDb.JobDate.ToString("ddMMyyyy") + "_" + jobFromDb.IdJob.ToString() + ".pdf";
 
             return (fileResult);
         }
 
-        static string getStaffNames(string StaffNumbers)
-        {
-            string StaffNames = "";
-            if (StaffNumbers != null)
-            {
-                string[] numbers = StaffNumbers.Split(',');
-                if (numbers != null)
-                {
-                    foreach (var num in numbers)
-                    {
-                        var employees = _context.Staffs.Where(x => x.EmployeeNr == num).ToList();
-                        foreach (var employee in employees)
-                        {
-                            StaffNames = StaffNames + employee.EmployeeName1 + ',';
-                        }
-                    }
-                    StaffNames = StaffNames.Remove(StaffNames.Length - 1, 1);
-                }
-            }
-            return StaffNames;
-        }
 
         Paragraph formatContent(string content)
         {
@@ -283,14 +263,14 @@ namespace ExpofairTourPlanung.Controllers
             private Table table;
             private float tableHeight;
             private Document doc;
-            private Tour tour;
+            private Job2Tour job;
 
-            public TableHeaderEventHandler(Document doc, Tour tour)
+            public TableHeaderEventHandler(Document doc, Job2Tour job)
             {
                 this.doc = doc;
-                this.tour = tour;
+                this.job = job;
 
-                InitHeaderTable(tour);
+                InitHeaderTable(job);
 
                 TableRenderer renderer = (TableRenderer)table.CreateRendererSubTree();
                 renderer.SetParent(new DocumentRenderer(doc));
@@ -323,42 +303,42 @@ namespace ExpofairTourPlanung.Controllers
                 return tableHeight;
             }
 
-            private void InitHeaderTable(Tour tour)
+            private void InitHeaderTable(Job2Tour job)
             {
                 var culture = new System.Globalization.CultureInfo("de-DE");
 
-                table = new Table(UnitValue.CreatePercentArray(new float[] { 3, 3, 3, 2 })).UseAllAvailableWidth().SetMarginBottom(5);
+                table = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 3, 3 })).UseAllAvailableWidth().SetMarginBottom(5);
 
-                Cell cell1 = new Cell().Add(new Paragraph("Fahrer").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
+                Cell cell1 = new Cell().Add(new Paragraph("JobNr").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
                 Div div1 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0);
-                div1.Add(new Paragraph(TourPacklistPdf.getStaffNames(tour.Driver)).SetFontSize(12));
+                div1.Add(new Paragraph(job.Number).SetFontSize(10));
                 cell1.Add(div1);
                 table.AddCell(cell1);
 
-                Cell cell2 = new Cell().Add(new Paragraph("Datum").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
-                cell2.Add(new Paragraph(tour.TourDate.ToString("dd.MM.yyyy")).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
+                Cell cell2 = new Cell().Add(new Paragraph("Job-Datum").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                cell2.Add(new Paragraph(job.JobDate.ToString("dd.MM.yyyy")).SetFontSize(10).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
                 table.AddCell(cell2);
 
-                Cell cell3 = new Cell().Add(new Paragraph("Wochentag").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
-                cell3.Add(new Paragraph(culture.DateTimeFormat.GetDayName(tour.TourDate.DayOfWeek)).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
+                Cell cell3 = new Cell().Add(new Paragraph("JobTyp").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                cell3.Add(new Paragraph(job.DeliveryType).SetFontSize(10).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
                 table.AddCell(cell3);
 
-                Cell cell4 = new Cell(2, 1).Add(new Paragraph("LKW").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
-                if (!String.IsNullOrEmpty(tour.VehicleNr))
+                Cell cell4 = new Cell(2, 1).Add(new Paragraph("Adresse").SetFontSize(6).SetVerticalAlignment(VerticalAlignment.TOP)).SetHorizontalAlignment(HorizontalAlignment.CENTER);
+                if (!String.IsNullOrEmpty(job.AddressTXT))
                 {
-                    cell4.Add(new Paragraph(tour.VehicleNr).SetFontSize(12).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
+                    cell4.Add(new Paragraph(job.AddressTXT).SetFontSize(10).SetTextAlignment(TextAlignment.CENTER).SetVerticalAlignment(VerticalAlignment.BOTTOM).SetHeight(20));
                 }
                 table.AddCell(cell4);
 
-                Cell cell12 = new Cell().Add(new Paragraph("Verantwortlich").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
+                Cell cell12 = new Cell().Add(new Paragraph("Projektleiter").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
                 Div div2 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
-                div2.Add(new Paragraph(TourPacklistPdf.getStaffNames(tour.Master)).SetFontSize(12));
+                div2.Add(new Paragraph(job.UserName).SetFontSize(10));
                 cell12.Add(div2);
                 table.AddCell(cell12);
 
-                Cell cell22 = new Cell(1, 2).Add(new Paragraph("Tourname").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
+                Cell cell22 = new Cell(1, 2).Add(new Paragraph("Job").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT).SetHeight(36);
                 Div div22 = new Div().SetTextAlignment(TextAlignment.CENTER).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
-                div22.Add(new Paragraph(tour.TourName).SetFontSize(12));
+                div22.Add(new Paragraph(job.Caption).SetFontSize(10));
                 cell22.Add(div22);
                 table.AddCell(cell22);
             }

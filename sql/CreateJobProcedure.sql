@@ -1,4 +1,4 @@
-use [easyjob]
+ use [easyjob]
 GO
 -- DROP PROCEDURE [expofair].[CustJob_GetByDate]
 -- GO
@@ -38,7 +38,10 @@ Time,
 ReadyTime,
 SplitCounter,
 JobType,
-DeliveryType
+DeliveryType,
+LastUpdate,
+UserName,
+UserEmail
 )
 SELECT 
        t1.IdJob,
@@ -68,7 +71,12 @@ SELECT
 	   convert(varchar(5), t5.SetupEnd,108),
 	   1,
 	   (select x2.Caption FROM [easyjob].[dbo].[Project] x1, [easyjob].[dbo].[ProjectType] x2 where t1.IdProject = x1.IdProject and x2.IdProjectType = x1.IdProjectType),
-	   'Lieferung'
+	   'Lieferung',
+	   CASE WHEN t1.UpdateTime IS NULL THEN t1.CreationTime ELSE t1.UpdateTime END,	
+	   CASE WHEN t1.UpdateTime IS NULL THEN ((select FirstName + ' ' + SurName from [easyjob].[dbo].[User] where IdUser = t1.IdUserCreated)) ELSE
+	   (select FirstName + ' ' + SurName from [easyjob].[dbo].[User] where IdUser = t1.IdUserUpdated ) END,
+	   CASE WHEN t1.UpdateTime IS NULL THEN (select EMail from [dbo].[Address] s1,[dbo].[User] s2  where s1.IdAddress = s2.IdAddress and s2.IdUser = t1.IdUserCreated) ELSE
+	   ( select EMail from [dbo].[Address] s1,[dbo].[User] s2  where s1.IdAddress = s2.IdAddress and s2.IdUser = t1.IdUserUpdated ) END
  	FROM 
 		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4, [easyjob].[dbo].[CusProjectInfo] t5
  where  t1.IdJobState in (1,5) and cast(t1.DayTimeOut as Date) >= convert(date, @DateStart) and cast(t1.DayTimeOut as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState and t5.IdJob = t1.IdJob
@@ -99,7 +107,10 @@ Time,
 ReadyTime,
 SplitCounter,
 JobType,
-DeliveryType
+DeliveryType,
+LastUpdate,
+UserName,
+UserEmail
 )
 SELECT 
        t1.IdJob,
@@ -128,7 +139,12 @@ SELECT
 	   convert(varchar(5), t5.BreakdownEnd,108),
 	   1,
 	   (select x2.Caption FROM [easyjob].[dbo].[Project] x1, [easyjob].[dbo].[ProjectType] x2 where t1.IdProject = x1.IdProject and x2.IdProjectType = x1.IdProjectType),
-	   'Abholung'
+	   'Abholung',
+	   CASE WHEN t1.UpdateTime IS NULL THEN t1.CreationTime ELSE t1.UpdateTime END,
+	   CASE WHEN t1.UpdateTime IS NULL THEN ((select FirstName + ' ' + SurName from [easyjob].[dbo].[User] where IdUser = t1.IdUserCreated)) ELSE
+	   (select FirstName + ' ' + SurName from [easyjob].[dbo].[User] where IdUser = t1.IdUserUpdated ) END,
+	   CASE WHEN t1.UpdateTime IS NULL THEN (select EMail from [dbo].[Address] s1,[dbo].[User] s2  where s1.IdAddress = s2.IdAddress and s2.IdUser = t1.IdUserCreated) ELSE
+	   ( select EMail from [dbo].[Address] s1,[dbo].[User] s2  where s1.IdAddress = s2.IdAddress and s2.IdUser = t1.IdUserUpdated ) END
 	FROM 
 		[easyjob].[dbo].[Job] t1, [easyjob].[dbo].[Address] t2, [easyjob].[dbo].[JobService] t3, [easyjob].[dbo].[JobState] t4 , [easyjob].[dbo].[CusProjectInfo] t5
  where  t1.IdJobState in  (1,5) and cast(t1.DayTimeIn as Date) >= convert(date, @DateStart) and cast(t1.DayTimeIn as Date) <= convert(date , @DateEnd) and t1.IdAddress_Delivery = t2.IdAddress and t1.IdJobService = T3.IdJobService and t1.IdJobState = T4.IdJobState  and t5.IdJob = t1.IdJob
@@ -170,13 +186,15 @@ SELECT
 
 insert into [expofair].[stock2job] (
 IdTourJob, 
+IdJob,
 IdStockType,
 Factor, 
 CustomNumber,
 Caption,
+Addition,
 Weight
 ) 
-	SELECT @TOURJOB, idstocktype, factor, (SELECT CustomNumber FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) CustomNumber,
+	SELECT @TOURJOB, IdJob, idstocktype, factor, (SELECT CustomNumber FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) CustomNumber,
 	CASE WHEN CUSTOM2 IS NULL
 	THEN
 		CASE WHEN caption IS NULL 
@@ -185,8 +203,9 @@ Weight
 		END 
 	ELSE
 	Custom2
-	END
-	+ IIF(Custom1 is NULL, '' , CHAR(13) + Custom1),
+	END,
+	Custom1,
+--	+ IIF(Custom1 is NULL, '' , CHAR(13) + Custom1),
 	(SELECT weight FROM stocktype WHERE idstocktype = stocktype2job.idstocktype) AS Weight
   FROM stocktype2job 
   WHERE 
@@ -209,13 +228,13 @@ update [expofair].[job2Tour]  set Weight = (select sum(Factor * Weight) from [ex
 -- SELECT RIGHT('00000' + CAST(@Int AS VARCHAR(6)), 6)
 -- 			  convert(varchar(10),Factor) + ' ' + Caption Stock
 --			  RIGHT('000' + CAST(Factor AS VARCHAR(3)), 3) +  CHAR(9) + Replace(Caption, CHAR(13), CHAR(13) + CHAR(9)) Stock
-
+--			  REPLACE(RIGHT('000' + CAST(Factor AS VARCHAR(3)), 3) +  CHAR(9) + Replace(Caption, CHAR(13), CHAR(13) + CHAR(9)), CHAR(10),' ') Stock from [expofair].[stock2job] 
 
 			  SET @STOCK = ''
 			  DECLARE @temp VARCHAR(1000)
 
 			  DECLARE Cur2 CURSOR READ_ONLY FOR SELECT
-			  RIGHT('000' + CAST(Factor AS VARCHAR(3)), 3) +  CHAR(9) + Replace(Caption, CHAR(13), CHAR(13) + CHAR(9)) Stock from [expofair].[stock2job] 
+			  REPLACE(RIGHT('000' + CAST(Factor AS VARCHAR(3)), 3) +  CHAR(9) + Replace(Caption + IIF( Addition Is NOT NULL, CHAR(13) + Addition, ''), CHAR(13), CHAR(13) + CHAR(9)), CHAR(10),' ') Stock from [expofair].[stock2job] 
 			  where  IdTourJob = @TOURJOB
 
 			  OPEN Cur2 
@@ -232,7 +251,9 @@ update [expofair].[job2Tour]  set Weight = (select sum(Factor * Weight) from [ex
 			Close cur2
 			DEALLOCATE cur2 
 
-			update [expofair].[job2Tour] set Stock = @STOCK where IdTourJob = @TOURJOB
+	--	update [expofair].[job2Tour] set Stock = @STOCK where IdTourJob = @TOURJOB
+		
+		   update [expofair].[job2Tour] set Stock = LEFT(@STOCK, NULLIF(LEN(@STOCK)-1,-1)) where IdTourJob = @TOURJOB
 
 -----------------------------------------------------------------------------------------------------------
 	        FETCH NEXT FROM Cur1 into @TOURJOB, @ID

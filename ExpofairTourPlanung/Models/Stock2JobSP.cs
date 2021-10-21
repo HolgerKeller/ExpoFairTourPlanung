@@ -14,6 +14,7 @@ namespace ExpofairTourPlanung.Models
         public int? StockType { get; set; }
         public int? Count { get; set; }
         public string Caption { get; set; }
+        public string CustomNumber { get; set; }
         public decimal? Weight { get; set; }
         public decimal? SumWeight { get; set; }
     }

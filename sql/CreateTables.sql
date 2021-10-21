@@ -4,7 +4,6 @@ GO
 --delete from [expofair].[job2Tour] where 1=1
 --delete from [expofair].[Tour] where 1=1
 --delete from [expofair].[stock2job] where 1=1
-
 GO
 drop TABLE [expofair].[job2Tour];
 GO
@@ -43,6 +42,9 @@ ContactPhone NVARCHAR(100) NULL,
 ReadyTime NVARCHAR(200) NULL,
 JobType NVARCHAR(50) NULL,
 DeliveryType NVARCHAR(50) NULL,
+UserName NVARCHAR(50) NULL,
+UserEmail NVARCHAR(50) NULL,
+LastUpdate DATETIME NULL,
 PRIMARY KEY( IdTourJob),
 CONSTRAINT AK_JOB_IN_OUT UNIQUE(IdJob, In_Out, SplitCounter)  WITH (IGNORE_DUP_KEY = ON)
 );
@@ -114,12 +116,48 @@ GO
 create Table [expofair].[stock2job] (
 IdStock INT NOT NULL IDENTITY(1,1),
 IdTourJob INT NULL,
+IdJob INT NULL,
 IdStockType INT  NULL,
 CustomNumber VARCHAR(20) NULL,
 Factor INT NULL,
 Caption NVARCHAR(200) NULL,
+Addition NVARCHAR(200) NULL,
 Weight DECIMAL NULL,
 Volume DECIMAL NULL,
 Status NVARCHAR(10) NULL,
 PRIMARY KEY( IdStock)
-)
+);
+GO
+drop TABLE [expofair].[Del4Job];
+GO
+create Table [expofair].[Del4Job] (
+IdDelJob INT NOT NULL IDENTITY(1,1),
+IdJob INT NOT NULL,
+IdTourJob INT NOT NULL,
+In_Out NVARCHAR(20) NOT NULL,
+Number NVARCHAR(30) NULL,
+Caption NVARCHAR(MAX) NULL,
+JobDate Date NOT NULL,
+DeliveryTime DATETIME NULL,
+Time NVARCHAR(200) NULL,
+Status NVARCHAR(50) NULL,
+StatusDel NVARCHAR(50) NULL,
+AddressTXT NVARCHAR(500) NULL,
+Customer NVARCHAR(100) NULL,
+CustomerEmail NVARCHAR(100) NULL,
+ReadyTime NVARCHAR(200) NULL,
+UserName NVARCHAR(100) NULL,
+UserEmail NVARCHAR(50) NULL,
+HeadName NVARCHAR(100) NULL,
+HeadEmail NVARCHAR(100) NULL,
+Contact NVARCHAR(100) NULL,
+ContactPhone NVARCHAR(100) NULL,
+LastUpdate DATETIME NULL,
+PackMaterial NVARCHAR(1000),
+TransportMaterial NVARCHAR(1000),
+Comment NVARCHAR(1000),
+CustomerSignature NVARCHAR(MAX) NULL,
+HeadSignature NVARCHAR(MAX) NULL,
+PRIMARY KEY(IdDelJob)
+);
+GO

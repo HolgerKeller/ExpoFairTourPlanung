@@ -34,13 +34,13 @@
     <table id="jobTable" class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
-                <th>Datum</th>
-                <th>An/Ab</th>
-                <th>Job<br />Fertig bis</th>
+                <th>Datum<br />Fertig bis</th>
+                <th>Job</th>
                 <th>Beschreibung</th>
                 <th>Adresse</th>
                 <th>Service</th>
                 <th>Tour</th>
+                <th>&nbsp;</th>
 
             </tr>
         </thead>
@@ -51,90 +51,92 @@
                 foreach (Job2Tour job in Model)
                 {
 
-                    <tr onclick="showModal(@job.IdTourJob)" style="@if(job.InOut == "OUT"){<text>background-color:#F2F3F4</text>}">
+                        <tr onclick="showModal(@job.IdTourJob)" style="@if(job.InOut == "OUT"){<text>background-color:#F2F3F4</text>}">
+                            <td nowrap>
+                                @{
 
-                        @{
-                        string jobDT = @job.JobDate.ToString("dd.MM.yyyy");
+                                    @job.JobDate.ToString("dd.MM.yyyy"); <br />
 
+                                    if (job.InOut == "OUT")
+                                    {
+                                        string returnDT = @job.JobDateReturn.ToString();
+                                        returnDT = Regex.Replace(returnDT, "00:00:00$", "");
 
-                        if (job.InOut == "OUT")
-                        {
-
-                            string returnDT = @job.JobDateReturn.ToString();
-                            returnDT = Regex.Replace(returnDT, "00:00:00$", "");
-
-
-                            if (!String.IsNullOrEmpty(job.Time))
-                            {
-                                    <td nowrap>@jobDT<br />@job.Time Uhr<br />(@returnDT)</td>
-                                }
-                                else
-                                {
-                                    <td nowrap>@jobDT<br />(@returnDT)</td>
-                                }
-                            }
-                            else
-                            {
-                               
-                                if (!String.IsNullOrEmpty(job.Time))
-                                {
-                                    <td nowrap>@jobDT<br />@job.Time Uhr</td>
-                                }
-                                else
-                                {
-                                    <td nowrap>@jobDT</td>
-                                }
-                            }
-                        }
-
-
-
-                        @{
-                            if (job.IdJobState == 5)
-                            {
-                                <td>@job.DeliveryType<br />Zumietung</td>
-                            }
-                            else
-                            {
-                                <td>@job.DeliveryType</td>
-                            }
-                        }
-                        <td nowrap>@job.Number<br />@job.ReadyTime</td>
-                        <td>@job.Caption</td>
-
-                        @{
-                            if (job.Address != null)
-                            {
-                                string[] words = @job.Address.Split(';');
-                                <td>
-                                    @words[0] <br />
-                                    @{
-                                        if (@words[1] != "")
-                                        {
-                                            @words[1] <br />
-                                        }
-                                        if (@words[4] != "")
-                                        {
-                                            @words[4] <br />
-                                        }
-                                        if (@words[2] != "")
-                                        {
-                                            <text>@words[2]  @words[3]</text>
-                                        }
+                                        <text>(</text>@returnDT<text>)</text><br />
                                     }
+                                    if (!String.IsNullOrEmpty(job.Time))
+                                    {
+                                        @job.Time<text> Uhr</text><br />
+                                    }
+                                    if (!String.IsNullOrEmpty(job.ReadyTime))
+                                    {
+                                        <text>Fertig: </text>@job.ReadyTime<text> Uhr</text>
+                                    }
+
+                                }
+                            </td>
+
+                                @{
+
+                                    if (job.IdJobState == 5)
+                                    {
+                                        <td nowrap>
+                                            @job.Number<br />@job.DeliveryType<br />Zumietung
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td nowrap>
+                                            @job.Number<br />@job.DeliveryType
+                                        </td>
+                                    }
+
+                                }
+
+                                <td>@job.Caption</td>
+
+                                @{
+                                    if (job.Address != null)
+                                    {
+                                        string[] words = @job.Address.Split(';');
+                                        <td>
+                                            @words[0] <br />
+                                            @{
+                                                if (@words[1] != "")
+                                                {
+                                                    @words[1] <br />
+                                                }
+                                                if (@words[4] != "")
+                                                {
+                                                    @words[4] <br />
+                                                }
+                                                if (@words[2] != "")
+                                                {
+                                                    <text>@words[2]  @words[3]</text>
+                                                }
+                                            }
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>&nbsp;</td>
+                                    }
+
+                                }
+
+                                <td>@job.Service</td>
+                                <td>@job.TourName</td>
+                                <td nowrap>
+
+                                    @{
+ 
+                                            <button onclick="onClickedCreateJobStockPDF(event ,@job.IdJob)" class="btn btn-default" aria-label="PDF">
+                                                <span class="fa fa-clipboard-list fa-lg" aria-hidden="true"></span>
+                                            </button>
+                                        }
+
                                 </td>
-                            }
-                            else
-                            {
-                                <td>&nbsp;</td>
-                            }
-
-                        }
-
-                        <td>@job.Service</td>
-                        <td>@job.TourName</td>
-
-                    </tr>
+                            </tr>
                 }
             }
 
@@ -289,6 +291,29 @@
                 }
              });
         }
+
+        function onClickedCreateJobStockPDF(e, id) {
+            var win = window.open("/JobPacklistPdf/CreateJobStockPdf/" + id, '_blank');
+            win.document.title = "Packliste für Job";
+            myEventHandler(e);
+        }
+
+        function myEventHandler(e) {
+            if (!e)
+                e = window.event;
+
+            //IE9 & Other Browsers
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            //IE8 and Lower
+            else {
+                e.cancelBubble = true;
+            }
+        }
+
+
+
 
 
         @*function onClickedDeleteButton(id) {

@@ -116,7 +116,7 @@
                         <h5>folgende Jobs sind der Tour zugeordnet:</h5>
                     </div>
                     <div class="col-4">
-                        <h5>Gesamtgewicht:  @Model.Weight Kg</h5>
+                        <h5>Gesamtmasse:  @Model.Weight Kg</h5>
                         </div>
                 </div>
             </div>
@@ -184,7 +184,7 @@
 
                         <td>@job.Number<br />@job.ReadyTime</td>
 
-                        <td>@job.Caption<br />Gewicht: @job.Weight Kg </td>
+                        <td>@job.Caption<br />Masse: @job.Weight Kg </td>
 
                         @{
 
@@ -523,6 +523,9 @@
                     var tbdy = document.createElement('TBODY');
                     table.appendChild(tbdy);
 
+
+                    // Tab-Taste alt+09
+
                     var output = document.getElementById("modalStock");
 
                     var temp = new Array();
@@ -580,7 +583,7 @@
                         }
                     });
                     myEventHandler(e);
-                    e.stopPropagation();
+//                    e.stopPropagation();
         }
         function onClickedDelJobButton(e, id, idTourJob) {
 

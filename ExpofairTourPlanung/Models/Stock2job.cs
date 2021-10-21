@@ -13,6 +13,7 @@ namespace ExpofairTourPlanung.Models
     {
         [Key]
         public int IdStock { get; set; }
+        public int? IdJob { get; set; }
         public int? IdTourJob { get; set; }
         public int? IdStockType { get; set; }
         public int? Factor { get; set; }

@@ -1,0 +1,61 @@
+﻿@model ExpofairTourPlanung.Models.Del4Job
+
+@{
+    ViewData["Title"] = "Jobdaten";
+}
+
+<form asp-controller="Delivery" asp-action="SaveShowJob" enctype="multipart/form-data">
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>Job: @Model.Caption (@Model.Number)</h5>
+        </div>
+
+        <div class="card-body">
+
+            @Html.Hidden("IdDelJob", (Model != null) ? Model.IdDelJob : 0)
+
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Tour">Datum:</label>
+                    <input class="form-control" asp-for="JobDate" type="text" readonly />
+                </div>
+                <div class="col-6">
+                    <label for="Tour">Expofair Mitarbeiter:</label>
+                    <input class="form-control" asp-for="HeadName" type="text" readonly />
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="Tour">Status</label>
+                    @Html.DropDownListFor(model => Model.Status, (SelectList)ViewBag.Status, "Auswahl Status", new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="Tour">Kommentar</label>
+                    <textarea rows="10" class="form-control" asp-for="Comment" placeholder="Kommentar"></textarea>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Tour">Kunde:</label>
+                    <input class="form-control" asp-for="Customer" type="text" />
+                </div>
+                <div class="col-6">
+                    <label for="Tour">Kunden Email:</label>
+                    <input class="form-control" asp-for="CustomerEmail" type="text" />
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" type="submit">Weiter</button>
+            </div>
+        </div>
+    </div>
+</form>

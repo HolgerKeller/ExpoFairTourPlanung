@@ -1,0 +1,109 @@
+﻿@model ExpofairTourPlanung.Models.Del4Job
+
+@{
+    ViewData["Title"] = "Jobdaten";
+}
+
+<form asp-controller="Delivery" asp-action="ProcessJob" enctype="multipart/form-data" method="post">
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>Job: @Model.Caption (@Model.Number)</h5>
+        </div>
+
+        <div class="card-body">
+
+            @Html.Hidden("IdDelJob", (Model != null) ? Model.IdDelJob : 0)
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Tour">Datum:</label>
+                    <input class="form-control" asp-for="JobDate" type="text" readonly />
+                </div>
+                <div class="col-6">
+                    <label for="Tour">Expofair Mitarbeiter:</label>
+                    <input class="form-control" asp-for="HeadName" type="text" readonly />
+                </div>
+            </div>
+
+
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="Tour">Status:</label>
+                    <input class="form-control" asp-for="Status" type="text" readonly />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12">
+                    <label for="Tour">Kommentar</label>
+                    <textarea rows="10" class="form-control" asp-for="Comment" placeholder="Kommentar"></textarea>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-6">
+                    <label for="Tour">Kunde:</label>
+                    <input class="form-control" asp-for="Customer" type="text" readonly />
+                </div>
+                <div class="col-6">
+                    <label for="Tour">Kunde Email:</label>
+                    <input class="form-control" asp-for="CustomerEmail" type="text" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-4">
+                <label for="Tour">Unterschrift Kunde:</label>
+                <canvas width="400" height="200" id="signature" style="border:1px solid black; padding-left:10px"></canvas><br>
+
+                    <button type="button" id="accept"
+                            class="btn btn-primary">
+                        Unterschrift OK
+                    </button>
+                    <button type="button" id="clear"
+                            class="btn btn-primary">
+                        Löschen
+                    </button>
+
+                    @*<img width="200" height="300" id="savetarget" style="border:1px solid black"><br>*@
+
+                    <input type="hidden" asp-for="CustomerSignature" id="CustomerSignature">
+
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">Weiter</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+
+    <script>
+        $(function () {
+
+            var canvas = document.querySelector('#signature');
+            var pad = new SignaturePad(canvas);
+
+            $('#accept').click(function () {
+
+                var data = pad.toDataURL();
+
+                //$('#savetarget').attr('src', data);
+                $('#CustomerSignature').val(data);
+                pad.off();
+
+            });
+
+            $('#clear').click(function () {  
+                pad.clear();
+            });
+
+        });
+    </script>
+}

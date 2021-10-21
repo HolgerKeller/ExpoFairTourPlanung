@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using ExpofairTourPlanung.Models;
 using iText.Layout.Borders;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace ExpofairTourPlanung.Controllers
 {
@@ -98,6 +99,11 @@ namespace ExpofairTourPlanung.Controllers
                 cellContent = getCell(1, 1, "CONTENT");
                 cellAdresse = getCell(1, 1, "ADR");
 
+
+                _logger.LogInformation("TourNR" + tourFromDb.IdTour );
+
+
+
                 cellTime.Add(formatContent("##" + tourFromDb.StartWorkDay + "##"));
                 cellAdresse.Add(new Paragraph(""));
                 cellContent.Add(formatContent("##ARBEITSBEGINN##"));
@@ -109,10 +115,14 @@ namespace ExpofairTourPlanung.Controllers
 
                 int cellColor = 0;
 
-                Color greyColor = new DeviceRgb(240, 240, 240);
+                Color greyColor = new DeviceRgb(242, 243, 244);
 
                 foreach (var job in jobs)
                 {
+
+                    _logger.LogInformation("JobNR: " + job.IdJob);
+
+
 
                     cellTime = getCell(1,1,"TIME");
                     cellContent = getCell(1,1,"CONTENT");
@@ -168,12 +178,97 @@ namespace ExpofairTourPlanung.Controllers
 
                     if (!String.IsNullOrEmpty(job.Caption)) content += "##" + job.Caption + "##" + "\n";
 
-                    if (!String.IsNullOrEmpty(job.Stock)) content += job.Stock;
+                    cellContent.Add(formatContent(content));
+
+
+                    // if (!String.IsNullOrEmpty(job.Stock)) content += job.Stock;
+
+                    string[] lines = job.Stock.Split(
+                    new[] { "\r\n", "\r", "\n" },StringSplitOptions.None);
+
+                    string factor = "";
+                    string caption = "";
+                    string factorOld = "";
+                    string captionOld = "";
+
+                    Table stockTable = new Table(UnitValue.CreatePercentArray(new float[] { 10, 90 })).UseAllAvailableWidth();
+
+                    stockTable.SetBorder(Border.NO_BORDER);
+
+
+                    _logger.LogInformation("lines.length: " + lines.Length);
+
+
+
+
+                    if (lines.Length > 0)
+                    {
+
+
+                        int flagAbZeile2 = 0;
+                        foreach (string line in lines)
+                        {
+
+                            _logger.LogInformation("line: " + line);
+
+                            _logger.LogInformation("line HEX: " + BitConverter.ToString(Encoding.Default.GetBytes(line)));
+
+                            string[] words = line.Split(
+                                new[] { "\t" }, StringSplitOptions.None);
+
+                            _logger.LogInformation("words.length: " + words.Length);
+
+
+                            _logger.LogInformation("words[0]: " + words[0]);
+
+
+
+                            if (words.Length > 1)
+                            {
+                                factor = words[0];
+                                caption = words[1];
+                                _logger.LogInformation("words[1]: " + words[1]);
+                            
+
+                                if(flagAbZeile2 == 0)
+                                {
+                                    factorOld = factor;
+                                }
+
+                                if(factor != "" && flagAbZeile2 == 1)
+                                {
+                                    Cell cell1 = new Cell(1, 1).Add(new Paragraph(factorOld)).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+                                    Cell cell2 = new Cell(1, 1).Add(new Paragraph(captionOld)).SetBorder(Border.NO_BORDER);
+
+                                    stockTable.AddCell(cell1);
+                                    stockTable.AddCell(cell2);
+                                    captionOld = "";
+                                    factorOld = factor;
+
+                                }
+                                captionOld += caption;
+                                flagAbZeile2 = 1;
+
+                            }
+                        }
+                    }
+
+                    Cell cell11 = new Cell(1, 1).Add(new Paragraph(factorOld)).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+                   Cell cell21 = new Cell(1, 1).Add(new Paragraph(captionOld)).SetBorder(Border.NO_BORDER).SetPadding(2);
+
+                    stockTable.AddCell(cell11);
+                    stockTable.AddCell(cell21);
+
+                    cellContent.Add(stockTable);
+
+
+                    content = "";
 
                     if (!String.IsNullOrEmpty(job.Comment)) content += job.Comment;
 
-
                     cellContent.Add(formatContent(content));
+
+                    //cellContent.Add(formatContent(content));
 
                     string address = "";
 

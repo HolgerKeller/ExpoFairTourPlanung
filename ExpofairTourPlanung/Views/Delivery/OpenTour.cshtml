@@ -1,0 +1,331 @@
+﻿@model ExpofairTourPlanung.Models.Tour
+@using System.Text.RegularExpressions
+
+@{
+    ViewData["Title"] = "Tourdaten";
+}
+
+<form asp-controller="Tour" Id="Tour" asp-action="SaveTour" enctype="multipart/form-data">
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+            <h5>Tourdaten:</h5>
+        </div>
+
+        <div class="card-body">
+
+            @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
+
+
+            @Html.Hidden("IdTour", (Model != null) ? Model.IdTour : 0)
+
+
+            @*<input hidden asp-for="IdTour" />*@
+
+            <input hidden asp-for="IsSbtour" value="false" />
+
+
+
+                <div class="row form-group">
+                    <div class="col-6">
+                        <label for="Tour">Datum:</label>
+                        <input class="form-control" asp-for="TourDate" type="date" readonly />
+                    </div>
+                    <div class="col">
+                        <label for="Tour">Tourname:</label>
+                        <input class="form-control" asp-for="TourName" type="text" readonly />
+
+                    </div>
+                </div>
+
+ 
+                <div class="row form-group">
+                    <div class="col-6">
+                        <label for="Tour">Fahrzeug</label>
+                        <input class="form-control" asp-for="VehicleNr" type="text" readonly />
+
+                     </div>
+                    <div class="col">
+                        <label for="Tour">Fahrer</label>
+                        <input class="form-control" asp-for="Driver" type="text" readonly />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col">
+                        <label for="Tour">Verantwortlicher</label>
+                        <input class="form-control" asp-for="Master" type="text" readonly />
+                    </div>
+                 </div>
+        </div>
+        @*<div class="card-footer">
+            <button class="btn btn-primary" type="submit">Speichern</button>
+        </div>*@
+    </div>
+</form>
+
+    <div class="card" style="margin-bottom: 15px;">
+
+        <div class="card-header">
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-8">
+                        <h5>folgende Jobs sind der Tour zugeordnet:</h5>
+                    </div>
+                    <div class="col-4">
+                        <h5>Gesamtgewicht:  @Model.Weight Kg</h5>
+                        </div>
+                </div>
+            </div>
+
+
+
+            
+        </div>
+
+        <div class="card-body">
+            @{
+                List<Job2Tour> tourJobs = ViewBag.tourJobs;
+            }
+            <table class="table table-sm table-hover">
+                <tr>
+                    <th class="col-1">Zeit</th>
+                    <th class="col-1">An/Ab</th>
+                    <th class="col-2">JobNr<br />fertig bis</th>
+                    <th class="col-4">Bezeichnung</th>
+                    <th class="col-3">Adresse</th>
+
+                    <th class="col-1">&nbsp;</th>
+                </tr>
+
+                @foreach (Job2Tour job in tourJobs)
+                {
+
+                    <tr onclick="showModal(@job.IdTourJob)">
+                        <td nowrap>
+                                @{
+
+                                    @job.JobDate.ToString("dd.MM.yyyy"); <br />
+
+                                    if (job.InOut == "OUT")
+                                    {
+                                        string returnDT = @job.JobDateReturn.ToString();
+                                        returnDT = Regex.Replace(returnDT, "00:00:00$", "");
+
+                                        <text>(</text>@returnDT<text>)</text><br />
+                                    }
+                                    if (!String.IsNullOrEmpty(job.Time))
+                                    {
+                                        @job.Time<text> Uhr</text><br />
+                                    }
+                                    if (!String.IsNullOrEmpty(job.ReadyTime))
+                                    {
+                                        <text>Fertig: </text>@job.ReadyTime<text> Uhr</text>
+                                    }
+
+                                }
+                        </td>
+
+                        @{
+                            if (job.IdJobState == 5)
+                            {
+                                <td>@job.DeliveryType<br />Zumietung</td>
+                            }
+                            else
+                            {
+                                <td>@job.DeliveryType</td>
+                            }
+                        }
+
+                        <td>@job.Number<br />@job.ReadyTime</td>
+
+                        <td>@job.Caption<br />Gewicht: @job.Weight Kg </td>
+
+                        @{
+
+                            if (job.AddressTXT != null)
+                            {
+                                //string[] words = @job.Address.Split(';');
+
+                                //string Addr = Regex.Replace(@job.AddressTXT, "(\r\n|\r|\n)+", "\r");
+                                string Addr = Regex.Replace(Regex.Replace(@job.AddressTXT, "(\r \r|\r+)", "\r"), "(\r\n|\r|\n)", "<br />");
+
+                                                <td>
+
+                                                    @{ WriteLiteral(Addr); }
+                                                    
+                                                </td>
+
+                                                }
+                                                else
+                                                {
+                                <td>&nbsp;</td>
+                            }
+
+                        }
+
+                        <td class="text-right">
+ 
+                            <a asp-route-id="@job.IdTourJob" asp-controller="Delivery" asp-action="CheckJob" class="btn btn-sm" aria-label="Bearbeiten">
+                                <span class="fa fa-edit fa-lg" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="modalJobDetail" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <h6>Adresse:</h6>
+                    <div id="modalAddress">
+                    </div>
+
+                    <hr class="col-xs-12">
+                    <h6>Ansprechpartner:</h6>
+                    <div id="modalContact">
+                    </div>
+
+                    <hr class="col-xs-12">
+                    <h6>KontaktInfo:</h6>
+                    <div id="modalContactPhone">
+                    </div>
+
+                    <hr class="col-xs-12">
+                    <h6>Zeiten:</h6>
+                    <div id="modalDateTime">
+                    </div>
+
+                    <hr class="col-xs-12">
+                    <h6>Kommentar:</h6>
+                    <div id="modalComment">
+                    </div>
+
+                    <hr class="col-xs-12">
+                    <h6>Gewicht in kg:</h6>
+                    <div id="modalWeight">
+                    </div>
+
+                    <hr class="col-xs-12">
+                    <h6>Inhalt:</h6>
+                    <div class="table-responsive" id="modalStock">
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+@section scripts {
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+
+        function showModal(id) {
+
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetJobDetail","Tour")",
+                data: { id: id },
+                success: function (daten) {
+
+                    var comment = daten.comment.replace(/Storno[\s\S]+$/g, "");
+                    comment = comment.replace(/_*/g, "");
+
+                    address = daten.addressTXT.replace(/(?:\r\n|\r|\n)/g, "<br>");
+
+
+                    var jobDate = new Date(daten.jobDate).toLocaleDateString('de-DE');
+                    var time = daten.time;
+                    var readyTime = daten.readyTime;
+
+                    var dateTime = "Jobdatum: " + jobDate;
+
+                    if (daten.jobDateReturn ) {
+                        var jobDateReturn = new Date(daten.jobDateReturn).toLocaleDateString('de-DE');
+                        dateTime = dateTime + "<br />" + "Rückgabe: " + jobDateReturn;
+                    }
+                    if (daten.time && time != "") {
+                        dateTime = dateTime + "<br />" + "Zeit: " + time + " Uhr";
+                    }
+                    if (daten.readyTime && readyTime != "") {
+                        dateTime = dateTime + "<br />" + "Fertig bis: " + readyTime + " Uhr";
+                    }
+
+                    $('#modalTitle').text(daten.number + " " + daten.caption + " (" + daten.deliveryType + ")");
+                    $('#modalAddress').html(address);
+                    $('#modalComment').text(comment);
+                    $('#modalWeight').html(daten.weight);
+                    $('#modalDateTime').html(dateTime);
+
+                    var str = daten.stock;
+
+                    var table = document.createElement('TABLE');
+                    table.setAttribute('class', 'table table-bordered col-xs-12')//this is bootstraps classes
+                    var tbdy = document.createElement('TBODY');
+                    table.appendChild(tbdy);
+
+                    var output = document.getElementById("modalStock");
+
+                    var temp = new Array();
+                    temp = str.split("\r");
+                    for (var zxc2 = 0; zxc2 < temp.length; zxc2++) {
+
+                        var temp1 = new Array();
+                        temp1 = temp[zxc2].split("\t");
+
+                        if (temp1[1] != undefined) {
+
+                            if (temp1[0] != "") {
+                                var tr = document.createElement('TR');
+                                tbdy.appendChild(tr);
+
+                                var td = document.createElement('TD');
+                                td.appendChild(document.createTextNode(temp1[0]));
+                                tr.appendChild(td);
+
+                                var td1 = document.createElement('TD');
+                                td1.appendChild(document.createTextNode(temp1[1]));
+                                tr.appendChild(td1);
+                            } else {
+                                var value = td1.innerText + "\n" + temp1[1];
+                                td1.innerText = value;
+                            }
+                        }
+                    }
+
+                    if (output.hasChildNodes) {
+                        output.removeChild(output.lastChild);
+                    }
+                    output.appendChild(table);
+
+                    $('#modalJobDetail').modal('show')
+                }
+             });
+        }
+
+
+ 
+
+</script>
+
+    }

@@ -48,7 +48,7 @@ namespace ExpofairTourPlanung.Controllers
 
             DateTime dateFromDT = DateTime.Parse(dateFrom);
 
-            var allTours = _context.Tours.Where(x => x.IsSbtour != true && x.TourDate >= dateFromDT).OrderByDescending(x => x.TourDate).ToList();
+            var allTours = _context.Tours.Where(x => x.IsSbtour != true && x.TourDate == dateFromDT).OrderByDescending(x => x.TourDate).ToList();
 
             return View( allTours );
         }
