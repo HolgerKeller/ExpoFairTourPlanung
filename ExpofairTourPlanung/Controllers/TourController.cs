@@ -332,7 +332,6 @@ namespace ExpofairTourPlanung.Controllers
             return Ok();
         }
 
-
         [HttpGet]
         public IActionResult GetJobDetail(int id)
         {
@@ -346,8 +345,5 @@ namespace ExpofairTourPlanung.Controllers
 
             return Ok(jobFromDb);
         }
-
-
-
     }
 }

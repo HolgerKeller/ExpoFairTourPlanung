@@ -161,3 +161,15 @@ HeadSignature NVARCHAR(MAX) NULL,
 PRIMARY KEY(IdDelJob)
 );
 GO
+--drop TABLE [easyjob].[expofair].[PackMat]
+--GO
+--create Table [easyjob].[expofair].[PackMat] (
+--Id INT NOT NULL IDENTITY(1,1),
+--IdJob INT NULL,
+--IdTourJob INT NULL,
+--Article NVARCHAR(20) NULL,
+--Caption NVARCHAR(100) NULL,
+--MatGroup NVARCHAR(20) NULL,
+--PRIMARY KEY(Id)
+--);
+GO

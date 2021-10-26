@@ -28,6 +28,7 @@ namespace ExpofairTourPlanung.Data
         public virtual DbSet<ExpoEvent> ExpoEvents { get; set; }
         public virtual DbSet<Stock2jobSP> Stock2JobSPs { get; set; }
         public virtual DbSet<Del4Job> Del4Jobs { get; set; }
+        public virtual DbSet<PackMat> PackMats { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

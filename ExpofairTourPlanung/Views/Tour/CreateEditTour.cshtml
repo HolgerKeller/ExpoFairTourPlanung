@@ -53,9 +53,9 @@
                 <div class="row form-group">
                     <div class="col-6">
                         <label for="Tour">Arbeitsbeginn:</label>
-                        <input class="form-control" asp-for="StartWorkDay" type="text" value="8:00 Uhr"/>
+                        <input class="form-control" asp-for="StartWorkDay" type="text" value="8:00 Uhr" />
                     </div>
-                 
+
                 </div>
                 <div class="row form-group">
                     <div class="col-6">
@@ -117,13 +117,13 @@
                     </div>
                     <div class="col-4">
                         <h5>Gesamtmasse:  @Model.Weight Kg</h5>
-                        </div>
+                    </div>
                 </div>
             </div>
 
 
 
-            
+
         </div>
 
         <div class="card-body">
@@ -195,37 +195,37 @@
                                 //string Addr = Regex.Replace(@job.AddressTXT, "(\r\n|\r|\n)+", "\r");
                                 string Addr = Regex.Replace(Regex.Replace(@job.AddressTXT, "(\r \r|\r+)", "\r"), "(\r\n|\r|\n)", "<br />");
 
-                                                <td>
+                                <td>
 
 
 
-                                                    @{ WriteLiteral(Addr); }
-                                                    
+                                    @{ WriteLiteral(Addr); }
 
 
-                                                </td>
+
+                                </td>
 
 
-        @*@words[0] <br />
-        @{
-            if (@words[1] != "")
-            {
-                @words[1] <br />
-            }
-            if (@words[4] != "")
-            {
-                @words[4] <br />
-            }
-            if (@words[2] != "")
-            {
-                <text>@words[2]  @words[3]</text>
-            }
-        }*@
+                                @*@words[0] <br />
+                                    @{
+                                        if (@words[1] != "")
+                                        {
+                                            @words[1] <br />
+                                        }
+                                        if (@words[4] != "")
+                                        {
+                                            @words[4] <br />
+                                        }
+                                        if (@words[2] != "")
+                                        {
+                                            <text>@words[2]  @words[3]</text>
+                                        }
+                                    }*@
 
-                                                }
-                                                else
-                                                {
-<td>&nbsp;</td>
+                            }
+                            else
+                            {
+                                <td>&nbsp;</td>
                             }
 
                         }
@@ -295,23 +295,23 @@
                             if (job.Address != null)
                             {
                                 string[] words = @job.Address.Split(';');
-                                                <td>
-                                                    @words[0] <br />
-                                                    @{ 
-                                                        if (@words[1] != "")
-                                                        {
-                                                    @words[1] <br />
-                                                        }
-                                                        if (@words[4] != "")
-                                                        {
-                                                    @words[4] <br />
-                                                        }
-                                                        if (@words[2] != "")
-                                                        {
-                                                   <text>@words[2]  @words[3]</text>
-                                                            }
-                                                    }
-                                                </td>
+                                <td>
+                                    @words[0] <br />
+                                    @{
+                                        if (@words[1] != "")
+                                        {
+                                            @words[1] <br />
+                                        }
+                                        if (@words[4] != "")
+                                        {
+                                            @words[4] <br />
+                                        }
+                                        if (@words[2] != "")
+                                        {
+                                            <text>@words[2]  @words[3]</text>
+                                        }
+                                    }
+                                </td>
                             }
                             else
                             {
@@ -319,19 +319,19 @@
                             }
                         }
 
-                    <td class="text-right">
-                        <button onclick="onClickedAddJobButton(event, @Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
-                            <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
-                        </button>
-                        <button onclick="onClickedCloneJobButton( event, @job.IdTourJob )" class="btn btn-sm" aria-label="Duplizieren">
-                            <span class="fa fa-clone fa-lg" aria-hidden="true"></span>
-                        </button>
+                        <td class="text-right">
+                            <button onclick="onClickedAddJobButton(event, @Model.IdTour, @job.IdTourJob)" class="btn btn-sm" aria-label="Zufügen">
+                                <span class="fa fa-plus fa-lg" aria-hidden="true"></span>
+                            </button>
+                            <button onclick="onClickedCloneJobButton( event, @job.IdTourJob )" class="btn btn-sm" aria-label="Duplizieren">
+                                <span class="fa fa-clone fa-lg" aria-hidden="true"></span>
+                            </button>
 
 
-                        @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
-            <span class="fa fa-info fa-lg" aria-hidden="true"></span>
-        </button>*@
-</tr>
+                            @*<button onclick="showModal(@job.IdTourJob)" class="btn btn-sm" aria-label="Detail">
+                                    <span class="fa fa-info fa-lg" aria-hidden="true"></span>
+                                </button>*@
+                    </tr>
                 }
             </table>
         </div>
@@ -381,14 +381,10 @@
                 <h6>Inhalt:</h6>
                 <div class="table-responsive" id="modalStock">
                 </div>
-
-
             </div>
+        </div>
     </div>
 </div>
-
-
-
 
 @section scripts {
 
@@ -457,27 +453,27 @@
     {
         <script>
 
-        $(document).ready(function() {
-            $('#Team').SumoSelect({
+            $(document).ready(function () {
+                $('#Team').SumoSelect({
                     outputAsCSV: true,
-                csvSepChar: ','
-            });
-            $('#VehicleNr').SumoSelect({
+                    csvSepChar: ','
+                });
+                $('#VehicleNr').SumoSelect({
                     outputAsCSV: true,
-                csvSepChar: ','
-            });
-            $('#Driver').SumoSelect({
+                    csvSepChar: ','
+                });
+                $('#Driver').SumoSelect({
                     outputAsCSV: true,
-                csvSepChar: ','
+                    csvSepChar: ','
+                });
+                $('#Master').SumoSelect();
+                $('#TourName').SumoSelect();
             });
-            $('#Master').SumoSelect();
-            $('#TourName').SumoSelect();
-        });
 
         </script>
     }
 
-<script>
+    <script>
 
         function showModal(id) {
 
@@ -687,6 +683,6 @@
     }
 
 
-</script>
+    </script>
 
-    }
+}

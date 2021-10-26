@@ -1,4 +1,5 @@
 using ExpofairTourPlanung.Data;
+using ExpofairTourPlanung.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -48,6 +49,7 @@ namespace ExpofairTourPlanung
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddTransient<IDeliveryPdf, DeliveryPdf>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
