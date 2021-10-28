@@ -1,40 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ExpofairTourPlanung.Data;
+using ExpofairTourPlanung.Models;
+using ExpofairTourPlanung.Models.ViewModels;
+using ExpofairTourPlanung.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ExpofairTourPlanung.Data;
-using ExpofairTourPlanung.Models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Http;
-using ExpofairTourPlanung.Models.ViewModels;
-using ExpofairTourPlanung.Helper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
 
 namespace ExpofairTourPlanung.Controllers
 {
     public class DeliveryController : Controller
     {
         private readonly EasyjobDbContext _context;
-        private readonly ILogger<TourListController> _logger;
+        private readonly ILogger<DeliveryController> _logger;
+        private readonly IDeliveryPdf _deliveryPdf;
 
-        public DeliveryController(EasyjobDbContext context, ILogger<TourListController> logger)
+        public DeliveryController(EasyjobDbContext context, ILogger<DeliveryController> logger, IDeliveryPdf deliveryPdf)
         {
             _context = context;
             _logger = logger;
+            _deliveryPdf = deliveryPdf;
         }
 
         private SelectList _getLsStatus()
         {
 
+
+
+
             var deliveryStatusSelectItems = new List<DeliveryStatusSelectItem>();
 
-            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_OK", Description = "Alle Artikel gemäß Lieferschein ohne Mängel geliefert" });
-            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_ANM", Description = "Alle Artikel gemäß Lieferschein ohne Mängel mit Anmerkungen geliefert." });
-            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_NOK", Description = "Artikel gemäß Lieferschein mit Mängel geliefert" });
+            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_OK", Description = StatCodes.StatusCodeDic["LS_OK"] });
+            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_ANM", Description = StatCodes.StatusCodeDic["LS_ANM"] });
+            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_NOK", Description = StatCodes.StatusCodeDic["LS_NOK"] });
 
+         
             return new SelectList(deliveryStatusSelectItems, "Status", "Description");
         }
 
@@ -43,8 +49,8 @@ namespace ExpofairTourPlanung.Controllers
 
             var deliveryStatusSelectItems = new List<DeliveryStatusSelectItem>();
 
-            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "RLS_OK", Description = "Alle Artikel gemäß Rücklieferschein ohne Mängel zurückgenommen." });
-            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "LS_NOK", Description = "Artikel gemäß Rücklieferschein mit Mängeln zurückgenommen." });
+            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "RLS_OK", Description = StatCodes.StatusCodeDic["RLS_OK"] });
+            deliveryStatusSelectItems.Add(new DeliveryStatusSelectItem { Status = "RLS_NOK", Description = StatCodes.StatusCodeDic["RLS_NOK"] });
 
             return new SelectList(deliveryStatusSelectItems, "Status", "Description");
         }
@@ -167,15 +173,15 @@ namespace ExpofairTourPlanung.Controllers
                 }
                 else
                 {
-                   var jobFromDb = _context.Job2Tours.SingleOrDefault( x => x.IdTourJob == id );
+                    var jobFromDb = _context.Job2Tours.SingleOrDefault(x => x.IdTourJob == id);
 
-                    if( jobFromDb != null )
+                    if (jobFromDb != null)
                     {
                         Del4Job delivery = new Del4Job();
                         delivery.IdTourJob = jobFromDb.IdTourJob;
                         delivery.Number = jobFromDb.Number;
                         delivery.IdJob = jobFromDb.IdJob;
-                        delivery.Caption = jobFromDb.Caption;      
+                        delivery.Caption = jobFromDb.Caption;
                         delivery.JobDate = jobFromDb.JobDate;
                         delivery.ReadyTime = jobFromDb.ReadyTime;
                         delivery.Contact = jobFromDb.Contact;
@@ -193,10 +199,11 @@ namespace ExpofairTourPlanung.Controllers
                         _context.SaveChanges();
 
 
-                        if(delivery.InOut == "OUT")
+                        if (delivery.InOut == "OUT")
                         {
                             ViewBag.Status = _getLsStatus();
-                        } else
+                        }
+                        else
                         {
                             ViewBag.Status = _getRlsStatus();
                         }
@@ -209,48 +216,119 @@ namespace ExpofairTourPlanung.Controllers
             }
             return NotFound();
         }
-        public IActionResult SaveShowJob(Del4Job delivery)
-        {
 
-  
-                var delFromDb = _context.Del4Jobs.SingleOrDefault(x => x.IdDelJob == delivery.IdDelJob);
-
-                if (delFromDb == null)
-                {
-                    return NotFound();
-                }
-
-                delFromDb.Comment = delivery.Comment;
-                delFromDb.Status = delivery.Status;
-                delFromDb.Customer = delivery.Customer;
-                delFromDb.CustomerEmail = delivery.CustomerEmail;
-
-            _context.SaveChanges();
- 
-           return View(delFromDb);
-        }
 
         public IActionResult processJob(Del4Job delivery)
         {
 
- 
-                var delFromDb = _context.Del4Jobs.SingleOrDefault(x => x.IdDelJob == delivery.IdDelJob);
 
-                if (delFromDb == null)
-                {
-                    return NotFound();
-                }
+            var delFromDb = _context.Del4Jobs.SingleOrDefault(x => x.IdDelJob == delivery.IdDelJob);
+
+            if (delFromDb == null)
+            {
+                return NotFound();
+            }
+
             delFromDb.CustomerSignature = delivery.CustomerSignature;
             delFromDb.DeliveryTime = DateTime.Now;
 
             _context.SaveChanges();
 
+            string pdfName = _deliveryPdf.createDeliveryPdf(delFromDb);
 
-//            DeliveryPdf deliveryPdf = new DeliveryPdf( _context, _logger);
+            System.Net.Mail.MailMessage mail = new System.Net.Mail.MailMessage();
+            mail.To.Add(delFromDb.CustomerEmail);
+            mail.From = new MailAddress("info@Nexos.de", "Nexos.de", System.Text.Encoding.UTF8);
+            mail.Subject = "Lieferdokument Expofair Auftrag" + delFromDb.Number;
+            mail.SubjectEncoding = System.Text.Encoding.UTF8;
+            mail.Body = "Expofair ist Happy";
+            mail.BodyEncoding = System.Text.Encoding.UTF8;
+            mail.IsBodyHtml = true;
+            mail.Priority = MailPriority.High;
+
+            System.Net.Mail.Attachment attachment;
+            attachment = new System.Net.Mail.Attachment(pdfName);
+            mail.Attachments.Add(attachment);
+
+            SmtpClient client = new SmtpClient();
+            client.Credentials = new System.Net.NetworkCredential("lab@nexos.de", "HXbMWm9vDL2n6S7n");
+            client.Port = 587;
+            client.Host = "smtp.ionos.de";
+            client.EnableSsl = true;
+            client.Send(mail);
 
             return View(delFromDb);
         }
 
+        public IActionResult SaveShowJob(Del4Job delivery)
+        {
+
+            var delFromDb = _context.Del4Jobs.SingleOrDefault(x => x.IdDelJob == delivery.IdDelJob);
+
+            if (delFromDb == null)
+            {
+                return NotFound();
+            }
+
+            delFromDb.Comment = delivery.Comment;
+            delFromDb.Status = delivery.Status;
+            delFromDb.Customer = delivery.Customer;
+            delFromDb.CustomerEmail = delivery.CustomerEmail;
+            delFromDb.PackMaterial = delivery.PackMaterial;
+
+            _context.SaveChanges();
+
+
+            ViewBag.PaMa = getPackMat(delivery.PackMaterial);
+
+
+            return View(delFromDb);
+        }
+
+
+        [HttpGet]
+        public IActionResult GetPackMat()
+        {
+            var packMats = _context.PackMats.ToList();
+
+            if (packMats == null)
+                return NotFound();
+
+            return Ok(packMats);
+        }
+
+        public string getPackMat( string packMat)
+        {
+            string longPackMats = "";
+
+            if (String.IsNullOrEmpty(packMat)) return null;
+
+            string[] entries = packMat.Split(';');
+
+                foreach (string entry in entries)
+                {
+                    string[] part = entry.Split(':');
+                    if( part.Length == 2)
+                    {
+                    string caption = getArticleName(part[0]);
+                    string fullEntry = part[1] + "\t" + part[0] + "\t" + caption;
+                    longPackMats = longPackMats + fullEntry + "\n";
+                    }
+                }
+  
+            return longPackMats;
+        }
+
+        private string getArticleName( string article )
+        {
+            string name = "";
+
+            var entries =_context.PackMats.SingleOrDefault(x => x.Article == article);
+
+            name = entries.Caption;
+
+            return (name);
+        }
 
     }
 }

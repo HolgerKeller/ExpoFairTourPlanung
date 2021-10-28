@@ -9,7 +9,7 @@
     <div class="card" style="margin-bottom: 15px;">
 
         <div class="card-header">
-            <h5>Job: @Model.Caption (@Model.Number)</h5>
+            <h5>Job: @Model.Caption (@Model.Number) </h5>
         </div>
 
         <div class="card-body">
@@ -19,7 +19,7 @@
             <div class="row form-group">
                 <div class="col-6">
                     <label for="Tour">Datum:</label>
-                    <input class="form-control" asp-for="JobDate" type="text" readonly />
+                    <input class="form-control" asp-for="JobDate" type="date" readonly />
                 </div>
                 <div class="col-6">
                     <label for="Tour">Expofair Mitarbeiter:</label>
@@ -27,18 +27,31 @@
                 </div>
             </div>
 
+            @{
+                string stat = StatCodes.StatusCodeDic[Model.Status];
+            }
 
             <div class="row form-group">
                 <div class="col-12">
                     <label for="Tour">Status:</label>
-                    <input class="form-control" asp-for="Status" type="text" readonly />
+                    <input class="form-control" asp-for="@stat" type="text" readonly />
                 </div>
             </div>
 
             <div class="row form-group">
                 <div class="col-12">
-                    <label for="Tour">Kommentar</label>
-                    <textarea rows="10" class="form-control" asp-for="Comment" placeholder="Kommentar"></textarea>
+                    <label for="Tour">Anmerkungen</label>
+                    <textarea rows="5" class="form-control" asp-for="Comment" placeholder="Anmerkungen" readonly></textarea>
+                </div>
+            </div>
+
+
+
+            <div class="row form-group">
+                <div class="col-12">
+
+                    <label for="Tour">zurückgelassenes Packmaterial</label>
+                    @Html.TextArea("PaMa", (string)(ViewBag.PaMa), new { @class = "form-control", name = "PaMa", rows = "5", @readonly = "true" })
                 </div>
             </div>
 
@@ -52,12 +65,12 @@
                     <input class="form-control" asp-for="CustomerEmail" type="text" readonly />
                 </div>
             </div>
-        </div>
 
-        <div class="row form-group">
-            <div class="col-4">
-                <label for="Tour">Unterschrift Kunde:</label>
-                <canvas width="400" height="200" id="signature" style="border:1px solid black; padding-left:10px"></canvas><br>
+
+            <div class="row form-group">
+                <div class="col-4">
+                    <label>Unterschrift Kunde:</label>
+                    <canvas width="400" height="200" id="signature" style="border:1px solid black;padding:3px"></canvas><br>
 
                     <button type="button" id="accept"
                             class="btn btn-primary">
@@ -72,6 +85,7 @@
 
                     <input type="hidden" asp-for="CustomerSignature" id="CustomerSignature">
 
+                </div>
             </div>
         </div>
 
