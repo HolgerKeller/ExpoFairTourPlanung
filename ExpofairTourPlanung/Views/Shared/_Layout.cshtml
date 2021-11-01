@@ -12,17 +12,22 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.css" />
     <link rel="stylesheet" href="~/lib/Font-Awesome/css/regular.min.css">
     <link rel="stylesheet" href="~/lib/Font-Awesome/css/solid.min.css">
+
+
+ 
+
     <style>
         body {
             min-height: 75rem;
             padding-top: 6.5rem;
         }
+
         .navbar-light .nav-item.active {
             color: white;
             background-color: red;
         }
-    </style >
-    </head >
+    </style>
+</head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light fixed-top bg-white border-bottom box-shadow mb-3">
@@ -86,8 +91,13 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+    <script src="~/lib/jquery-unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+
     <script src="~/js/jquery.sumoselect.min.js"></script>
-    
+
     <script type="text/javascript">
         $(function () {
             var page = sessionStorage.getItem('page');
@@ -97,7 +107,7 @@
             } else {
                 navbar.forEach((item, index) => {
 
-//                    alert(item.children[0].href);
+                    //                    alert(item.children[0].href);
 
                     if (item.children[0].href == page) {
                         $(item).addClass('active').siblings().removeClass('active');

@@ -1,0 +1,26 @@
+﻿@model List<String>
+
+ <div id="Result">
+        <table id="EventTable" class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Events</th>
+                    <th>Auswahl</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+
+                    foreach (String ev in Model)
+                    {
+                        <tr>
+                            <td>@ev</td>
+
+                            <td><input type="checkbox" value="@ev" /> </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+</div>

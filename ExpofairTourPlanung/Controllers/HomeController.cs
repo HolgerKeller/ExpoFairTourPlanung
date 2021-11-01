@@ -28,6 +28,7 @@ namespace ExpofairTourPlanung.Controllers
         public IActionResult Index(string dateFrom)
         {
 
+        
             string dateTo = null;
 
             if (dateFrom == null)

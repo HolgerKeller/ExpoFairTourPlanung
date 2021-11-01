@@ -112,6 +112,49 @@ namespace ExpofairTourPlanung.Controllers
 
             return RedirectToAction("Index", new { dateFrom = date });
         }
+
+
+        //############################################ New
+
+
+        public PartialViewResult GetEvents( string dateFrom )
+        {
+
+            string dateTo = null;
+
+            if (dateFrom == null)
+            {
+
+                dateFrom = this.HttpContext.Session.GetString("dateFrom");
+
+                if (dateFrom == null)
+                {
+                    dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+                }
+            }
+
+            dateTo = dateFrom;
+
+            ViewData["dateFrom"] = dateFrom;
+            this.HttpContext.Session.SetString("dateFrom", dateFrom);
+
+            _logger.LogInformation("dateFrom:" + dateFrom + " dateTo:" + dateTo);
+            
+            DateTime dateFromDT = DateTime.Parse(dateFrom);
+            DateTime dateToDT = DateTime.Parse(dateTo);
+
+
+            var allEvents = _context.Job2Tours.Where(x => x.JobDate >= dateFromDT && x.JobDate <= dateToDT && x.JobType != ".Bessemerstrasse").Select(x => x.JobType ).Distinct().ToList();
+
+            _logger.LogInformation("Anzahl Events:" + allEvents.Count.ToString());
+
+
+            return PartialView("_GetEvents",allEvents);
+
+
+        }
+
+
     }
 }
 

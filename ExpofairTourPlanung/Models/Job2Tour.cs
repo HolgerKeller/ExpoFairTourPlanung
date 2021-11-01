@@ -54,6 +54,7 @@ namespace ExpofairTourPlanung.Models
         [Column("In_Out")]
         [StringLength(20)]
         public string InOut { get; set; }
+        public string JobType { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? DeliveryTimeStart { get; set; }
         [Column(TypeName = "datetime")]
