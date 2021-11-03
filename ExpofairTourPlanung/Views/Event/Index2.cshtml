@@ -1,0 +1,124 @@
+﻿@model List<ExpoEvent>
+@using System.Text.RegularExpressions
+
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<h3>Events</h3>
+<br />
+
+
+
+@*Ajax.BeginForm("GetEvents", "Event", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "Result" })*@
+
+@*<form asp-controller="Event" asp-action="GetEvents"
+    data-ajax-begin="onBegin" data-ajax-complete="onComplete" data-ajax-mode="replace"
+    data-ajax-failure="onFailed" data-ajax-success="onSuccess" data-ajax-update="#Events"
+    data-ajax="true" data-ajax-method="GET">*@
+
+
+
+
+
+<form asp-controller="Event" asp-action="GetEvents"
+      data-ajax-mode="replace"
+      data-ajax-update="#Events"
+      data-ajax="true" data-ajax-method="GET">
+
+    <div class="row form-group">
+        <div class="col-1">
+            <div class="col-form-label">
+                Vom:
+            </div>
+        </div>
+        <div class="col-2">
+            <input class="form-control" type="date" id="dateFrom" name="dateFrom" placeholder="DD.MM.YYYY" />
+        </div>
+        <div class="col-1">
+            <div class="col-form-label">
+                Bis:
+            </div>
+        </div>
+        <div class="col-2">
+            <input class="form-control" type="date" id="dateTo" name="dateTo" placeholder="DD.MM.YYYY" />
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary" type="submit">Anzeigen</button>
+        </div>
+    </div>
+</form>
+
+
+<form asp-controller="Event" asp-action="CreateTour" onsubmit="sendSelected()" enctype="multipart/form-data">
+    @Html.Hidden("Date", "") 
+    @Html.Hidden("EventList", "")
+
+    <div id="Events">
+    </div>
+
+    <div id="Addresses">
+    </div>
+
+</form>
+
+
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            document.getElementById("dateFrom").value = '@ViewData["dateFrom"]';
+            document.getElementById("dateTo").value = '@ViewData["dateTo"]';
+        });
+
+        function disableCheckboxes(obj) {
+            var cb_name = obj.name;
+            if (obj.checked) {
+                $('input[type=checkbox]').attr("disabled", true);
+                $('input[name="' + cb_name + '"]').removeAttr("disabled");
+            } else {
+                var atLeastOneIsChecked = $('input:checkbox').is(':checked');
+                if (!atLeastOneIsChecked) {
+                    $('input[type=checkbox]').removeAttr("disabled");
+                }
+            }
+        }
+
+
+            function sendSelected() {
+                var sList = "";
+                var datum = "";
+                $('input[type=checkbox]').each(function () {
+                    if (this.checked) {
+                        var temp = new Array();
+                        temp = this.value.split('|');
+                        datum = temp[1];
+                        sList += temp[0] + ",";
+                    }
+                });
+                alert(sList, datum);
+                document.getElementById("EventList").value = sList;
+                document.getElementById("Date").value = datum;
+        }
+
+        //var results = $("#Result");
+        //var onBegin = function () {
+        //    alert("Hallo");
+        //};
+
+        //var onComplete = function () {
+        //    results.html("yyyy");
+        //};
+
+        //var onSuccess = function (context) {
+        //    alert("XXX" + context);
+        //};
+
+        //var onFailed = function (context) {
+        //    alert("Failed");
+        //};
+
+    </script>
+}

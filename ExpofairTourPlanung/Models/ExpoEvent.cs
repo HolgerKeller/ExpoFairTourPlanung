@@ -15,5 +15,7 @@ namespace ExpofairTourPlanung.Models
         public string JobType { get; set; }
         public string Address { get; set; }
         public int Count { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime? JobDate { get; set; }
     }
 }

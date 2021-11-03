@@ -73,11 +73,7 @@ namespace ExpofairTourPlanung.Controllers
                         mainTable1.AddCell(cell1);
                     }
 
-                    if (!string.IsNullOrEmpty(tourFromDb.Team))
-                    {
-                        Cell cell2 = getCell(1, 3, "").Add(formatContent("Team: " + getStaffNames(tourFromDb.Team))).SetBorderBottom(Border.NO_BORDER);
-                        mainTable1.AddCell(cell2);
-                    }
+                   
 
                     doc.Add(mainTable1);
                 }
@@ -496,9 +492,15 @@ namespace ExpofairTourPlanung.Controllers
                 cell22.Add(div22);
                 table.AddCell(cell22);
 
+                if (!string.IsNullOrEmpty(tour.Team))
+                {
+                    Cell cell5 = new Cell(1, 4).Add(new Paragraph("Team").SetFontSize(6)).SetVerticalAlignment(VerticalAlignment.TOP).SetHorizontalAlignment(HorizontalAlignment.LEFT);
+                    Div div5 = new Div().SetTextAlignment(TextAlignment.LEFT).SetPadding(0).SetVerticalAlignment(VerticalAlignment.MIDDLE).SetFontSize(10);
+                    div5.Add(new Paragraph(getStaffNames(tour.Team)));
+                    cell5.Add(div5);
+                    table.AddCell(cell5);
+                }
             }
         }
-
     }
-
 }

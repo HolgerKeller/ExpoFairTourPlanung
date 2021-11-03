@@ -110,14 +110,28 @@ END
 GO
 --#######################################
 
+CREATE OR ALTER PROCEDURE [expofair].[GetEventAdd] (
+	@Event VARCHAR(80)
+	)
+AS
+BEGIN
+ select JobDate,DeliveryType,JobType,Address, count(Address) Count from [expofair].[job2Tour] where JobType = @Event and ( IdTour is Null or IdTour = 0 ) and JobType <> '.Bessemerstraﬂe' and IdJobState <> 5 group by JobDate, DeliveryType, Jobtype, Address order by JobDate, DeliveryType, Address
+END
+GO
+
+--#######################################
+
+
 CREATE OR ALTER PROCEDURE [expofair].[GetExpoEvents] (
 	@EventDate VARCHAR(20)
 	)
 AS
 BEGIN
- select DeliveryType,JobType, Address, count(Address) Count from [expofair].[job2Tour] where cast(JobDate as Date) = convert(date, @EventDate) and ( IdTour is Null or IdTour = 0 ) and JobType <> '.Bessemerstraﬂe' group by DeliveryType,Jobtype, Address order by DeliveryType,Jobtype, Address
+ select JobDate,DeliveryType,JobType, Address, count(Address) Count from [expofair].[job2Tour] where cast(JobDate as Date) = convert(date, @EventDate) and ( IdTour is Null or IdTour = 0 ) and JobType <> '.Bessemerstraﬂe' and IdJobState <> 5 group by DeliveryType,Jobtype,JobDate,Address order by DeliveryType,Jobtype, Address
 END
 GO
+
+
 
 --#######################################
 
@@ -170,7 +184,7 @@ BEGIN
     
 	SET @Ranking = 0
 	
-	DECLARE Cur1 CURSOR READ_ONLY FOR SELECT t.IdTourJob from [expofair].[job2Tour] t where cast(t.JobDate as Date) = convert(date, @EventDate) and t.Address IN (SELECT Item FROM [expofair].SimpleSplitFunction( @EventString, ',')) order by t.Address, t.JobStartTime
+	DECLARE Cur1 CURSOR READ_ONLY FOR SELECT t.IdTourJob from [expofair].[job2Tour] t where cast(t.JobDate as Date) = convert(date, @EventDate) and IdJobState<>5 and t.Address IN (SELECT Item FROM [expofair].SimpleSplitFunction( @EventString, ',')) order by t.Address, t.JobStartTime
 
 	Open Cur1 
     

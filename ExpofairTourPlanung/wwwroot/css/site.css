@@ -8,9 +8,16 @@ a.navbar-brand {
 }
 
 /* Provide sufficient contrast against white background */
-a {
+a:link {
   color: #0366d6;
 }
+
+
+.tdlink {
+    display: block;
+    width: 100%;
+}
+
 
 .btn-primary {
   color: #fff;

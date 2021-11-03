@@ -1,23 +1,36 @@
 ﻿@model List<String>
 
- <div id="Result">
+ <div id="Events">
+
         <table id="EventTable" class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">
                 <tr>
                     <th>Events</th>
-                    <th>Auswahl</th>
-
+                    <th>nbsp;</th>
                 </tr>
             </thead>
             <tbody>
-                @{
+            
 
+                @{
                     foreach (String ev in Model)
                     {
                         <tr>
-                            <td>@ev</td>
+                            <td>
+                                <a data-ajax="true"
+                                data-ajax-mode="replace"
+                                data-ajax-update="#Addresses" class="tdlink"
+                                href="@Url.Action("GetAddresses", "Event", new { ev = @ev })">@ev</a>
+                            </td>
+                            <td>
+                                @{
+                                    @*<button onclick="onClickedCreateJobStockPDF(event , @ev)" class="btn btn-default" aria-label="PDF">*@
+                                        <button onclick="" class="btn btn-default" aria-label="PDF">
+                                            <span class="fa fa-clipboard-list fa-lg" aria-hidden="true"></span>
+                                        </button>
+                                        }
 
-                            <td><input type="checkbox" value="@ev" /> </td>
+                                </td>
                         </tr>
                     }
                 }

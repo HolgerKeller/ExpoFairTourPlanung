@@ -89,11 +89,19 @@
 
 @section scripts {
 
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-
+ 
     <script>
+
+        //      $(document).ready(function () {
+        //        $('#MAT').DataTable({
+        //        "language": {
+        //            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+        //        }
+        //    });
+        //});
+
+
+
 
         function onClickedSavePackMatButton(id) {
 
@@ -108,7 +116,7 @@
                 }
             });
 
-  
+
             $('#PackMaterial').val(result);
 
             $('#modalPackMat').modal('hide');
@@ -127,10 +135,25 @@
 
                     var table = document.createElement('TABLE');
                     table.setAttribute('class', 'table table-bordered col-xs-12')//this is bootstraps classes
+                    table.setAttribute('ID', 'MAT')
+
+                    thead = document.createElement('THEAD');
+                    table.appendChild(thead);
+
                     var tbdy = document.createElement('TBODY');
                     table.appendChild(tbdy);
+                    var tr = document.createElement('TR');
+                    thead.appendChild(tr);
+                    var th = document.createElement('TH');
+                    th.appendChild(document.createTextNode("Artikel"));
+                    tr.appendChild(th);
+                    var th1 = document.createElement('TH');
+                    th1.appendChild(document.createTextNode("Beschreibung"));
+                    tr.appendChild(th1);
+                    var th2 = document.createElement('TH');
+                    th2.appendChild(document.createTextNode("Anzahl"));
+                    tr.appendChild(th2);
 
-                    var output = document.getElementById("modalTable");
 
                     if (daten) {
 
@@ -157,6 +180,9 @@
                         })
                     };
 
+                    var output = document.getElementById("modalTable");
+
+
                     output.appendChild(table);
 
 
@@ -167,7 +193,7 @@
                         entries = packM.split(";");
                         for (var z = 0; z < entries.length; z++) {
 
-                            if (entries[z]) { 
+                            if (entries[z]) {
                                var entry = new Array();
                                 entry = entries[z].split(":");
 
@@ -176,6 +202,15 @@
                             }
                         }
                     }
+
+
+                    $('#MAT').DataTable({
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/German.json"
+                        }
+                    });
+
+
 
                     $('#modalPackMat').modal('show');
 

@@ -1,0 +1,38 @@
+﻿@model List<ExpoEvent>
+@using System.Text.RegularExpressions
+
+<div id="Addresses">
+    <table id="EventTable" class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th></th>
+                <th></th>
+                <th>@Model[0].JobType</th>
+                <th>Anzahl Jobs</th>
+                <th>Auswahl</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (ExpoEvent expoEvent in Model)
+                {
+                    string address = Regex.Replace(Regex.Replace(@expoEvent.Address, ";+$", ""), ";", "; ");
+                    string datum = expoEvent.JobDate?.ToString("dd.MM.yyyy");
+                    <tr style="@if(@expoEvent.DeliveryType == "Lieferung"){<text>background-color:#F2F3F4</text>}">
+                        <td>@datum</td>
+                        <td>@expoEvent.DeliveryType</td>
+                        <td>
+                            @address
+                        </td>
+                        <td>@expoEvent.Count</td>
+                        <td><input type="checkbox" onchange="disableCheckboxes( this )"   name="@datum" value="@expoEvent.Address|@datum" /> </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <div class="col-2">
+        <button class="btn btn-primary"  type="submit">Erzeuge Tour</button>
+    </div>
+</div>
