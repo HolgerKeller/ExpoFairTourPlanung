@@ -251,7 +251,7 @@ namespace ExpofairTourPlanung.Controllers
             mail.Attachments.Add(attachment);
 
             SmtpClient client = new SmtpClient();
-            client.Credentials = new System.Net.NetworkCredential("lab@nexos.de", "HXbMWm9vDL2n6S7n");
+            client.Credentials = new System.Net.NetworkCredential("lab@nexos.de", "Y5kg8FYq3d9X8LXw7aZh47T3N59tK9gk677469T5");
             client.Port = 587;
             client.Host = "smtp.ionos.de";
             client.EnableSsl = true;
